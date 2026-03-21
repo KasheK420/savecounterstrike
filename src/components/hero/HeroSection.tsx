@@ -4,6 +4,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import { SignatureCounter } from "./SignatureCounter";
 import { RevenueTickerHero } from "./RevenueTickerHero";
+import { SupporterSlider } from "@/components/shared/SupporterSlider";
 import { db } from "@/lib/db";
 
 export async function HeroSection() {
@@ -83,6 +84,9 @@ export async function HeroSection() {
             <RevenueTickerHero />
           </div>
         </div>
+
+        {/* Supporter logos */}
+        <SupporterSlider />
       </div>
     </section>
   );

@@ -5,7 +5,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { UserBadges } from "@/components/shared/UserBadges";
 import { VoteButtons } from "./VoteButtons";
 import { CommentForm } from "./CommentForm";
-import { MessageSquare, Reply } from "lucide-react";
+import { useSession } from "@/components/auth/SessionProvider";
+import { MessageSquare, Reply, Trash2 } from "lucide-react";
 
 interface CommentAuthor {
   id: string;
@@ -99,8 +100,24 @@ function CommentThread({
   depth: number;
   onReply: () => void;
 }) {
+  const { user } = useSession();
   const [showReply, setShowReply] = useState(false);
+  const [deleted, setDeleted] = useState(false);
   const maxDepth = 2;
+
+  async function handleDelete() {
+    if (!confirm("Delete this comment?")) return;
+    const res = await fetch(`/api/comments/${comment.id}`, { method: "DELETE" });
+    if (res.ok) setDeleted(true);
+  }
+
+  if (deleted) {
+    return (
+      <div className={depth > 0 ? "ml-6 pl-4 border-l border-border/30" : ""}>
+        <p className="text-xs text-muted-foreground italic py-2">Comment deleted</p>
+      </div>
+    );
+  }
 
   return (
     <div className={depth > 0 ? "ml-6 pl-4 border-l border-border/30" : ""}>
@@ -148,6 +165,15 @@ function CommentThread({
               >
                 <Reply className="h-3 w-3" />
                 Reply
+              </button>
+            )}
+            {user?.role === "ADMIN" && (
+              <button
+                onClick={handleDelete}
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-red-500 transition-colors"
+              >
+                <Trash2 className="h-3 w-3" />
+                Delete
               </button>
             )}
           </div>

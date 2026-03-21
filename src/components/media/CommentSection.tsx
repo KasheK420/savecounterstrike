@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { MessageSquare, Reply } from "lucide-react";
+import { useSession } from "@/components/auth/SessionProvider";
+import { MessageSquare, Reply, Trash2 } from "lucide-react";
 import { VoteButtons } from "./VoteButtons";
 import { CommentForm } from "./CommentForm";
 
@@ -45,13 +46,29 @@ function CommentThread({
   mediaId: string;
   depth?: number;
 }) {
+  const { user } = useSession();
   const [showReply, setShowReply] = useState(false);
   const [replies, setReplies] = useState(comment.replies);
+  const [deleted, setDeleted] = useState(false);
   const maxDepth = 2;
 
   function handleReply(newComment: CommentData) {
     setReplies((prev) => [...prev, newComment]);
     setShowReply(false);
+  }
+
+  async function handleDelete() {
+    if (!confirm("Delete this comment?")) return;
+    const res = await fetch(`/api/comments/${comment.id}`, { method: "DELETE" });
+    if (res.ok) setDeleted(true);
+  }
+
+  if (deleted) {
+    return (
+      <div className={`${depth > 0 ? "ml-6 border-l border-border/20 pl-4" : ""}`}>
+        <p className="text-xs text-muted-foreground italic py-3">Comment deleted</p>
+      </div>
+    );
   }
 
   return (
@@ -87,15 +104,26 @@ function CommentThread({
           <p className="text-sm text-foreground mt-1 whitespace-pre-wrap break-words">
             {comment.content}
           </p>
-          {depth < maxDepth && (
-            <button
-              onClick={() => setShowReply(!showReply)}
-              className="flex items-center gap-1 mt-1 text-xs text-muted-foreground hover:text-cs-orange transition-colors"
-            >
-              <Reply className="h-3 w-3" />
-              Reply
-            </button>
-          )}
+          <div className="flex items-center gap-3 mt-1">
+            {depth < maxDepth && (
+              <button
+                onClick={() => setShowReply(!showReply)}
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-cs-orange transition-colors"
+              >
+                <Reply className="h-3 w-3" />
+                Reply
+              </button>
+            )}
+            {user?.role === "ADMIN" && (
+              <button
+                onClick={handleDelete}
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-red-500 transition-colors"
+              >
+                <Trash2 className="h-3 w-3" />
+                Delete
+              </button>
+            )}
+          </div>
           {showReply && (
             <div className="mt-2">
               <CommentForm

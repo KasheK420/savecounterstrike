@@ -31,15 +31,15 @@ export async function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left — Message */}
           <div className="relative space-y-8">
-            {/* Cheater Strike 2 art — behind text, characters peeking from right */}
+            {/* Cheater characters art — right side next to text */}
             <img
-              src="/images/cheater_strike2-removebg-preview.png"
+              src="/images/dashboard_bg.png"
               alt=""
               aria-hidden="true"
-              className="absolute -right-20 top-1/2 -translate-y-1/2 w-[500px] max-w-none opacity-[0.12] pointer-events-none select-none hidden lg:block"
+              className="absolute -right-8 top-1/2 -translate-y-[45%] w-[650px] max-w-none opacity-[0.18] pointer-events-none select-none hidden lg:block"
               style={{
-                maskImage: "linear-gradient(to left, black 40%, transparent 85%)",
-                WebkitMaskImage: "linear-gradient(to left, black 40%, transparent 85%)",
+                maskImage: "linear-gradient(to left, black 50%, transparent 90%)",
+                WebkitMaskImage: "linear-gradient(to left, black 50%, transparent 90%)",
               }}
             />
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-cs-red/30 bg-cs-red/5 text-cs-red text-sm">

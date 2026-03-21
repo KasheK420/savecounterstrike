@@ -18,8 +18,8 @@ const navLinks = [
   { href: "/blog", label: "Blog", icon: BookOpen },
   { href: "/media", label: "Media", icon: Video },
   { href: "/opinions", label: "Opinions", icon: MessageSquare },
-  { href: "/stats", label: "Stats", icon: BarChart3 },
-  { href: "/revenue", label: "Revenue", icon: DollarSign },
+  { href: "/stats", label: "Stats", icon: BarChart3, adminOnly: true },
+  { href: "/revenue", label: "Valve Revenue", icon: DollarSign },
   { href: "/about", label: "About", icon: Info },
 ];
 
@@ -42,7 +42,7 @@ export function Navbar() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
+            {navLinks.filter((l) => !l.adminOnly || user?.role === "ADMIN").map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -78,7 +78,7 @@ export function Navbar() {
                   Navigation
                 </SheetTitle>
                 <div className="flex flex-col gap-1 mt-6">
-                  {navLinks.map((link) => (
+                  {navLinks.filter((l) => !l.adminOnly || user?.role === "ADMIN").map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Handshake } from "lucide-react";
 
 interface Supporter {
@@ -11,6 +11,7 @@ interface Supporter {
 
 export function SupporterSlider() {
   const [supporters, setSupporters] = useState<Supporter[]>([]);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchSupporters() {
@@ -27,16 +28,12 @@ export function SupporterSlider() {
 
   if (supporters.length === 0) return null;
 
-  // Duplicate for seamless infinite loop
+  // Duplicate for seamless infinite loop (CSS translates -50%)
   const items = [...supporters, ...supporters];
 
   return (
-    <section className="py-8 overflow-hidden relative">
-      {/* Fade edges */}
-      <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
-
-      <div className="text-center mb-4">
+    <div className="mt-12 pt-8 border-t border-border/10 overflow-hidden relative">
+      <div className="text-center mb-5">
         <div className="inline-flex items-center gap-2 text-muted-foreground/40">
           <Handshake className="h-3.5 w-3.5" />
           <span className="text-[10px] uppercase tracking-[0.25em] font-heading">
@@ -46,38 +43,36 @@ export function SupporterSlider() {
       </div>
 
       <div className="supporter-track-wrapper">
-        <div className="supporter-track">
+        <div className="supporter-track" ref={trackRef}>
           {items.map((supporter, i) => {
-            const content = (
-              <div className="supporter-item" key={`${supporter.name}-${i}`}>
+            const Tag = supporter.url ? "a" : "div";
+            const linkProps = supporter.url
+              ? {
+                  href: supporter.url,
+                  target: "_blank" as const,
+                  rel: "noopener noreferrer",
+                }
+              : {};
+
+            return (
+              <Tag
+                key={`s-${i}`}
+                {...linkProps}
+                className="supporter-item"
+              >
                 <img
                   src={supporter.logoUrl}
                   alt={supporter.name}
-                  className="h-10 w-auto max-w-[120px] object-contain mx-auto"
-                  loading="lazy"
+                  className="h-10 w-auto max-w-[120px] object-contain"
                 />
-                <span className="text-[10px] text-muted-foreground/50 mt-1.5 block truncate max-w-[100px] mx-auto">
+                <span className="text-[10px] text-muted-foreground/50 mt-1.5 block truncate max-w-[100px]">
                   {supporter.name}
                 </span>
-              </div>
-            );
-
-            return supporter.url ? (
-              <a
-                key={`${supporter.name}-${i}`}
-                href={supporter.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="supporter-item-link"
-              >
-                {content}
-              </a>
-            ) : (
-              content
+              </Tag>
             );
           })}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

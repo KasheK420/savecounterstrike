@@ -1,4 +1,4 @@
-type MediaPlatform = "YOUTUBE" | "INSTAGRAM" | "TWITTER" | "TIKTOK" | "TWITCH" | "OTHER";
+type MediaPlatform = "YOUTUBE" | "INSTAGRAM" | "TWITTER" | "TIKTOK" | "TWITCH" | "FACEBOOK" | "OTHER";
 
 export function detectPlatform(url: string): MediaPlatform {
   try {
@@ -10,6 +10,7 @@ export function detectPlatform(url: string): MediaPlatform {
     if (host === "x.com" || host === "twitter.com") return "TWITTER";
     if (host.includes("tiktok.com")) return "TIKTOK";
     if (host === "twitch.tv" || host.includes("twitch.tv")) return "TWITCH";
+    if (host === "facebook.com" || host === "fb.watch" || host === "fb.com" || host === "m.facebook.com") return "FACEBOOK";
     return "OTHER";
   } catch {
     return "OTHER";
@@ -96,13 +97,16 @@ export function getEmbedUrl(url: string, platform: MediaPlatform): string | null
       return id ? `https://www.youtube.com/embed/${id}` : null;
     }
     case "INSTAGRAM": {
-      const id = extractInstagramId(url);
-      return id ? `https://www.instagram.com/p/${id}/embed` : null;
+      // Use original URL — rendered via blockquote + embed.js on the client
+      return extractInstagramId(url) ? url : null;
     }
     case "TWITTER": {
-      // Twitter doesn't have a simple iframe embed — we use the original URL
-      // and render via blockquote + widgets.js on the client
-      return url;
+      // Use original URL — rendered via twttr.widgets.createTweet on the client
+      return extractTwitterStatusId(url) ? url : null;
+    }
+    case "FACEBOOK": {
+      // Facebook plugin iframe — works for videos, reels, and posts
+      return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false&width=560`;
     }
     case "TIKTOK": {
       const id = extractTikTokId(url);

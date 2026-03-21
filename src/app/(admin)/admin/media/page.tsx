@@ -9,6 +9,7 @@ const platformLabels: Record<string, string> = {
   TIKTOK: "TT",
   INSTAGRAM: "IG",
   TWITTER: "X",
+  FACEBOOK: "FB",
   OTHER: "Link",
 };
 

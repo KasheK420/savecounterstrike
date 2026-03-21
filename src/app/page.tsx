@@ -1,6 +1,5 @@
 import { HeroSection } from "@/components/hero/HeroSection";
 import { OpenLetter } from "@/components/letter/OpenLetter";
-import { SupporterSlider } from "@/components/shared/SupporterSlider";
 import { Shield, Video, MessageSquare, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
@@ -43,9 +42,6 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
-
-      {/* Supporter logos slider */}
-      <SupporterSlider />
 
       {/* Open Letter */}
       <OpenLetter />

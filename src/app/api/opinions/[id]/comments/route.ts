@@ -72,7 +72,7 @@ export async function POST(
 
   const { id } = await params;
   const body = await request.json();
-  const parsed = commentSchema.safeParse(body);
+  const parsed = commentSchema.safeParse({ ...body, opinionId: id });
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.flatten().fieldErrors },
@@ -86,6 +86,7 @@ export async function POST(
       authorId: userId,
       opinionId: id,
       parentId: parsed.data.parentId || null,
+      isAnonymous: parsed.data.isAnonymous ?? false,
     },
     include: {
       author: {

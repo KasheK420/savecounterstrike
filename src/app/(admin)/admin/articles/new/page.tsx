@@ -5,10 +5,10 @@ export default function NewArticlePage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-2xl font-bold text-foreground">
-          New Article
+          New Blog Post
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Write a new article in Markdown
+          Create a new blog post with the rich text editor
         </p>
       </div>
       <ArticleForm mode="create" />

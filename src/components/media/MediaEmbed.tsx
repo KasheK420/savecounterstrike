@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { ExternalLink } from "lucide-react";
 
-type MediaPlatform = "YOUTUBE" | "INSTAGRAM" | "TWITTER" | "TIKTOK" | "TWITCH" | "OTHER";
+type MediaPlatform = "YOUTUBE" | "INSTAGRAM" | "TWITTER" | "TIKTOK" | "TWITCH" | "FACEBOOK" | "OTHER";
 
 interface MediaEmbedProps {
   url: string;
@@ -14,7 +14,12 @@ interface MediaEmbedProps {
 
 declare global {
   interface Window {
-    twttr?: { widgets: { load: (el?: HTMLElement) => void } };
+    twttr?: {
+      widgets: {
+        load: (el?: HTMLElement) => void;
+        createTweet: (id: string, el: HTMLElement, options?: Record<string, string>) => Promise<HTMLElement>;
+      };
+    };
     instgrm?: { Embeds: { process: () => void } };
   }
 }
@@ -74,45 +79,74 @@ function TikTokEmbed({ embedUrl }: { embedUrl: string }) {
   );
 }
 
-function InstagramEmbed({ embedUrl }: { embedUrl: string }) {
+function InstagramEmbed({ url }: { url: string }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const container = ref.current;
+    if (!container) return;
+
+    // Clear previous embed
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+
+    // Create blockquote (official Instagram embed method)
+    const blockquote = document.createElement("blockquote");
+    blockquote.className = "instagram-media";
+    blockquote.setAttribute("data-instgrm-permalink", url);
+    blockquote.setAttribute("data-instgrm-version", "14");
+    blockquote.style.maxWidth = "540px";
+    blockquote.style.width = "100%";
+    container.appendChild(blockquote);
+
+    // Load embed.js and process
     loadScript("https://www.instagram.com/embed.js", "instagram-embed-js").then(() => {
       window.instgrm?.Embeds.process();
     });
-  }, [embedUrl]);
+  }, [url]);
 
-  return (
-    <div ref={ref} className="flex justify-center">
-      <iframe
-        src={embedUrl}
-        className="rounded-lg border border-border/20"
-        width="400"
-        height="500"
-        allowFullScreen
-        title="Instagram post"
-      />
-    </div>
-  );
+  return <div ref={ref} className="flex justify-center" />;
 }
 
 function TwitterEmbed({ url }: { url: string }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const container = ref.current;
+    if (!container) return;
+
+    // Clear previous embed
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+
+    // Extract tweet ID from URL
+    const tweetIdMatch = url.match(/status\/(\d+)/);
+    if (!tweetIdMatch) return;
+
+    // Use createTweet API for reliable dynamic rendering
     loadScript("https://platform.twitter.com/widgets.js", "twitter-widgets-js").then(() => {
-      if (ref.current) {
-        window.twttr?.widgets.load(ref.current);
-      }
+      window.twttr?.widgets.createTweet(tweetIdMatch[1], container, {
+        theme: "dark",
+        align: "center",
+      });
     });
   }, [url]);
 
+  return <div ref={ref} className="flex justify-center min-h-[200px]" />;
+}
+
+function FacebookEmbed({ embedUrl }: { embedUrl: string }) {
   return (
-    <div ref={ref} className="flex justify-center">
-      <blockquote className="twitter-tweet" data-theme="dark">
-        <a href={url}>{url}</a>
-      </blockquote>
+    <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+      <iframe
+        src={embedUrl}
+        className="absolute inset-0 w-full h-full"
+        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+        allowFullScreen
+        title="Facebook video"
+      />
     </div>
   );
 }
@@ -149,9 +183,11 @@ export function MediaEmbed({ url, platform, embedUrl, title }: MediaEmbedProps) 
     case "TIKTOK":
       return <TikTokEmbed embedUrl={embedUrl!} />;
     case "INSTAGRAM":
-      return <InstagramEmbed embedUrl={embedUrl!} />;
+      return <InstagramEmbed url={url} />;
     case "TWITTER":
       return <TwitterEmbed url={url} />;
+    case "FACEBOOK":
+      return <FacebookEmbed embedUrl={embedUrl!} />;
     default:
       return <FallbackEmbed url={url} title={title} />;
   }

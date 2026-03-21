@@ -35,6 +35,7 @@ const platformColors: Record<string, string> = {
   TIKTOK: "bg-pink-500/20 text-pink-400",
   INSTAGRAM: "bg-orange-500/20 text-orange-400",
   TWITTER: "bg-sky-500/20 text-sky-400",
+  FACEBOOK: "bg-blue-600/20 text-blue-400",
   OTHER: "bg-gray-500/20 text-gray-400",
 };
 

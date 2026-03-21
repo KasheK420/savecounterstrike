@@ -207,6 +207,7 @@ enum MediaPlatform {
   TWITTER
   TIKTOK
   TWITCH
+  FACEBOOK
   OTHER
 }
 

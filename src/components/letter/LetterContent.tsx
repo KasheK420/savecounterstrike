@@ -123,7 +123,10 @@ export function LetterContent({ signatureCount }: LetterContentProps) {
               With urgency and resolve,
             </p>
             <p className="font-handwriting text-2xl font-bold text-[#2a2520] mt-2">
-              The Counter-Strike Community
+              Lukas Majoros
+            </p>
+            <p className="font-serif text-xs text-[#6b5e50] italic">
+              on behalf of the Counter-Strike community
             </p>
             <p className="font-serif text-sm text-[#8b1a1a] mt-1 font-semibold">
               {signatureCount.toLocaleString()} signatures and counting

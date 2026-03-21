@@ -179,18 +179,13 @@ export default async function MediaDetailPage({ params }: Props) {
                   {author.cs2PlaytimeHours && (
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      {author.cs2PlaytimeHours}h
+                      {author.cs2PlaytimeHours.toLocaleString()}h
                     </span>
-                  )}
-                  {kd && <span>K/D: {kd}</span>}
-                  {author.cs2HeadshotPct && (
-                    <span>HS: {author.cs2HeadshotPct.toFixed(0)}%</span>
                   )}
                   {author.faceitLevel && (
                     <span className="text-cs-orange flex items-center gap-1">
                       <Shield className="h-3 w-3" />
-                      FACEIT LVL {author.faceitLevel}
-                      {author.faceitElo ? ` (${author.faceitElo} ELO)` : ""}
+                      FACEIT {author.faceitLevel}
                     </span>
                   )}
                 </div>

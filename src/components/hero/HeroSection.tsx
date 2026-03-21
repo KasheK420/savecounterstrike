@@ -36,7 +36,7 @@ export async function HeroSection() {
               src="/images/dashboard_bg.png"
               alt=""
               aria-hidden="true"
-              className="absolute -right-8 top-1/2 -translate-y-[45%] w-[650px] max-w-none opacity-[0.18] pointer-events-none select-none hidden lg:block"
+              className="absolute right-[-120px] top-1/2 -translate-y-[45%] w-[650px] max-w-none opacity-[0.18] pointer-events-none select-none hidden lg:block"
               style={{
                 maskImage: "linear-gradient(to left, black 50%, transparent 90%)",
                 WebkitMaskImage: "linear-gradient(to left, black 50%, transparent 90%)",

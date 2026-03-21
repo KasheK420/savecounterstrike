@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Chakra_Petch, Caveat, Lora } from "next/font/google";
 import { auth } from "@/lib/auth";
 import { SessionProvider } from "@/components/auth/SessionProvider";
+import { FaceitSync } from "@/components/auth/FaceitSync";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
@@ -99,6 +100,7 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background">
         <SessionProvider session={sessionUser}>
+          <FaceitSync />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

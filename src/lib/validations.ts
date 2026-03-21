@@ -31,6 +31,13 @@ export const commentSchema = z.object({
   { message: "Exactly one of opinionId or mediaId must be provided" }
 );
 
+export const contactSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").max(100),
+  email: z.string().email("Must be a valid email address"),
+  subject: z.string().min(3, "Subject must be at least 3 characters").max(200),
+  message: z.string().min(10, "Message must be at least 10 characters").max(5000),
+});
+
 export const articleSchema = z.object({
   title: z.string().min(3).max(200),
   slug: z

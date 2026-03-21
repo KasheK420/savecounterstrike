@@ -15,6 +15,7 @@ interface MediaEmbedProps {
 declare global {
   interface Window {
     twttr?: {
+      ready: (cb: () => void) => void;
       widgets: {
         load: (el?: HTMLElement) => void;
         createTweet: (id: string, el: HTMLElement, options?: Record<string, string>) => Promise<HTMLElement>;
@@ -24,9 +25,12 @@ declare global {
   }
 }
 
-function loadScript(src: string, id: string): Promise<void> {
+function loadScript(src: string, id: string, forceReload = false): Promise<void> {
   return new Promise((resolve) => {
-    if (document.getElementById(id)) {
+    const existing = document.getElementById(id);
+    if (existing && forceReload) {
+      existing.remove();
+    } else if (existing) {
       resolve();
       return;
     }
@@ -100,9 +104,13 @@ function InstagramEmbed({ url }: { url: string }) {
     blockquote.style.width = "100%";
     container.appendChild(blockquote);
 
-    // Load embed.js and process
-    loadScript("https://www.instagram.com/embed.js", "instagram-embed-js").then(() => {
-      window.instgrm?.Embeds.process();
+    // Load embed.js and process — force reload if instgrm is missing (stale script tag)
+    const needsReload = !!document.getElementById("instagram-embed-js") && !window.instgrm;
+    loadScript("https://www.instagram.com/embed.js", "instagram-embed-js", needsReload).then(() => {
+      // Small delay to ensure SDK is initialized
+      setTimeout(() => {
+        window.instgrm?.Embeds.process();
+      }, 100);
     });
   }, [url]);
 
@@ -125,12 +133,28 @@ function TwitterEmbed({ url }: { url: string }) {
     const tweetIdMatch = url.match(/status\/(\d+)/);
     if (!tweetIdMatch) return;
 
-    // Use createTweet API for reliable dynamic rendering
-    loadScript("https://platform.twitter.com/widgets.js", "twitter-widgets-js").then(() => {
-      window.twttr?.widgets.createTweet(tweetIdMatch[1], container, {
-        theme: "dark",
-        align: "center",
-      });
+    // Use createTweet API — wait for twttr.ready() to handle async SDK init
+    const needsReload = !!document.getElementById("twitter-widgets-js") && !window.twttr;
+    loadScript("https://platform.twitter.com/widgets.js", "twitter-widgets-js", needsReload).then(() => {
+      const createEmbed = () => {
+        window.twttr?.widgets.createTweet(tweetIdMatch[1], container, {
+          theme: "dark",
+          align: "center",
+        });
+      };
+
+      if (window.twttr?.ready) {
+        window.twttr.ready(createEmbed);
+      } else {
+        // Fallback: poll for twttr availability
+        const interval = setInterval(() => {
+          if (window.twttr?.widgets) {
+            clearInterval(interval);
+            createEmbed();
+          }
+        }, 100);
+        setTimeout(() => clearInterval(interval), 5000);
+      }
     });
   }, [url]);
 

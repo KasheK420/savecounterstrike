@@ -7,6 +7,7 @@ import { UserBadges } from "@/components/shared/UserBadges";
 import { Calendar, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { OpinionDetail } from "@/components/opinions/OpinionDetail";
+import { AdminContentBar } from "@/components/admin/AdminContentBar";
 
 export async function generateMetadata({
   params,
@@ -61,6 +62,7 @@ export default async function OpinionPage({
         </Link>
 
         <OpinionDetail opinion={JSON.parse(JSON.stringify(opinion))} />
+        <AdminContentBar type="opinion" id={opinion.id} status={opinion.status} />
       </div>
     </div>
   );

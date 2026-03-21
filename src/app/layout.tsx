@@ -31,6 +31,7 @@ const lora = Lora({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://savecounterstrike.com"),
   title: {
     default: "Save Counter-Strike — Demand Better Anti-Cheat",
     template: "%s | Save Counter-Strike",
@@ -45,19 +46,33 @@ export const metadata: Metadata = {
     "petition",
     "valve",
     "cheaters",
+    "savecounterstrike",
   ],
+  icons: {
+    icon: "/images/spinbot_logo.jpeg",
+    apple: "/images/spinbot_logo.jpeg",
+  },
   openGraph: {
     title: "Save Counter-Strike — Demand Better Anti-Cheat",
     description:
       "Join the community petition demanding Valve fix CS2's cheating epidemic.",
     type: "website",
     siteName: "SaveCounterStrike.com",
+    images: [
+      {
+        url: "/images/cheater_strike2.jpeg",
+        width: 1200,
+        height: 630,
+        alt: "Save Counter-Strike — Demand Better Anti-Cheat",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Save Counter-Strike",
     description:
       "Join the community petition demanding Valve fix CS2's cheating epidemic.",
+    images: ["/images/cheater_strike2.jpeg"],
   },
 };
 

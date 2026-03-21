@@ -44,11 +44,11 @@ export default function HomePage() {
     <>
       <HeroSection />
 
-      {/* Open Letter */}
-      <OpenLetter />
-
       {/* Supporter logos slider */}
       <SupporterSlider />
+
+      {/* Open Letter */}
+      <OpenLetter />
 
       {/* Features section */}
       <section className="py-20 bg-cs-darker">

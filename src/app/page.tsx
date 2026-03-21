@@ -1,13 +1,14 @@
 import { HeroSection } from "@/components/hero/HeroSection";
+import { OpenLetter } from "@/components/letter/OpenLetter";
 import { Shield, Video, MessageSquare, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
 const features = [
   {
     icon: Shield,
-    title: "Sign the Petition",
+    title: "Sign the Letter",
     description:
-      "Add your voice to thousands of players demanding Valve implement proper anti-cheat.",
+      "Add your signature to the open letter we'll deliver to Valve on August 31, 2026.",
     href: "/petition",
     color: "text-cs-orange",
   },
@@ -21,17 +22,17 @@ const features = [
   },
   {
     icon: MessageSquare,
-    title: "Community Voices",
+    title: "Community Requests",
     description:
-      "Share your opinion on the state of CS2 and vote on what matters most.",
+      "Submit and vote on what Valve has ignored for years. Your voice shapes the letter.",
     href: "/opinions",
     color: "text-cs-gold",
   },
   {
     icon: BarChart3,
-    title: "Track the Problem",
+    title: "Track the Money",
     description:
-      "View statistics on cheating prevalence, VAC bans, and how much Valve earns.",
+      "See exactly how much Valve earns from CS2 while ignoring the community.",
     href: "/stats",
     color: "text-cs-green",
   },
@@ -77,36 +78,60 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Why section */}
-      <section className="py-20">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-center mb-12">
-            WHY <span className="text-cs-orange">THIS MATTERS</span>
-          </h2>
+      {/* Open Letter */}
+      <OpenLetter />
 
-          <div className="space-y-8 text-muted-foreground leading-relaxed">
+      {/* Why section — broader messaging */}
+      <section className="py-20 bg-cs-darker">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-center mb-4">
+            BIGGER THAN <span className="text-cs-orange">CHEATING</span>
+          </h2>
+          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+            Anti-cheat is our primary demand, but the community&apos;s
+            frustration runs deeper. Valve has ignored player feedback across
+            every aspect of Counter-Strike for years.
+          </p>
+
+          <div className="space-y-6 text-muted-foreground leading-relaxed">
             <div className="cs-card rounded-lg p-6">
               <h3 className="font-heading text-lg font-semibold text-foreground mb-3">
-                The Problem
+                The Cheating Epidemic
               </h3>
               <p>
                 Counter-Strike 2 is plagued by cheaters at every skill level.
                 From blatant aimbots to subtle wallhacks, the competitive
-                experience is being destroyed. Players spend hours in matches
-                only to face opponents who are clearly using unauthorized
-                software.
+                experience is being destroyed. VAC is outdated, easily bypassed,
+                and Valve has shown no urgency to fix it — despite earning
+                billions from the game.
               </p>
             </div>
 
             <div className="cs-card rounded-lg p-6">
               <h3 className="font-heading text-lg font-semibold text-foreground mb-3">
-                Valve&apos;s Response
+                Years of Silence
               </h3>
               <p>
-                Despite earning millions of dollars daily from CS2 through case
-                sales, market transactions, and in-game purchases, Valve&apos;s
-                anti-cheat measures remain inadequate. VAC (Valve Anti-Cheat) is
-                outdated and easily bypassed. The community deserves better.
+                Missing features, broken promises, unanswered community
+                requests. Players have been asking for basic improvements —
+                better matchmaking, tournament features, demo system fixes, UI
+                improvements — for years. The response? Silence. Valve collects
+                the revenue but refuses to invest proportionally in the game
+                that generates it.
+              </p>
+            </div>
+
+            <div className="cs-card rounded-lg p-6">
+              <h3 className="font-heading text-lg font-semibold text-foreground mb-3">
+                &ldquo;Do Nothing and Win&rdquo; Is Over
+              </h3>
+              <p>
+                For too long, Valve has operated on the assumption that
+                Counter-Strike is too big to fail. That players will keep
+                buying, keep trading, keep playing — no matter how little Valve
+                gives back. That era ends now. This community is organizing,
+                documenting, and demanding accountability. Every vote, every
+                signature, every shared clip adds to the case.
               </p>
             </div>
 
@@ -116,20 +141,22 @@ export default function HomePage() {
               </h3>
               <ul className="list-disc list-inside space-y-2">
                 <li>
-                  A modern, kernel-level anti-cheat system comparable to
-                  competitors
+                  A modern, kernel-level anti-cheat comparable to competitors
                 </li>
                 <li>
-                  Faster detection and banning of cheaters — days, not months
+                  Hardware bans and faster detection — days, not months
                 </li>
                 <li>
-                  Better reporting tools and feedback when reports lead to bans
+                  Transparent reporting: know when your reports lead to action
                 </li>
                 <li>
-                  Hardware bans for repeat offenders to prevent new accounts
+                  Regular communication about development priorities
                 </li>
                 <li>
-                  Transparency about anti-cheat efforts and ban statistics
+                  Community-requested features that have been ignored for years
+                </li>
+                <li>
+                  Investment proportional to the revenue CS2 generates
                 </li>
               </ul>
             </div>

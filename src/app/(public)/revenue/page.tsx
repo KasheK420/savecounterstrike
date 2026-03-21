@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { RevenueTickerHero } from "@/components/hero/RevenueTickerHero";
+import { RevenueBreakdown } from "@/components/revenue/RevenueBreakdown";
 import { DollarSign } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Revenue Tracker",
-  description: "See how much Valve earns from CS2 while cheaters go unpunished.",
+  description:
+    "See how much Valve earns from CS2 while cheaters go unpunished.",
 };
 
 export default function RevenuePage() {
@@ -26,33 +28,45 @@ export default function RevenuePage() {
           <RevenueTickerHero />
         </div>
 
-        <div className="mt-12 cs-card rounded-xl p-8">
+        <RevenueBreakdown />
+
+        <div className="mt-8 cs-card rounded-xl p-8">
           <h2 className="font-heading text-xl font-bold text-foreground mb-4">
             Where does this money come from?
           </h2>
           <div className="space-y-4 text-muted-foreground">
-            <p>
-              Counter-Strike 2 generates revenue through multiple streams:
-            </p>
+            <p>Counter-Strike 2 generates revenue through multiple streams:</p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>
-                <strong className="text-foreground">Case keys</strong> — $2.49 each, millions sold monthly
+                <strong className="text-foreground">Case keys</strong> — $2.50
+                each, over 1 million sold daily
               </li>
               <li>
-                <strong className="text-foreground">Steam Market fees</strong> — 15% cut on every skin transaction
+                <strong className="text-foreground">Steam Market fees</strong>{" "}
+                — 15% cut on every skin transaction ($1.22B in 2025)
               </li>
               <li>
-                <strong className="text-foreground">Operation passes</strong> — Seasonal content at $14.99
+                <strong className="text-foreground">Operation passes</strong> —
+                Seasonal content at $14.99
               </li>
               <li>
-                <strong className="text-foreground">Stickers & capsules</strong> — Major tournament merchandise
+                <strong className="text-foreground">
+                  Stickers & capsules
+                </strong>{" "}
+                — Major tournament merchandise
               </li>
             </ul>
-            <p className="text-sm italic">
-              Revenue estimates are based on publicly available data from SteamDB,
-              market analysis, and community research. Actual figures may vary.
-            </p>
           </div>
+        </div>
+
+        <div className="mt-6 text-center">
+          <p className="text-[11px] text-muted-foreground/60 max-w-2xl mx-auto leading-relaxed">
+            Revenue estimates based on publicly available data from Steam
+            Community Market API, BitSkins analysis (March 2025), ZestyJesus
+            yearly analysis (2025), csgocasetracker.com, and CSFloat FloatDB
+            case tracking data. Actual Valve revenue may differ. CS2 total skin
+            market cap estimated at $4.3B.
+          </p>
         </div>
       </div>
     </div>

@@ -6,13 +6,6 @@ import sanitizeHtml from "sanitize-html";
 // Extend window for embed script globals
 declare global {
   interface Window {
-    twttr?: {
-      ready: (cb: () => void) => void;
-      widgets: {
-        load: (el?: HTMLElement) => void;
-        createTweet: (id: string, el: HTMLElement, options?: Record<string, string>) => Promise<HTMLElement>;
-      };
-    };
     instgrm?: { Embeds: { process: () => void } };
   }
 }

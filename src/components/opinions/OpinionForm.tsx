@@ -7,6 +7,7 @@ import { RichTextEditor } from "./RichTextEditor";
 import { SafeHtml } from "./SafeHtml";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ImageUpload } from "@/components/shared/ImageUpload";
 import { Send, Loader2, Eye, Edit3 } from "lucide-react";
 
 export function OpinionForm() {
@@ -90,11 +91,10 @@ export function OpinionForm() {
         maxLength={200}
       />
 
-      <Input
+      <ImageUpload
         value={imageUrl}
-        onChange={(e) => setImageUrl(e.target.value)}
-        placeholder="Preview image URL (optional)"
-        className="bg-muted/50 border-border text-sm"
+        onChange={setImageUrl}
+        label="Preview Image (optional)"
       />
 
       <div className="flex gap-2 mb-2">

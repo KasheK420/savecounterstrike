@@ -5,6 +5,7 @@ import { UserBadges } from "@/components/shared/UserBadges";
 import { VoteButtons } from "./VoteButtons";
 import { SafeHtml } from "./SafeHtml";
 import { CommentSection } from "./CommentSection";
+import { ImageLightbox } from "@/components/shared/ImageLightbox";
 import { Calendar, MessageSquare } from "lucide-react";
 
 interface OpinionDetailProps {
@@ -59,11 +60,8 @@ export function OpinionDetail({ opinion }: OpinionDetailProps) {
               {opinion.author.displayName}
             </span>
             <UserBadges
-              ownsCs2={opinion.author.ownsCs2}
               cs2PlaytimeHours={opinion.author.cs2PlaytimeHours}
-              cs2Wins={opinion.author.cs2Wins}
               faceitLevel={opinion.author.faceitLevel}
-              profileVisibility={opinion.author.profileVisibility}
             />
             <span className="text-xs text-muted-foreground flex items-center gap-1">
               <Calendar className="h-3 w-3" />
@@ -83,11 +81,13 @@ export function OpinionDetail({ opinion }: OpinionDetailProps) {
 
       {/* Image */}
       {opinion.imageUrl && (
-        <img
-          src={opinion.imageUrl}
-          alt=""
-          className="w-full rounded-lg border border-border/30 max-h-96 object-cover"
-        />
+        <ImageLightbox src={opinion.imageUrl}>
+          <img
+            src={opinion.imageUrl}
+            alt=""
+            className="w-full rounded-lg border border-border/30 max-h-96 object-cover"
+          />
+        </ImageLightbox>
       )}
 
       {/* Content */}

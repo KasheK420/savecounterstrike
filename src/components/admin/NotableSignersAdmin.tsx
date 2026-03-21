@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ImageUpload } from "@/components/shared/ImageUpload";
 import { Plus, Trash2, Save, Loader2 } from "lucide-react";
 
 interface NotableSigner {
@@ -100,12 +101,13 @@ export function NotableSignersAdmin({
               </option>
             ))}
           </select>
-          <Input
-            value={signer.avatarOverride || ""}
-            onChange={(e) => updateSigner(i, "avatarOverride", e.target.value)}
-            placeholder="Avatar URL (optional)"
-            className="bg-muted/30 border-border flex-1 min-w-[120px] text-xs"
-          />
+          <div className="flex-1 min-w-[120px]">
+            <ImageUpload
+              value={signer.avatarOverride || ""}
+              onChange={(url) => updateSigner(i, "avatarOverride", url)}
+              compact
+            />
+          </div>
           <Button
             variant="ghost"
             size="icon"

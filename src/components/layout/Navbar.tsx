@@ -11,15 +11,16 @@ import {
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Menu, Shield, FileText, Video, MessageSquare, BarChart3, DollarSign } from "lucide-react";
+import { Menu, Shield, BookOpen, Video, MessageSquare, BarChart3, DollarSign, Info, Heart } from "lucide-react";
 
 const navLinks = [
   { href: "/petition", label: "Petition", icon: Shield },
-  { href: "/articles", label: "Articles", icon: FileText },
-  { href: "/videos", label: "Videos", icon: Video },
+  { href: "/blog", label: "Blog", icon: BookOpen },
+  { href: "/media", label: "Media", icon: Video },
   { href: "/opinions", label: "Opinions", icon: MessageSquare },
   { href: "/stats", label: "Stats", icon: BarChart3 },
   { href: "/revenue", label: "Revenue", icon: DollarSign },
+  { href: "/about", label: "About", icon: Info },
 ];
 
 export function Navbar() {
@@ -53,8 +54,15 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Auth */}
+          {/* Auth + Support */}
           <div className="flex items-center gap-3">
+            <Link
+              href="/support"
+              className="hidden sm:flex items-center gap-1 px-2 py-1.5 text-xs text-muted-foreground hover:text-cs-red transition-colors rounded-md"
+              title="Support Us"
+            >
+              <Heart className="h-3.5 w-3.5" />
+            </Link>
             {user ? <UserAvatar /> : <SteamLoginButton />}
 
             {/* Mobile menu */}

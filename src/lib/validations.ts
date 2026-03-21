@@ -8,19 +8,10 @@ export const petitionSignSchema = z.object({
     .transform((val) => val?.trim() || undefined),
 });
 
-export const videoSubmitSchema = z.object({
-  url: z.string().url("Must be a valid URL").refine(
-    (url) => {
-      return (
-        url.includes("youtube.com") ||
-        url.includes("youtu.be") ||
-        url.includes("twitch.tv")
-      );
-    },
-    { message: "Must be a YouTube or Twitch URL" }
-  ),
-  title: z.string().min(3).max(200),
-  description: z.string().max(1000).optional(),
+export const mediaSubmitSchema = z.object({
+  url: z.string().url("Must be a valid URL"),
+  title: z.string().min(3, "Title must be at least 3 characters").max(200),
+  description: z.string().max(1000).optional().transform((v) => v?.trim() || undefined),
 });
 
 export const opinionSchema = z.object({
@@ -32,7 +23,13 @@ export const opinionSchema = z.object({
 export const commentSchema = z.object({
   content: z.string().min(1).max(2000),
   parentId: z.string().optional(),
-});
+  opinionId: z.string().optional(),
+  mediaId: z.string().optional(),
+  isAnonymous: z.boolean().optional().default(false),
+}).refine(
+  (data) => Boolean(data.opinionId) !== Boolean(data.mediaId),
+  { message: "Exactly one of opinionId or mediaId must be provided" }
+);
 
 export const articleSchema = z.object({
   title: z.string().min(3).max(200),
@@ -45,4 +42,6 @@ export const articleSchema = z.object({
   content: z.string().min(10),
   coverImage: z.string().url().optional().or(z.literal("")),
   published: z.boolean().default(false),
+  featured: z.boolean().default(false),
+  tags: z.array(z.string().max(50)).max(10).default([]),
 });

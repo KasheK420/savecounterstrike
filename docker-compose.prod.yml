@@ -1,0 +1,25 @@
+services:
+  web:
+    image: majorluk/savecounterstrike:latest
+    container_name: savecounterstrike
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    environment:
+      - DATABASE_URL=postgresql://${PG_SCS_USER}:${PG_SCS_PASSWORD}@shared-postgres:5432/${PG_SCS_DB}
+      - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_URL=https://savecounterstrike.com
+      - STEAM_API_KEY=${STEAM_API_KEY}
+      - ADMIN_STEAM_IDS=${ADMIN_STEAM_IDS}
+      - NEXT_PUBLIC_SITE_URL=https://savecounterstrike.com
+    networks:
+      - proxy-net
+      - db-net
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+networks:
+  proxy-net:
+    external: true
+  db-net:
+    external: true

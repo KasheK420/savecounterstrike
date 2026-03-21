@@ -1,65 +1,141 @@
-import Image from "next/image";
+import { HeroSection } from "@/components/hero/HeroSection";
+import { Shield, Video, MessageSquare, BarChart3 } from "lucide-react";
+import Link from "next/link";
 
-export default function Home() {
+const features = [
+  {
+    icon: Shield,
+    title: "Sign the Petition",
+    description:
+      "Add your voice to thousands of players demanding Valve implement proper anti-cheat.",
+    href: "/petition",
+    color: "text-cs-orange",
+  },
+  {
+    icon: Video,
+    title: "Share Evidence",
+    description:
+      "Upload clips of cheaters ruining matches. Build an undeniable case for change.",
+    href: "/videos",
+    color: "text-cs-blue",
+  },
+  {
+    icon: MessageSquare,
+    title: "Community Voices",
+    description:
+      "Share your opinion on the state of CS2 and vote on what matters most.",
+    href: "/opinions",
+    color: "text-cs-gold",
+  },
+  {
+    icon: BarChart3,
+    title: "Track the Problem",
+    description:
+      "View statistics on cheating prevalence, VAC bans, and how much Valve earns.",
+    href: "/stats",
+    color: "text-cs-green",
+  },
+];
+
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <HeroSection />
+
+      {/* Features section */}
+      <section className="py-20 bg-cs-darker">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-foreground">
+              TAKE <span className="text-cs-orange">ACTION</span>
+            </h2>
+            <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
+              Every tool you need to make your voice heard and hold Valve
+              accountable.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature) => (
+              <Link
+                key={feature.href}
+                href={feature.href}
+                className="group cs-card rounded-lg p-6 hover:border-cs-orange/30 transition-all duration-300"
+              >
+                <feature.icon
+                  className={`h-10 w-10 ${feature.color} mb-4 group-hover:scale-110 transition-transform`}
+                />
+                <h3 className="font-heading font-semibold text-foreground mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </p>
+              </Link>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Why section */}
+      <section className="py-20">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-center mb-12">
+            WHY <span className="text-cs-orange">THIS MATTERS</span>
+          </h2>
+
+          <div className="space-y-8 text-muted-foreground leading-relaxed">
+            <div className="cs-card rounded-lg p-6">
+              <h3 className="font-heading text-lg font-semibold text-foreground mb-3">
+                The Problem
+              </h3>
+              <p>
+                Counter-Strike 2 is plagued by cheaters at every skill level.
+                From blatant aimbots to subtle wallhacks, the competitive
+                experience is being destroyed. Players spend hours in matches
+                only to face opponents who are clearly using unauthorized
+                software.
+              </p>
+            </div>
+
+            <div className="cs-card rounded-lg p-6">
+              <h3 className="font-heading text-lg font-semibold text-foreground mb-3">
+                Valve&apos;s Response
+              </h3>
+              <p>
+                Despite earning millions of dollars daily from CS2 through case
+                sales, market transactions, and in-game purchases, Valve&apos;s
+                anti-cheat measures remain inadequate. VAC (Valve Anti-Cheat) is
+                outdated and easily bypassed. The community deserves better.
+              </p>
+            </div>
+
+            <div className="cs-card rounded-lg p-6">
+              <h3 className="font-heading text-lg font-semibold text-foreground mb-3">
+                What We Want
+              </h3>
+              <ul className="list-disc list-inside space-y-2">
+                <li>
+                  A modern, kernel-level anti-cheat system comparable to
+                  competitors
+                </li>
+                <li>
+                  Faster detection and banning of cheaters — days, not months
+                </li>
+                <li>
+                  Better reporting tools and feedback when reports lead to bans
+                </li>
+                <li>
+                  Hardware bans for repeat offenders to prevent new accounts
+                </li>
+                <li>
+                  Transparency about anti-cheat efforts and ban statistics
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+    </>
   );
 }

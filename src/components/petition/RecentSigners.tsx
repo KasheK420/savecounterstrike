@@ -5,12 +5,13 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { filterProfanity } from "@/lib/profanity";
 
 interface Signer {
+  id: string;
   createdAt: string;
   message: string | null;
   user: {
+    id: string;
     displayName: string;
     avatarUrl: string | null;
-    steamId: string;
     ownsCs2: boolean | null;
     cs2PlaytimeHours: number | null;
     faceitLevel: number | null;
@@ -63,7 +64,7 @@ export function RecentSigners() {
 
           return (
             <div
-              key={u.steamId}
+              key={signer.id || u.id}
               className="flex items-start gap-3 p-3 rounded-lg bg-muted/30"
             >
               <Avatar className="h-8 w-8 border border-border/50 shrink-0">

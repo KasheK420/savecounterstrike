@@ -17,7 +17,7 @@ export const mediaSubmitSchema = z.object({
 export const opinionSchema = z.object({
   title: z.string().min(5).max(200),
   content: z.string().min(10).max(50000),
-  imageUrl: z.string().url().optional().or(z.literal("")),
+  imageUrl: z.string().max(2000).optional().transform((v) => v?.trim() || undefined),
 });
 
 export const commentSchema = z.object({
@@ -40,7 +40,7 @@ export const articleSchema = z.object({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase with hyphens"),
   excerpt: z.string().max(500).optional().transform((v) => v?.trim() || undefined),
   content: z.string().min(10),
-  coverImage: z.string().url().optional().or(z.literal("")),
+  coverImage: z.string().max(2000).optional().transform((v) => v?.trim() || undefined),
   published: z.boolean().default(false),
   featured: z.boolean().default(false),
   tags: z.array(z.string().max(50)).max(10).default([]),

@@ -97,7 +97,7 @@ export function Footer() {
         <div className="mt-8 pt-6 border-t border-border/30 text-center">
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} SaveCounterStrike.com — Created by
-            Lukas Majoros. Built by the community, for the community.
+            <a href="https://majorluk.pl" target="_blank" rel="noopener noreferrer" className="hover:text-cs-orange transition-colors">Lukas Majoros</a>. Built by the community, for the community.
           </p>
         </div>
       </div>

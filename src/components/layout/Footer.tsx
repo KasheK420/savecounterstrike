@@ -79,6 +79,12 @@ export function Footer() {
               >
                 Support Us
               </Link>
+              <Link
+                href="/contact"
+                className="text-sm text-muted-foreground hover:text-cs-orange transition-colors"
+              >
+                Contact Us
+              </Link>
               <a
                 href="https://github.com/KasheK420/savecounterstrike"
                 target="_blank"

@@ -38,6 +38,8 @@ model User {
   opinionVotes      OpinionVote[] @relation("UserOpinionVotes")
   comments          Comment[]     @relation("UserComments")
   commentVotes      CommentVote[] @relation("UserCommentVotes")
+  media             Media[]       @relation("UserMedia")
+  mediaVotes        MediaVote[]   @relation("UserMediaVotes")
 
   @@index([steamId])
 }
@@ -121,22 +123,26 @@ model OpinionVote {
 }
 
 model Comment {
-  id        String   @id @default(cuid())
-  content   String
-  authorId  String
-  opinionId String
-  parentId  String?
-  score     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  content     String
+  authorId    String
+  opinionId   String?
+  mediaId     String?
+  parentId    String?
+  isAnonymous Boolean  @default(false)
+  score       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   author  User      @relation("UserComments", fields: [authorId], references: [id], onDelete: Cascade)
-  opinion Opinion   @relation(fields: [opinionId], references: [id], onDelete: Cascade)
+  opinion Opinion?  @relation(fields: [opinionId], references: [id], onDelete: Cascade)
+  media   Media?    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
   parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
   replies Comment[] @relation("CommentReplies")
   votes   CommentVote[]
 
   @@index([opinionId, createdAt])
+  @@index([mediaId, createdAt])
   @@index([parentId])
 }
 
@@ -156,6 +162,108 @@ enum ContentStatus {
   PENDING
   APPROVED
   REJECTED
+  HIDDEN
+}
+
+// ── Media ─────────────────────────────────────────────
+
+model Media {
+  id           String        @id @default(cuid())
+  title        String
+  description  String?
+  url          String
+  platform     MediaPlatform
+  embedUrl     String?
+  thumbnailUrl String?
+  authorId     String
+  status       ContentStatus @default(APPROVED)
+  score        Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  author   User        @relation("UserMedia", fields: [authorId], references: [id], onDelete: Cascade)
+  votes    MediaVote[]
+  comments Comment[]
+
+  @@index([status, score])
+  @@index([status, createdAt])
+}
+
+model MediaVote {
+  id      String @id @default(cuid())
+  mediaId String
+  userId  String
+  value   Int
+
+  media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  user  User  @relation("UserMediaVotes", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([mediaId, userId])
+}
+
+enum MediaPlatform {
+  YOUTUBE
+  INSTAGRAM
+  TWITTER
+  TIKTOK
+  TWITCH
+  OTHER
+}
+
+// ── Tracked Players (GC Bot + Ban Checking) ────────────
+
+model TrackedPlayer {
+  id              String    @id @default(cuid())
+  steamId         String    @unique
+  displayName     String?
+  avatarUrl       String?
+
+  // Premier / Competitive rank (from GC bot)
+  premierRating   Int?
+  competitiveRank Int?
+  wins            Int?
+
+  // Ban status (from Steam API GetPlayerBans)
+  vacBanned         Boolean   @default(false)
+  numberOfVacBans   Int       @default(0)
+  daysSinceLastBan  Int?
+  numberOfGameBans  Int       @default(0)
+  communityBanned   Boolean   @default(false)
+
+  profileCheckedAt  DateTime?
+  banCheckedAt      DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([premierRating])
+  @@index([vacBanned])
+  @@index([steamId])
+}
+
+// ── Ban Tracking ────────────────────────────────────────
+
+model BanWave {
+  id            String   @id @default(cuid())
+  date          DateTime
+  title         String
+  description   String?
+  estimatedBans Int?
+  source        String?
+  createdAt     DateTime @default(now())
+
+  @@index([date])
+}
+
+model BanSnapshot {
+  id              String   @id @default(cuid())
+  date            DateTime @unique
+  totalTracked    Int
+  totalVacBanned  Int
+  totalGameBanned Int
+  newBansToday    Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  @@index([date])
 }
 
 // ── Site Configuration ──────────────────────────────────

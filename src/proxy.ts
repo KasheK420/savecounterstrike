@@ -3,6 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Redirect old /videos to /media
+  if (pathname === "/videos" || pathname.startsWith("/videos/")) {
+    const newPath = pathname.replace("/videos", "/media");
+    return NextResponse.redirect(new URL(newPath, request.url), 301);
+  }
+
   // Protect admin routes
   if (pathname.startsWith("/admin")) {
     // Admin protection is handled in the admin layout via server-side session check

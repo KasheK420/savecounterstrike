@@ -41,6 +41,12 @@ export function Footer() {
                 Cheater Videos
               </Link>
               <Link
+                href="/blog"
+                className="text-sm text-muted-foreground hover:text-cs-orange transition-colors"
+              >
+                Blog
+              </Link>
+              <Link
                 href="/opinions"
                 className="text-sm text-muted-foreground hover:text-cs-orange transition-colors"
               >
@@ -55,14 +61,35 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Disclaimer */}
+          {/* Project */}
           <div>
             <h3 className="font-heading font-semibold text-sm text-foreground mb-3 uppercase tracking-wider">
-              Disclaimer
+              Project
             </h3>
-            <p className="text-sm text-muted-foreground">
-              This website is not affiliated with or endorsed by Valve
-              Corporation. Counter-Strike is a trademark of Valve Corporation.
+            <div className="flex flex-col gap-2">
+              <Link
+                href="/about"
+                className="text-sm text-muted-foreground hover:text-cs-orange transition-colors"
+              >
+                About Us
+              </Link>
+              <Link
+                href="/support"
+                className="text-sm text-muted-foreground hover:text-cs-orange transition-colors"
+              >
+                Support Us
+              </Link>
+              <a
+                href="https://github.com/KasheK420/savecounterstrike"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-cs-orange transition-colors"
+              >
+                GitHub
+              </a>
+            </div>
+            <p className="text-xs text-muted-foreground/60 mt-3">
+              Not affiliated with Valve Corporation.
             </p>
           </div>
         </div>

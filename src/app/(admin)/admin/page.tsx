@@ -1,13 +1,14 @@
 import { db } from "@/lib/db";
 import { StatCard } from "@/components/admin/StatCard";
-import { Users, ScrollText, FileText, DollarSign } from "lucide-react";
+import { Users, ScrollText, FileText, DollarSign, Video } from "lucide-react";
 import Link from "next/link";
 
 export default async function AdminDashboard() {
-  const [userCount, signatureCount, articleCount] = await Promise.all([
+  const [userCount, signatureCount, articleCount, mediaCount] = await Promise.all([
     db.user.count(),
     db.petitionSignature.count(),
     db.article.count(),
+    db.media.count(),
   ]);
 
   return (
@@ -44,11 +45,11 @@ export default async function AdminDashboard() {
           color="text-cs-gold"
         />
         <StatCard
-          title="Revenue API"
-          value="Live"
-          subtitle="Fetching from Steam"
-          icon={DollarSign}
-          color="text-cs-green"
+          title="Media"
+          value={mediaCount}
+          subtitle="Submitted media"
+          icon={Video}
+          color="text-cs-blue"
         />
       </div>
 

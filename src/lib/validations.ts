@@ -25,7 +25,8 @@ export const videoSubmitSchema = z.object({
 
 export const opinionSchema = z.object({
   title: z.string().min(5).max(200),
-  content: z.string().min(10).max(5000),
+  content: z.string().min(10).max(50000),
+  imageUrl: z.string().url().optional().or(z.literal("")),
 });
 
 export const commentSchema = z.object({

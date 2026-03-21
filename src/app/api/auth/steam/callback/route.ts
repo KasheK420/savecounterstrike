@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySteamLogin, fetchSteamProfile } from "@/lib/steam";
 import { fetchCS2Stats } from "@/lib/steam-stats";
-import { fetchFaceitStats } from "@/lib/faceit";
 import { db } from "@/lib/db";
 import { signIn } from "@/lib/auth";
 
@@ -25,10 +24,9 @@ export async function GET(request: NextRequest) {
     const apiKey = process.env.STEAM_API_KEY;
     if (apiKey) {
       try {
-        const [stats, faceit] = await Promise.all([
-          fetchCS2Stats(steamId, apiKey),
-          fetchFaceitStats(steamId),
-        ]);
+        const stats = await fetchCS2Stats(steamId, apiKey);
+        // FACEIT data is fetched client-side (FaceitSync component)
+        // because FACEIT API blocks server/datacenter IPs via Cloudflare
 
         const statsUpdate: Record<string, unknown> = {
           statsUpdatedAt: new Date(),
@@ -43,11 +41,6 @@ export async function GET(request: NextRequest) {
           statsUpdate.cs2HeadshotPct = stats.headshotPct;
           statsUpdate.profileVisibility =
             stats.profileVisibility === "public" ? 3 : 1;
-        }
-
-        if (faceit) {
-          statsUpdate.faceitLevel = faceit.level;
-          statsUpdate.faceitElo = faceit.elo;
         }
 
         await db.user.upsert({

@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { ExternalLink } from "lucide-react";
+import { Tweet } from "react-tweet";
+import {
+  InstagramEmbed as IGEmbed,
+  FacebookEmbed as FBEmbed,
+} from "react-social-media-embed";
 
 type MediaPlatform = "YOUTUBE" | "INSTAGRAM" | "TWITTER" | "TIKTOK" | "TWITCH" | "FACEBOOK" | "OTHER";
 
@@ -12,36 +16,7 @@ interface MediaEmbedProps {
   title?: string;
 }
 
-declare global {
-  interface Window {
-    twttr?: {
-      ready: (cb: () => void) => void;
-      widgets: {
-        load: (el?: HTMLElement) => void;
-        createTweet: (id: string, el: HTMLElement, options?: Record<string, string>) => Promise<HTMLElement>;
-      };
-    };
-    instgrm?: { Embeds: { process: () => void } };
-  }
-}
-
-function loadScript(src: string, id: string, forceReload = false): Promise<void> {
-  return new Promise((resolve) => {
-    const existing = document.getElementById(id);
-    if (existing && forceReload) {
-      existing.remove();
-    } else if (existing) {
-      resolve();
-      return;
-    }
-    const script = document.createElement("script");
-    script.id = id;
-    script.src = src;
-    script.async = true;
-    script.onload = () => resolve();
-    document.body.appendChild(script);
-  });
-}
+// ── Iframe-based embeds (YouTube, Twitch, TikTok) ──────────
 
 function YouTubeEmbed({ embedUrl }: { embedUrl: string }) {
   return (
@@ -83,97 +58,36 @@ function TikTokEmbed({ embedUrl }: { embedUrl: string }) {
   );
 }
 
-function InstagramEmbed({ url }: { url: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const container = ref.current;
-    if (!container) return;
-
-    // Clear previous embed
-    while (container.firstChild) {
-      container.removeChild(container.firstChild);
-    }
-
-    // Create blockquote (official Instagram embed method)
-    const blockquote = document.createElement("blockquote");
-    blockquote.className = "instagram-media";
-    blockquote.setAttribute("data-instgrm-permalink", url);
-    blockquote.setAttribute("data-instgrm-version", "14");
-    blockquote.style.maxWidth = "540px";
-    blockquote.style.width = "100%";
-    container.appendChild(blockquote);
-
-    // Load embed.js and process — force reload if instgrm is missing (stale script tag)
-    const needsReload = !!document.getElementById("instagram-embed-js") && !window.instgrm;
-    loadScript("https://www.instagram.com/embed.js", "instagram-embed-js", needsReload).then(() => {
-      // Small delay to ensure SDK is initialized
-      setTimeout(() => {
-        window.instgrm?.Embeds.process();
-      }, 100);
-    });
-  }, [url]);
-
-  return <div ref={ref} className="flex justify-center" />;
-}
+// ── Library-based embeds (Twitter, Instagram, Facebook) ─────
 
 function TwitterEmbed({ url }: { url: string }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const tweetId = url.match(/status\/(\d+)/)?.[1];
+  if (!tweetId) return <FallbackEmbed url={url} />;
 
-  useEffect(() => {
-    const container = ref.current;
-    if (!container) return;
-
-    // Clear previous embed
-    while (container.firstChild) {
-      container.removeChild(container.firstChild);
-    }
-
-    // Extract tweet ID from URL
-    const tweetIdMatch = url.match(/status\/(\d+)/);
-    if (!tweetIdMatch) return;
-
-    // Use createTweet API — wait for twttr.ready() to handle async SDK init
-    const needsReload = !!document.getElementById("twitter-widgets-js") && !window.twttr;
-    loadScript("https://platform.twitter.com/widgets.js", "twitter-widgets-js", needsReload).then(() => {
-      const createEmbed = () => {
-        window.twttr?.widgets.createTweet(tweetIdMatch[1], container, {
-          theme: "dark",
-          align: "center",
-        });
-      };
-
-      if (window.twttr?.ready) {
-        window.twttr.ready(createEmbed);
-      } else {
-        // Fallback: poll for twttr availability
-        const interval = setInterval(() => {
-          if (window.twttr?.widgets) {
-            clearInterval(interval);
-            createEmbed();
-          }
-        }, 100);
-        setTimeout(() => clearInterval(interval), 5000);
-      }
-    });
-  }, [url]);
-
-  return <div ref={ref} className="flex justify-center min-h-[200px]" />;
-}
-
-function FacebookEmbed({ embedUrl }: { embedUrl: string }) {
   return (
-    <div className="relative w-full aspect-video rounded-lg overflow-hidden">
-      <iframe
-        src={embedUrl}
-        className="absolute inset-0 w-full h-full"
-        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-        allowFullScreen
-        title="Facebook video"
-      />
+    <div className="flex justify-center [&_.react-tweet-theme]:!bg-transparent">
+      <Tweet id={tweetId} />
     </div>
   );
 }
+
+function InstagramEmbedComponent({ url }: { url: string }) {
+  return (
+    <div className="flex justify-center">
+      <IGEmbed url={url} width={400} />
+    </div>
+  );
+}
+
+function FacebookEmbedComponent({ url }: { url: string }) {
+  return (
+    <div className="flex justify-center">
+      <FBEmbed url={url} width={560} />
+    </div>
+  );
+}
+
+// ── Fallback ────────────────────────────────────────────────
 
 function FallbackEmbed({ url, title }: { url: string; title?: string }) {
   return (
@@ -194,25 +108,22 @@ function FallbackEmbed({ url, title }: { url: string; title?: string }) {
   );
 }
 
-export function MediaEmbed({ url, platform, embedUrl, title }: MediaEmbedProps) {
-  // Instagram and Twitter use url directly (not embedUrl), so let them through
-  if (!embedUrl && platform !== "OTHER" && platform !== "INSTAGRAM" && platform !== "TWITTER") {
-    return <FallbackEmbed url={url} title={title} />;
-  }
+// ── Main component ──────────────────────────────────────────
 
+export function MediaEmbed({ url, platform, embedUrl, title }: MediaEmbedProps) {
   switch (platform) {
     case "YOUTUBE":
-      return <YouTubeEmbed embedUrl={embedUrl!} />;
+      return embedUrl ? <YouTubeEmbed embedUrl={embedUrl} /> : <FallbackEmbed url={url} title={title} />;
     case "TWITCH":
-      return <TwitchEmbed embedUrl={embedUrl!} />;
+      return embedUrl ? <TwitchEmbed embedUrl={embedUrl} /> : <FallbackEmbed url={url} title={title} />;
     case "TIKTOK":
-      return <TikTokEmbed embedUrl={embedUrl!} />;
-    case "INSTAGRAM":
-      return <InstagramEmbed url={url} />;
+      return embedUrl ? <TikTokEmbed embedUrl={embedUrl} /> : <FallbackEmbed url={url} title={title} />;
     case "TWITTER":
       return <TwitterEmbed url={url} />;
+    case "INSTAGRAM":
+      return <InstagramEmbedComponent url={url} />;
     case "FACEBOOK":
-      return <FacebookEmbed embedUrl={embedUrl!} />;
+      return <FacebookEmbedComponent url={url} />;
     default:
       return <FallbackEmbed url={url} title={title} />;
   }

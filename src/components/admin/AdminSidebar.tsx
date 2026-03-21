@@ -9,16 +9,20 @@ import {
   BarChart3,
   Users,
   MessageSquare,
+  Video,
+  ShieldAlert,
   ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/articles", label: "Articles", icon: FileText },
+  { href: "/admin/articles", label: "Blog Posts", icon: FileText },
   { href: "/admin/opinions", label: "Opinions", icon: MessageSquare },
+  { href: "/admin/media", label: "Media", icon: Video },
   { href: "/admin/petitions", label: "Petitions", icon: ScrollText },
   { href: "/admin/users", label: "Users", icon: Users },
+  { href: "/admin/ban-waves", label: "Ban Waves", icon: ShieldAlert },
   { href: "/admin/stats", label: "Stats", icon: BarChart3 },
 ];
 

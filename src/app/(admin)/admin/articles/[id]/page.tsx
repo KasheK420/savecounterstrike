@@ -8,7 +8,10 @@ export default async function EditArticlePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const article = await db.article.findUnique({ where: { id } });
+  const article = await db.article.findUnique({
+    where: { id },
+    include: { tags: true },
+  });
 
   if (!article) notFound();
 
@@ -32,6 +35,8 @@ export default async function EditArticlePage({
           content: article.content,
           coverImage: article.coverImage || "",
           published: article.published,
+          featured: article.featured,
+          tags: article.tags.map((t) => t.name),
         }}
       />
     </div>

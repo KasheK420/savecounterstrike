@@ -34,6 +34,10 @@ model User {
   faceitElo        Int?
 
   petitionSignature PetitionSignature?
+  opinions          Opinion[]     @relation("UserOpinions")
+  opinionVotes      OpinionVote[] @relation("UserOpinionVotes")
+  comments          Comment[]     @relation("UserComments")
+  commentVotes      CommentVote[] @relation("UserCommentVotes")
 
   @@index([steamId])
 }
@@ -56,7 +60,7 @@ model PetitionSignature {
   @@index([createdAt])
 }
 
-// ── Articles ────────────────────────────────────────────
+// ── Articles / Blog ──────────────────────────────────────
 
 model Article {
   id          String    @id @default(cuid())
@@ -66,11 +70,92 @@ model Article {
   content     String
   coverImage  String?
   published   Boolean   @default(false)
+  featured    Boolean   @default(false)
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  tags        Tag[]     @relation("ArticleTags")
 
   @@index([published, publishedAt])
+  @@index([featured, published])
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  articles Article[] @relation("ArticleTags")
+}
+
+// ── Opinions & Suggestions ──────────────────────────────
+
+model Opinion {
+  id        String        @id @default(cuid())
+  title     String
+  content   String
+  imageUrl  String?
+  authorId  String
+  status    ContentStatus @default(APPROVED)
+  score     Int           @default(0)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  author   User          @relation("UserOpinions", fields: [authorId], references: [id], onDelete: Cascade)
+  votes    OpinionVote[]
+  comments Comment[]
+
+  @@index([status, score])
+  @@index([status, createdAt])
+}
+
+model OpinionVote {
+  id        String @id @default(cuid())
+  opinionId String
+  userId    String
+  value     Int
+
+  opinion Opinion @relation(fields: [opinionId], references: [id], onDelete: Cascade)
+  user    User    @relation("UserOpinionVotes", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([opinionId, userId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  authorId  String
+  opinionId String
+  parentId  String?
+  score     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author  User      @relation("UserComments", fields: [authorId], references: [id], onDelete: Cascade)
+  opinion Opinion   @relation(fields: [opinionId], references: [id], onDelete: Cascade)
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies Comment[] @relation("CommentReplies")
+  votes   CommentVote[]
+
+  @@index([opinionId, createdAt])
+  @@index([parentId])
+}
+
+model CommentVote {
+  id        String @id @default(cuid())
+  commentId String
+  userId    String
+  value     Int
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation("UserCommentVotes", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+}
+
+enum ContentStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 // ── Site Configuration ──────────────────────────────────

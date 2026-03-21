@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { StatCard } from "@/components/admin/StatCard";
+import { DeleteSignatureButton } from "@/components/admin/DeleteSignatureButton";
 import { ScrollText, TrendingUp } from "lucide-react";
 
 export default async function AdminPetitionsPage() {
@@ -35,7 +36,7 @@ export default async function AdminPetitionsPage() {
           Petition Signatures
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          All petition signatures
+          All petition signatures &mdash; removing a signature lets the user sign again
         </p>
       </div>
 
@@ -91,6 +92,10 @@ export default async function AdminPetitionsPage() {
                   </p>
                 )}
               </div>
+              <DeleteSignatureButton
+                signatureId={sig.id}
+                userName={sig.user.displayName}
+              />
             </div>
           ))}
           {signatures.length === 0 && (

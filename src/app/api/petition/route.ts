@@ -4,28 +4,49 @@ import { db } from "@/lib/db";
 import { petitionSignSchema } from "@/lib/validations";
 import { filterProfanity } from "@/lib/profanity";
 
-export async function GET() {
-  const [count, recentSigners] = await Promise.all([
-    db.petitionSignature.count(),
-    db.petitionSignature.findMany({
-      take: 20,
-      orderBy: { createdAt: "desc" },
-      include: {
-        user: {
-          select: {
-            displayName: true,
-            avatarUrl: true,
-            steamId: true,
-            ownsCs2: true,
-            cs2PlaytimeHours: true,
-            profileVisibility: true,
-          },
-        },
-      },
-    }),
-  ]);
+const USER_SELECT_WITH_STATS = {
+  displayName: true,
+  avatarUrl: true,
+  steamId: true,
+  ownsCs2: true,
+  cs2PlaytimeHours: true,
+  profileVisibility: true,
+} as const;
 
-  return NextResponse.json({ count, recentSigners });
+const USER_SELECT_BASE = {
+  displayName: true,
+  avatarUrl: true,
+  steamId: true,
+} as const;
+
+export async function GET() {
+  // Try with stats fields first, fall back to base if migration not applied yet
+  try {
+    const [count, recentSigners] = await Promise.all([
+      db.petitionSignature.count(),
+      db.petitionSignature.findMany({
+        take: 20,
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: { select: USER_SELECT_WITH_STATS },
+        },
+      }),
+    ]);
+    return NextResponse.json({ count, recentSigners });
+  } catch {
+    // Stats columns likely don't exist yet — query without them
+    const [count, recentSigners] = await Promise.all([
+      db.petitionSignature.count(),
+      db.petitionSignature.findMany({
+        take: 20,
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: { select: USER_SELECT_BASE },
+        },
+      }),
+    ]);
+    return NextResponse.json({ count, recentSigners });
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -66,4 +87,38 @@ export async function POST(request: NextRequest) {
   });
 
   return NextResponse.json(signature, { status: 201 });
+}
+
+export async function DELETE(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.role || session.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const { searchParams } = request.nextUrl;
+  const signatureId = searchParams.get("id");
+
+  if (!signatureId) {
+    return NextResponse.json(
+      { error: "Missing signature id" },
+      { status: 400 }
+    );
+  }
+
+  const signature = await db.petitionSignature.findUnique({
+    where: { id: signatureId },
+  });
+
+  if (!signature) {
+    return NextResponse.json(
+      { error: "Signature not found" },
+      { status: 404 }
+    );
+  }
+
+  await db.petitionSignature.delete({
+    where: { id: signatureId },
+  });
+
+  return NextResponse.json({ success: true });
 }

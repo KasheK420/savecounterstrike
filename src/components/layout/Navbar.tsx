@@ -36,6 +36,11 @@ export function Navbar() {
             href="/"
             className="flex items-center gap-2 font-heading text-xl font-bold tracking-wider"
           >
+            <img
+              src="/images/spinbot_logo.jpeg"
+              alt="SaveCS"
+              className="h-8 w-8 rounded-md"
+            />
             <span className="text-cs-orange">SAVE</span>
             <span className="text-foreground">CS</span>
           </Link>

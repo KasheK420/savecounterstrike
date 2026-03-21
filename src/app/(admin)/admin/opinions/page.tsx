@@ -3,6 +3,7 @@ import { StatCard } from "@/components/admin/StatCard";
 import { MessageSquare, TrendingUp } from "lucide-react";
 import { stripHtml } from "@/lib/sanitize";
 import Link from "next/link";
+import { OpinionActions } from "@/components/admin/OpinionActions";
 
 export default async function AdminOpinionsPage() {
   const [totalCount, opinions, todayCount] = await Promise.all([
@@ -82,13 +83,20 @@ export default async function AdminOpinionsPage() {
                         ? "text-cs-green"
                         : op.status === "REJECTED"
                           ? "text-cs-red"
-                          : "text-cs-gold"
+                          : op.status === "HIDDEN"
+                            ? "text-muted-foreground"
+                            : "text-cs-gold"
                     }
                   >
                     {op.status}
                   </span>
                 </div>
               </div>
+              <OpinionActions
+                opinionId={op.id}
+                status={op.status}
+                title={op.title}
+              />
             </Link>
           ))}
           {opinions.length === 0 && (

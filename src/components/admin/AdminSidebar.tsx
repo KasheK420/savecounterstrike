@@ -11,6 +11,7 @@ import {
   MessageSquare,
   Video,
   ShieldAlert,
+  Handshake,
   ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,6 +22,7 @@ const links = [
   { href: "/admin/opinions", label: "Opinions", icon: MessageSquare },
   { href: "/admin/media", label: "Media", icon: Video },
   { href: "/admin/petitions", label: "Petitions", icon: ScrollText },
+  { href: "/admin/supporters", label: "Supporters", icon: Handshake },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/ban-waves", label: "Ban Waves", icon: ShieldAlert },
   { href: "/admin/stats", label: "Stats", icon: BarChart3 },

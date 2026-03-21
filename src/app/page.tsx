@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/hero/HeroSection";
 import { OpenLetter } from "@/components/letter/OpenLetter";
+import { SupporterSlider } from "@/components/shared/SupporterSlider";
 import { Shield, Video, MessageSquare, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
@@ -45,6 +46,9 @@ export default function HomePage() {
 
       {/* Open Letter */}
       <OpenLetter />
+
+      {/* Supporter logos slider */}
+      <SupporterSlider />
 
       {/* Features section */}
       <section className="py-20 bg-cs-darker">

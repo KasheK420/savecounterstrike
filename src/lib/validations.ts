@@ -32,3 +32,16 @@ export const commentSchema = z.object({
   content: z.string().min(1).max(2000),
   parentId: z.string().optional(),
 });
+
+export const articleSchema = z.object({
+  title: z.string().min(3).max(200),
+  slug: z
+    .string()
+    .min(3)
+    .max(200)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase with hyphens"),
+  excerpt: z.string().max(500).optional().transform((v) => v?.trim() || undefined),
+  content: z.string().min(10),
+  coverImage: z.string().url().optional().or(z.literal("")),
+  published: z.boolean().default(false),
+});

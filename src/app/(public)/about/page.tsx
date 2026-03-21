@@ -81,9 +81,11 @@ export default function AboutPage() {
                   Who We Are
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  Built and maintained by players who care. No corporate
-                  backing, no sponsors, no hidden agenda. Just a group of people
-                  who love Counter-Strike and refuse to watch it deteriorate in
+                  Founded by{" "}
+                  <strong className="text-foreground">Lukas Majoros</strong> and
+                  maintained by players who care. No corporate backing, no
+                  sponsors, no hidden agenda. Just people who love
+                  Counter-Strike and refuse to watch it deteriorate in
                   silence. The project is{" "}
                   <a
                     href="https://github.com/KasheK420/savecounterstrike"

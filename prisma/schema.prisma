@@ -230,6 +230,9 @@ model TrackedPlayer {
   numberOfGameBans  Int       @default(0)
   communityBanned   Boolean   @default(false)
 
+  source            String    @default("manual") // manual, signer, leaderboard
+  flagged           Boolean   @default(false)    // fishy stats detected
+
   profileCheckedAt  DateTime?
   banCheckedAt      DateTime?
   createdAt         DateTime  @default(now())
@@ -238,6 +241,22 @@ model TrackedPlayer {
   @@index([premierRating])
   @@index([vacBanned])
   @@index([steamId])
+  @@index([source])
+  @@index([flagged])
+}
+
+// ── Bot Commands (webapp → bot communication) ───────────
+
+model BotCommand {
+  id        String   @id @default(cuid())
+  command   String
+  payload   Json?
+  status    String   @default("pending")
+  result    Json?
+  createdAt DateTime @default(now())
+
+  @@index([status])
+  @@index([createdAt])
 }
 
 // ── Ban Tracking ────────────────────────────────────────

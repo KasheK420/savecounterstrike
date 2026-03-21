@@ -12,6 +12,7 @@ import {
   Video,
   ShieldAlert,
   Handshake,
+  Bot,
   ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ const links = [
   { href: "/admin/supporters", label: "Supporters", icon: Handshake },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/ban-waves", label: "Ban Waves", icon: ShieldAlert },
+  { href: "/admin/bot", label: "GC Bot", icon: Bot },
   { href: "/admin/stats", label: "Stats", icon: BarChart3 },
 ];
 

@@ -13,29 +13,19 @@ interface Signer {
     steamId: string;
     ownsCs2: boolean | null;
     cs2PlaytimeHours: number | null;
-    cs2Kills: number | null;
-    cs2Deaths: number | null;
-    cs2HeadshotPct: number | null;
     faceitLevel: number | null;
     faceitElo: number | null;
     profileVisibility: number | null;
   };
 }
 
-function StatBadge({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <span
-      className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ${className}`}
-    >
-      {children}
-    </span>
-  );
+/** FACEIT level colors matching their official badge palette */
+function getFaceitColor(level: number): string {
+  if (level <= 1) return "bg-[#EEE]/15 text-[#CCC]";
+  if (level <= 3) return "bg-[#1CE400]/15 text-[#1CE400]";
+  if (level <= 6) return "bg-[#FFC800]/15 text-[#FFC800]";
+  if (level <= 9) return "bg-[#FF6309]/15 text-[#FF6309]";
+  return "bg-[#FF0000]/15 text-[#FF0000]"; // Level 10
 }
 
 export function RecentSigners() {
@@ -70,10 +60,6 @@ export function RecentSigners() {
       <div className="space-y-2 max-h-80 overflow-y-auto">
         {signers.map((signer) => {
           const u = signer.user;
-          const kd =
-            u.cs2Kills != null && u.cs2Deaths != null && u.cs2Deaths > 0
-              ? (u.cs2Kills / u.cs2Deaths).toFixed(2)
-              : null;
 
           return (
             <div
@@ -95,24 +81,16 @@ export function RecentSigners() {
                     {u.displayName}
                   </span>
                   {u.cs2PlaytimeHours != null && u.cs2PlaytimeHours > 0 && (
-                    <StatBadge className="bg-cs-orange/15 text-cs-orange">
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-cs-orange/15 text-cs-orange shrink-0">
                       {u.cs2PlaytimeHours.toLocaleString()}h
-                    </StatBadge>
-                  )}
-                  {kd && (
-                    <StatBadge className="bg-blue-500/15 text-blue-400">
-                      K/D {kd}
-                    </StatBadge>
-                  )}
-                  {u.cs2HeadshotPct != null && u.cs2HeadshotPct > 0 && (
-                    <StatBadge className="bg-emerald-500/15 text-emerald-400">
-                      HS {u.cs2HeadshotPct}%
-                    </StatBadge>
+                    </span>
                   )}
                   {u.faceitLevel != null && u.faceitLevel > 0 && (
-                    <StatBadge className="bg-orange-500/15 text-orange-400">
-                      FACEIT Lv.{u.faceitLevel}
-                    </StatBadge>
+                    <span
+                      className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 ${getFaceitColor(u.faceitLevel)}`}
+                    >
+                      FACEIT {u.faceitLevel}
+                    </span>
                   )}
                   <span className="text-xs text-muted-foreground shrink-0 ml-auto">
                     {new Date(signer.createdAt).toLocaleDateString()}

@@ -27,6 +27,19 @@ export async function HeroSection() {
         }}
       />
 
+      {/* Cheater Strike 2 background art */}
+      <div
+        className="absolute right-0 top-1/2 -translate-y-1/2 w-[700px] h-[400px] opacity-[0.08] pointer-events-none hidden lg:block"
+        style={{
+          backgroundImage: "url(/images/cheater_strike2-removebg-preview.png)",
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "right center",
+          maskImage: "linear-gradient(to left, black 30%, transparent 90%)",
+          WebkitMaskImage: "linear-gradient(to left, black 30%, transparent 90%)",
+        }}
+      />
+
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left — Message */}

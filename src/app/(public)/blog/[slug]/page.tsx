@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Calendar, ArrowLeft, Clock, Share2, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { AdminContentBar } from "@/components/admin/AdminContentBar";
 
 export async function generateMetadata({
   params,
@@ -41,6 +42,7 @@ export default async function BlogPostPage({
 
   return (
     <div className="min-h-screen">
+      <AdminContentBar type="article" id={article.id} status={article.published} />
       {/* Cover Image Hero */}
       {article.coverImage && (
         <div className="relative w-full aspect-[21/9] max-h-[400px] overflow-hidden">

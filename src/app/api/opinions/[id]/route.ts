@@ -33,6 +33,32 @@ export async function GET(
   return NextResponse.json(opinion);
 }
 
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const result = await requireAdminApi();
+  if (result.error) return result.response;
+
+  const { id } = await params;
+  const body = await request.json();
+  const status = body.status;
+
+  if (!["APPROVED", "REJECTED", "HIDDEN"].includes(status)) {
+    return NextResponse.json(
+      { error: "Invalid status. Must be APPROVED, REJECTED, or HIDDEN" },
+      { status: 400 }
+    );
+  }
+
+  const opinion = await db.opinion.update({
+    where: { id },
+    data: { status },
+  });
+
+  return NextResponse.json(opinion);
+}
+
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

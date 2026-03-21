@@ -4,6 +4,7 @@ import { Plus, FileText, Eye, EyeOff, Star } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { ArticleActions } from "@/components/admin/ArticleActions";
 
 export default async function AdminArticlesPage() {
   const articles = await db.article.findMany({
@@ -98,6 +99,11 @@ export default async function AdminArticlesPage() {
                   )}
                 </div>
               </div>
+              <ArticleActions
+                articleId={article.id}
+                published={article.published}
+                title={article.title}
+              />
             </Link>
           ))}
         </div>

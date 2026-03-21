@@ -22,8 +22,16 @@ model User {
   // CS2 stats (fetched from Steam API on login)
   ownsCs2          Boolean?
   cs2PlaytimeHours Int?
+  cs2Kills         Int?
+  cs2Deaths        Int?
+  cs2Wins          Int?
+  cs2HeadshotPct   Float?      // 0-100, pre-calculated
   profileVisibility Int?       // 1=private, 3=public
   statsUpdatedAt   DateTime?
+
+  // FACEIT stats
+  faceitLevel      Int?        // 1-10
+  faceitElo        Int?
 
   petitionSignature PetitionSignature?
 

@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN "ownsCs2" BOOLEAN;
+ALTER TABLE "User" ADD COLUMN "cs2PlaytimeHours" INTEGER;
+ALTER TABLE "User" ADD COLUMN "profileVisibility" INTEGER;
+ALTER TABLE "User" ADD COLUMN "statsUpdatedAt" TIMESTAMP(3);

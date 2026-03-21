@@ -9,7 +9,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-heading);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -46,75 +46,55 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* CS2 custom colors */
+  --color-cs-orange: #de9b35;
+  --color-cs-orange-light: #f0b54d;
+  --color-cs-orange-dark: #b8802a;
+  --color-cs-blue: #5b99c9;
+  --color-cs-blue-light: #7ab3de;
+  --color-cs-gold: #e8c252;
+  --color-cs-red: #ff4444;
+  --color-cs-green: #4caf50;
+  --color-cs-navy: #1a1a2e;
+  --color-cs-dark: #0a0a0a;
+  --color-cs-darker: #050505;
 }
 
+/* CS2 Dark Theme — always dark, no light mode */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0a0a0a;
+  --foreground: #e5e5e5;
+  --card: #111111;
+  --card-foreground: #e5e5e5;
+  --popover: #111111;
+  --popover-foreground: #e5e5e5;
+  --primary: #de9b35;
+  --primary-foreground: #0a0a0a;
+  --secondary: #1a1a2e;
+  --secondary-foreground: #e5e5e5;
+  --muted: #1c1c1c;
+  --muted-foreground: #737373;
+  --accent: #5b99c9;
+  --accent-foreground: #0a0a0a;
+  --destructive: #ff4444;
+  --border: #2a2a2a;
+  --input: #2a2a2a;
+  --ring: #de9b35;
+  --chart-1: #de9b35;
+  --chart-2: #5b99c9;
+  --chart-3: #e8c252;
+  --chart-4: #ff4444;
+  --chart-5: #4caf50;
+  --radius: 0.5rem;
+  --sidebar: #111111;
+  --sidebar-foreground: #e5e5e5;
+  --sidebar-primary: #de9b35;
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #1a1a2e;
+  --sidebar-accent-foreground: #e5e5e5;
+  --sidebar-border: #2a2a2a;
+  --sidebar-ring: #de9b35;
 }
 
 @layer base {
@@ -127,4 +107,98 @@
   html {
     @apply font-sans;
   }
+}
+
+/* CS2 HUD-style elements */
+@layer components {
+  .cs-glow {
+    text-shadow: 0 0 20px rgba(222, 155, 53, 0.5),
+      0 0 40px rgba(222, 155, 53, 0.2);
+  }
+
+  .cs-border-glow {
+    box-shadow: 0 0 15px rgba(222, 155, 53, 0.15),
+      inset 0 0 15px rgba(222, 155, 53, 0.05);
+    border: 1px solid rgba(222, 155, 53, 0.3);
+  }
+
+  .cs-card {
+    @apply bg-card/80 backdrop-blur-sm;
+    border: 1px solid rgba(222, 155, 53, 0.15);
+  }
+
+  .cs-gradient {
+    background: linear-gradient(
+      180deg,
+      rgba(26, 26, 46, 0.8) 0%,
+      rgba(10, 10, 10, 0.95) 100%
+    );
+  }
+
+  .cs-hero-gradient {
+    background: linear-gradient(
+      135deg,
+      rgba(10, 10, 10, 0.95) 0%,
+      rgba(26, 26, 46, 0.8) 50%,
+      rgba(10, 10, 10, 0.95) 100%
+    );
+  }
+
+  .cs-stat-number {
+    font-variant-numeric: tabular-nums;
+    @apply font-bold tracking-tight;
+  }
+
+  .cs-crosshair::before {
+    content: "+";
+    @apply text-cs-orange/30 text-2xl absolute;
+  }
+}
+
+/* Animated counter digits */
+@keyframes countUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-count-up {
+  animation: countUp 0.5s ease-out forwards;
+}
+
+/* Scanline overlay effect */
+.cs-scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+}
+
+/* Pulse glow animation for CTA buttons */
+@keyframes pulseGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(222, 155, 53, 0.3),
+      0 0 15px rgba(222, 155, 53, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(222, 155, 53, 0.5),
+      0 0 30px rgba(222, 155, 53, 0.2);
+  }
+}
+
+.cs-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
 }

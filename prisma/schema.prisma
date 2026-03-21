@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Users (Steam Auth) ─────────────────────────────────
+
+model User {
+  id          String   @id @default(cuid())
+  steamId     String   @unique
+  displayName String
+  avatarUrl   String?
+  profileUrl  String?
+  role        Role     @default(USER)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  petitionSignature PetitionSignature?
+
+  @@index([steamId])
+}
+
+enum Role {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+// ── Petition ────────────────────────────────────────────
+
+model PetitionSignature {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  message   String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+}
+
+// ── Site Configuration ──────────────────────────────────
+
+model SiteConfig {
+  key   String @id
+  value Json
+}

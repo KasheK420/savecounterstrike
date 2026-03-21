@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     "savecounterstrike",
   ],
   icons: {
-    icon: "/images/spinbot_logo.jpeg",
+    icon: "/images/spinbot_logo.ico",
     apple: "/images/spinbot_logo.jpeg",
   },
   openGraph: {

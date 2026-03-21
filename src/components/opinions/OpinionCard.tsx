@@ -68,10 +68,8 @@ export function OpinionCard({ opinion }: OpinionCardProps) {
             {opinion.author.displayName}
           </span>
           <UserBadges
-            ownsCs2={opinion.author.ownsCs2}
             cs2PlaytimeHours={opinion.author.cs2PlaytimeHours}
             faceitLevel={opinion.author.faceitLevel}
-            compact
           />
           <span className="text-xs text-muted-foreground flex items-center gap-1">
             <MessageSquare className="h-3 w-3" />

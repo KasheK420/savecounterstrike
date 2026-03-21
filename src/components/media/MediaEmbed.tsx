@@ -195,7 +195,8 @@ function FallbackEmbed({ url, title }: { url: string; title?: string }) {
 }
 
 export function MediaEmbed({ url, platform, embedUrl, title }: MediaEmbedProps) {
-  if (!embedUrl && platform !== "OTHER") {
+  // Instagram and Twitter use url directly (not embedUrl), so let them through
+  if (!embedUrl && platform !== "OTHER" && platform !== "INSTAGRAM" && platform !== "TWITTER") {
     return <FallbackEmbed url={url} title={title} />;
   }
 

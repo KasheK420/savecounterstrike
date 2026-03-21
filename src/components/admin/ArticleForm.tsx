@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { TiptapEditor } from "./TiptapEditor";
+import { ImageUpload } from "@/components/shared/ImageUpload";
 import { Save, Trash2, Eye, Loader2, Star } from "lucide-react";
 
 interface ArticleData {
@@ -203,20 +204,13 @@ export function ArticleForm({ initial, mode }: ArticleFormProps) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">
-            Cover Image URL{" "}
-            <span className="text-muted-foreground font-normal">
-              (optional)
-            </span>
-          </label>
-          <Input
+        <div>
+          <ImageUpload
             value={data.coverImage}
-            onChange={(e) =>
-              setData((prev) => ({ ...prev, coverImage: e.target.value }))
+            onChange={(url) =>
+              setData((prev) => ({ ...prev, coverImage: url }))
             }
-            placeholder="https://..."
-            className="bg-muted/50 border-border"
+            label="Cover Image (optional)"
           />
         </div>
 

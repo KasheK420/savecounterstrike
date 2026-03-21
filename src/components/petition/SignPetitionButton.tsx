@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useSession } from "@/components/auth/SessionProvider";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
 import { Textarea } from "@/components/ui/textarea";
 import { Shield, CheckCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";

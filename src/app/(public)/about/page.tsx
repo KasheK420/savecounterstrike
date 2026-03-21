@@ -82,7 +82,7 @@ export default function AboutPage() {
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
                   Founded by{" "}
-                  <strong className="text-foreground">Lukas Majoros</strong> and
+                  <a href="https://majorluk.pl" target="_blank" rel="noopener noreferrer" className="text-foreground font-bold hover:text-cs-orange transition-colors">Lukas Majoros</a> and
                   maintained by players who care. No corporate backing, no
                   sponsors, no hidden agenda. Just people who love
                   Counter-Strike and refuse to watch it deteriorate in

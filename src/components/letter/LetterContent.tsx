@@ -122,9 +122,9 @@ export function LetterContent({ signatureCount }: LetterContentProps) {
             <p className="font-handwriting text-lg text-[#4a3f35]">
               With urgency and resolve,
             </p>
-            <p className="font-handwriting text-2xl font-bold text-[#2a2520] mt-2">
+            <a href="https://majorluk.pl" target="_blank" rel="noopener noreferrer" className="font-handwriting text-2xl font-bold text-[#2a2520] mt-2 block hover:text-[#8b1a1a] transition-colors">
               Lukas Majoros
-            </p>
+            </a>
             <p className="font-serif text-xs text-[#6b5e50] italic">
               on behalf of the Counter-Strike community
             </p>

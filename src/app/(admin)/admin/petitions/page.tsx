@@ -2,32 +2,39 @@ import { db } from "@/lib/db";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { StatCard } from "@/components/admin/StatCard";
 import { DeleteSignatureButton } from "@/components/admin/DeleteSignatureButton";
-import { ScrollText, TrendingUp } from "lucide-react";
+import { NotableSignersAdmin } from "@/components/admin/NotableSignersAdmin";
+import { ScrollText, TrendingUp, Star } from "lucide-react";
 
 export default async function AdminPetitionsPage() {
-  const [totalCount, signatures, todayCount] = await Promise.all([
-    db.petitionSignature.count(),
-    db.petitionSignature.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 50,
-      include: {
-        user: {
-          select: {
-            displayName: true,
-            avatarUrl: true,
-            steamId: true,
+  const [totalCount, signatures, todayCount, notableConfig] = await Promise.all(
+    [
+      db.petitionSignature.count(),
+      db.petitionSignature.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 50,
+        include: {
+          user: {
+            select: {
+              displayName: true,
+              avatarUrl: true,
+              steamId: true,
+            },
           },
         },
-      },
-    }),
-    db.petitionSignature.count({
-      where: {
-        createdAt: {
-          gte: new Date(new Date().setHours(0, 0, 0, 0)),
+      }),
+      db.petitionSignature.count({
+        where: {
+          createdAt: {
+            gte: new Date(new Date().setHours(0, 0, 0, 0)),
+          },
         },
-      },
-    }),
-  ]);
+      }),
+      db.siteConfig.findUnique({ where: { key: "notable_signers" } }),
+    ]
+  );
+
+  const notableSigners =
+    (notableConfig?.value as any)?.signers || [];
 
   return (
     <div className="space-y-6">
@@ -36,7 +43,8 @@ export default async function AdminPetitionsPage() {
           Petition Signatures
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          All petition signatures &mdash; removing a signature lets the user sign again
+          All petition signatures &mdash; removing a signature lets the user
+          sign again
         </p>
       </div>
 
@@ -54,6 +62,17 @@ export default async function AdminPetitionsPage() {
           icon={TrendingUp}
           color="text-cs-green"
         />
+      </div>
+
+      {/* Notable Signers Management */}
+      <div className="cs-card rounded-lg p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Star className="h-5 w-5 text-cs-gold" />
+          <h3 className="font-heading text-sm font-semibold text-foreground uppercase tracking-wider">
+            Notable Signers Configuration
+          </h3>
+        </div>
+        <NotableSignersAdmin initialSigners={notableSigners} />
       </div>
 
       <div className="cs-card rounded-lg overflow-hidden">

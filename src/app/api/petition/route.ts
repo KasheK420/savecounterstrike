@@ -5,9 +5,9 @@ import { petitionSignSchema } from "@/lib/validations";
 import { filterProfanity } from "@/lib/profanity";
 
 const USER_SELECT_WITH_STATS = {
+  id: true,
   displayName: true,
   avatarUrl: true,
-  steamId: true,
   ownsCs2: true,
   cs2PlaytimeHours: true,
   faceitLevel: true,
@@ -16,9 +16,9 @@ const USER_SELECT_WITH_STATS = {
 } as const;
 
 const USER_SELECT_BASE = {
+  id: true,
   displayName: true,
   avatarUrl: true,
-  steamId: true,
 } as const;
 
 export async function GET() {

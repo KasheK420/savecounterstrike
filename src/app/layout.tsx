@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Chakra_Petch } from "next/font/google";
+import { Inter, Chakra_Petch, Caveat, Lora } from "next/font/google";
 import { auth } from "@/lib/auth";
 import { SessionProvider } from "@/components/auth/SessionProvider";
 import { Navbar } from "@/components/layout/Navbar";
@@ -14,6 +14,19 @@ const inter = Inter({
 const chakraPetch = Chakra_Petch({
   variable: "--font-heading",
   weight: ["400", "600", "700"],
+  subsets: ["latin"],
+});
+
+const caveat = Caveat({
+  variable: "--font-handwriting",
+  weight: ["400", "700"],
+  subsets: ["latin"],
+});
+
+const lora = Lora({
+  variable: "--font-serif",
+  weight: ["400", "600", "700"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
 });
 
@@ -67,7 +80,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${chakraPetch.variable} h-full antialiased`}
+      className={`${inter.variable} ${chakraPetch.variable} ${caveat.variable} ${lora.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background">
         <SessionProvider session={sessionUser}>

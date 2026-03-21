@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { DollarSign, Users, Package, RefreshCw } from "lucide-react";
+import { DollarSign, Users, Package } from "lucide-react";
 
 interface RevenueData {
   currentPlayers: number;
@@ -19,7 +19,6 @@ interface RevenueData {
   lastUpdated: string;
 }
 
-// Fallback until API responds
 const FALLBACK: RevenueData = {
   currentPlayers: 0,
   dailyCaseOpenings: 1_058_065,
@@ -36,14 +35,31 @@ const FALLBACK: RevenueData = {
   lastUpdated: "",
 };
 
+function getSecondsSinceMidnightUTC(): number {
+  const now = new Date();
+  return (
+    now.getUTCHours() * 3600 +
+    now.getUTCMinutes() * 60 +
+    now.getUTCSeconds() +
+    now.getUTCMilliseconds() / 1000
+  );
+}
+
+function formatMoney(n: number): string {
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
+  if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}K`;
+  return `$${n.toFixed(2)}`;
+}
+
 export function RevenueTickerHero() {
   const [data, setData] = useState<RevenueData>(FALLBACK);
-  const [pageSeconds, setPageSeconds] = useState(0);
+  const [todayEarned, setTodayEarned] = useState(0);
+  const [pageEarned, setPageEarned] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const startRef = useRef(Date.now());
   const frameRef = useRef<number>(0);
+  const rateRef = useRef(FALLBACK.perSecondRevenue);
 
-  // Fetch revenue data from API
   useEffect(() => {
     async function fetchRevenue() {
       try {
@@ -51,6 +67,7 @@ export function RevenueTickerHero() {
         const json = await res.json();
         if (json.perSecondRevenue) {
           setData(json);
+          rateRef.current = json.perSecondRevenue;
           setLoaded(true);
         }
       } catch {
@@ -58,39 +75,46 @@ export function RevenueTickerHero() {
       }
     }
     fetchRevenue();
-    const interval = setInterval(fetchRevenue, 15 * 60 * 1000); // refresh every 15 min
+    const interval = setInterval(fetchRevenue, 15 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Animated counter
+  // High-perf animation loop — updates via ref, not state per frame
   useEffect(() => {
     function tick() {
-      const elapsed = (Date.now() - startRef.current) / 1000;
-      setPageSeconds(elapsed);
+      const now = Date.now();
+      const pageElapsed = (now - startRef.current) / 1000;
+      const todaySeconds = getSecondsSinceMidnightUTC();
+      const rate = rateRef.current;
+
+      setTodayEarned(todaySeconds * rate);
+      setPageEarned(pageElapsed * rate);
+
       frameRef.current = requestAnimationFrame(tick);
     }
     frameRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frameRef.current);
   }, []);
 
-  const earned = pageSeconds * data.perSecondRevenue;
-
   return (
     <div className="cs-card rounded-lg p-6">
-      {/* Live earned on page */}
+      {/* Today's total — the big impressive number */}
       <div className="text-center mb-4">
         <div className="flex items-center justify-center gap-2 text-muted-foreground mb-1">
           <DollarSign className="h-4 w-4 text-cs-green" />
           <span className="text-xs uppercase tracking-widest font-heading">
-            Valve earned while you&apos;re here
+            Valve earned today (UTC)
           </span>
         </div>
-        <div className="cs-stat-number text-3xl sm:text-4xl text-cs-green font-heading">
-          ${earned.toFixed(2)}
+        <div className="cs-stat-number text-4xl sm:text-5xl text-cs-green font-heading">
+          {formatMoney(todayEarned)}
+        </div>
+        <div className="text-xs text-muted-foreground mt-1">
+          +${pageEarned.toFixed(0)} since you opened this page
         </div>
       </div>
 
-      {/* Revenue breakdown */}
+      {/* Revenue rate breakdown */}
       <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground mb-4">
         <div className="text-center">
           <div className="cs-stat-number text-sm text-foreground">
@@ -100,7 +124,7 @@ export function RevenueTickerHero() {
         </div>
         <div className="text-center">
           <div className="cs-stat-number text-sm text-foreground">
-            ${data.perMinuteRevenue.toLocaleString()}
+            ${Math.round(data.perMinuteRevenue).toLocaleString()}
           </div>
           <div>/min</div>
         </div>

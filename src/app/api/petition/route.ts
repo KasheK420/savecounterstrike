@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { petitionSignSchema } from "@/lib/validations";
+import { filterProfanity } from "@/lib/profanity";
 
 export async function GET() {
   const [count, recentSigners] = await Promise.all([
@@ -15,6 +16,9 @@ export async function GET() {
             displayName: true,
             avatarUrl: true,
             steamId: true,
+            ownsCs2: true,
+            cs2PlaytimeHours: true,
+            profileVisibility: true,
           },
         },
       },
@@ -50,10 +54,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const cleanMessage = parsed.data.message
+    ? filterProfanity(parsed.data.message)
+    : undefined;
+
   const signature = await db.petitionSignature.create({
     data: {
       userId: session.user.userId,
-      message: parsed.data.message,
+      message: cleanMessage,
     },
   });
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { filterProfanity } from "@/lib/profanity";
 
 interface Signer {
   createdAt: string;
@@ -10,6 +11,9 @@ interface Signer {
     displayName: string;
     avatarUrl: string | null;
     steamId: string;
+    ownsCs2: boolean | null;
+    cs2PlaytimeHours: number | null;
+    profileVisibility: number | null;
   };
 }
 
@@ -62,13 +66,19 @@ export function RecentSigners() {
                 <span className="text-sm font-medium text-foreground truncate">
                   {signer.user.displayName}
                 </span>
+                {signer.user.cs2PlaytimeHours != null &&
+                  signer.user.cs2PlaytimeHours > 0 && (
+                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-cs-orange/15 text-cs-orange shrink-0">
+                      {signer.user.cs2PlaytimeHours.toLocaleString()}h
+                    </span>
+                  )}
                 <span className="text-xs text-muted-foreground shrink-0">
                   {new Date(signer.createdAt).toLocaleDateString()}
                 </span>
               </div>
               {signer.message && (
                 <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                  &ldquo;{signer.message}&rdquo;
+                  &ldquo;{filterProfanity(signer.message)}&rdquo;
                 </p>
               )}
             </div>

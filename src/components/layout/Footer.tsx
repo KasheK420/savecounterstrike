@@ -96,8 +96,8 @@ export function Footer() {
 
         <div className="mt-8 pt-6 border-t border-border/30 text-center">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} SaveCounterStrike.com — Built by
-            the community, for the community.
+            &copy; {new Date().getFullYear()} SaveCounterStrike.com — Created by
+            Lukas Majoros. Built by the community, for the community.
           </p>
         </div>
       </div>

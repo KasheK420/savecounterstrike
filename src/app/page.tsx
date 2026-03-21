@@ -43,6 +43,9 @@ export default function HomePage() {
     <>
       <HeroSection />
 
+      {/* Open Letter */}
+      <OpenLetter />
+
       {/* Features section */}
       <section className="py-20 bg-cs-darker">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -77,9 +80,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Open Letter */}
-      <OpenLetter />
 
       {/* Why section — broader messaging */}
       <section className="py-20 bg-cs-darker">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySteamLogin, fetchSteamProfile } from "@/lib/steam";
 import { fetchCS2Stats } from "@/lib/steam-stats";
+import { fetchFaceitStats } from "@/lib/faceit";
 import { db } from "@/lib/db";
 import { signIn } from "@/lib/auth";
 
@@ -20,34 +21,48 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${siteUrl}/?error=steam_profile_failed`);
     }
 
-    // Fetch CS2 stats (non-fatal — login proceeds even if this fails)
+    // Fetch CS2 stats + FACEIT in parallel (non-fatal)
     const apiKey = process.env.STEAM_API_KEY;
     if (apiKey) {
       try {
-        const stats = await fetchCS2Stats(steamId, apiKey);
+        const [stats, faceit] = await Promise.all([
+          fetchCS2Stats(steamId, apiKey),
+          fetchFaceitStats(steamId),
+        ]);
+
+        const statsUpdate: Record<string, unknown> = {
+          statsUpdatedAt: new Date(),
+        };
+
         if (stats) {
-          await db.user.upsert({
-            where: { steamId },
-            update: {
-              ownsCs2: stats.ownsCs2,
-              cs2PlaytimeHours: stats.playtimeHours,
-              profileVisibility: stats.profileVisibility === "public" ? 3 : 1,
-              statsUpdatedAt: new Date(),
-            },
-            create: {
-              steamId,
-              displayName: profile.displayName,
-              avatarUrl: profile.avatarUrl,
-              profileUrl: profile.profileUrl,
-              ownsCs2: stats.ownsCs2,
-              cs2PlaytimeHours: stats.playtimeHours,
-              profileVisibility: stats.profileVisibility === "public" ? 3 : 1,
-              statsUpdatedAt: new Date(),
-            },
-          });
+          statsUpdate.ownsCs2 = stats.ownsCs2;
+          statsUpdate.cs2PlaytimeHours = stats.playtimeHours;
+          statsUpdate.cs2Kills = stats.kills;
+          statsUpdate.cs2Deaths = stats.deaths;
+          statsUpdate.cs2Wins = stats.wins;
+          statsUpdate.cs2HeadshotPct = stats.headshotPct;
+          statsUpdate.profileVisibility =
+            stats.profileVisibility === "public" ? 3 : 1;
         }
+
+        if (faceit) {
+          statsUpdate.faceitLevel = faceit.level;
+          statsUpdate.faceitElo = faceit.elo;
+        }
+
+        await db.user.upsert({
+          where: { steamId },
+          update: statsUpdate,
+          create: {
+            steamId,
+            displayName: profile.displayName,
+            avatarUrl: profile.avatarUrl,
+            profileUrl: profile.profileUrl,
+            ...statsUpdate,
+          },
+        });
       } catch (e) {
-        console.error("CS2 stats fetch failed:", e);
+        console.error("Stats fetch failed:", e);
       }
     }
 

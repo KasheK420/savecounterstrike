@@ -10,6 +10,11 @@ const USER_SELECT_WITH_STATS = {
   steamId: true,
   ownsCs2: true,
   cs2PlaytimeHours: true,
+  cs2Kills: true,
+  cs2Deaths: true,
+  cs2HeadshotPct: true,
+  faceitLevel: true,
+  faceitElo: true,
   profileVisibility: true,
 } as const;
 

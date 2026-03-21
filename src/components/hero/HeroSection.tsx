@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Shield, ChevronRight, AlertTriangle } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import { SignatureCounter } from "./SignatureCounter";
 import { RevenueTickerHero } from "./RevenueTickerHero";

@@ -15,8 +15,13 @@ services:
     networks:
       - proxy-net
       - db-net
+    volumes:
+      - uploads:/app/public/uploads
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
+
+volumes:
+  uploads:
 
 networks:
   proxy-net:

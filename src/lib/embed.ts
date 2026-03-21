@@ -72,8 +72,8 @@ function extractTikTokId(url: string): string | null {
 function extractInstagramId(url: string): string | null {
   try {
     const u = new URL(url);
-    // /p/CODE/ or /reel/CODE/
-    const match = u.pathname.match(/^\/(p|reel|tv)\/([^/?]+)/);
+    // /p/CODE/ or /reel/CODE/ or /username/reel/CODE/
+    const match = u.pathname.match(/\/(p|reel|tv)\/([^/?]+)/);
     return match ? match[2] : null;
   } catch {
     return null;

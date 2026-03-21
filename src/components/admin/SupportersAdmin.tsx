@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ImageUpload } from "@/components/shared/ImageUpload";
 import { Plus, Trash2, Save, Loader2 } from "lucide-react";
 
 interface SupporterItem {
@@ -69,25 +70,19 @@ export function SupportersAdmin({
             placeholder="Name"
             className="bg-muted/30 border-border w-36 text-sm"
           />
-          <Input
-            value={item.logoUrl}
-            onChange={(e) => updateItem(i, "logoUrl", e.target.value)}
-            placeholder="Logo URL (image)"
-            className="bg-muted/30 border-border flex-1 min-w-[200px] text-xs"
-          />
+          <div className="flex-1 min-w-[200px]">
+            <ImageUpload
+              value={item.logoUrl}
+              onChange={(url) => updateItem(i, "logoUrl", url)}
+              compact
+            />
+          </div>
           <Input
             value={item.url || ""}
             onChange={(e) => updateItem(i, "url", e.target.value)}
             placeholder="Link URL (optional)"
             className="bg-muted/30 border-border w-48 text-xs"
           />
-          {item.logoUrl && (
-            <img
-              src={item.logoUrl}
-              alt={item.name}
-              className="h-8 w-8 object-contain rounded border border-border/30 shrink-0"
-            />
-          )}
           <Button
             variant="ghost"
             size="icon"

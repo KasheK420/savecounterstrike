@@ -15,6 +15,8 @@ export function sanitizeContent(html: string): string {
   return sanitizeHtml(html, {
     allowedTags: ALLOWED_TAGS,
     allowedAttributes: ALLOWED_ATTRS,
+    allowedSchemes: ["http", "https", "mailto"],
+    allowedSchemesAppliedToAttributes: ["href", "src", "cite"],
     transformTags: {
       a: (tagName, attribs) => ({
         tagName,

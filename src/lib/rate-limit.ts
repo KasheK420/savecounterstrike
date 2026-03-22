@@ -47,14 +47,30 @@ export function rateLimit(
   };
 }
 
+export function getClientIp(request: Request): string {
+  // Cloudflare Tunnel sets the real client IP — most trusted source
+  const cfIp = request.headers.get("cf-connecting-ip");
+  if (cfIp) return cfIp.trim();
+
+  // Fall back to rightmost non-private IP in x-forwarded-for
+  // (rightmost = added by the closest trusted proxy)
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) {
+    const ips = forwarded.split(",").map((ip) => ip.trim());
+    // Use last IP (added by our reverse proxy, not client-controlled)
+    return ips[ips.length - 1] || "unknown";
+  }
+
+  return request.headers.get("x-real-ip")?.trim() || "unknown";
+}
+
 export function rateLimitByIp(
   request: Request,
   endpoint: string,
   maxRequests: number = 10,
   windowMs: number = 60_000
 ): RateLimitResult {
-  const forwarded = request.headers.get("x-forwarded-for");
-  const ip = forwarded?.split(",")[0]?.trim() || "unknown";
+  const ip = getClientIp(request);
   const key = `${endpoint}:${ip}`;
   return rateLimit(key, maxRequests, windowMs);
 }

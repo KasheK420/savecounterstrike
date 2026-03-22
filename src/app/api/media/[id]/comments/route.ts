@@ -74,6 +74,10 @@ export async function POST(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { rateLimitByIp, rateLimitResponse } = await import("@/lib/rate-limit");
+  const rl = rateLimitByIp(request, "comment:create", 20, 300_000); // 20 per 5 min
+  if (rl.limited) return rateLimitResponse(rl);
+
   const { id } = await params;
   const body = await request.json();
 

@@ -81,6 +81,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { rateLimitByIp, rateLimitResponse } = await import("@/lib/rate-limit");
+  const rl = rateLimitByIp(request, "media:create", 5, 3600_000); // 5 per hour
+  if (rl.limited) return rateLimitResponse(rl);
+
   const body = await request.json();
   const parsed = mediaSubmitSchema.safeParse(body);
   if (!parsed.success) {

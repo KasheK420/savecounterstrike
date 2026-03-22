@@ -14,7 +14,6 @@ export async function GET(
       id: true,
       displayName: true,
       avatarUrl: true,
-      role: true,
       createdAt: true,
       bio: true,
       karma: true,

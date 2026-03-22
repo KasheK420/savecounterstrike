@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { recalculateMediaScore, checkAutoModeration } from "@/lib/moderation";
+import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
+import { checkAutoModeration } from "@/lib/moderation";
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const rl = rateLimitByIp(request, "vote:media", 30, 60_000);
+  if (rl.limited) return rateLimitResponse(rl);
+
   const session = await auth();
   const userId = (session?.user as any)?.userId;
   if (!userId) {
@@ -17,33 +21,44 @@ export async function POST(
   const body = await request.json();
   const value = body.value === 1 ? 1 : body.value === -1 ? -1 : 0;
 
-  const media = await db.media.findUnique({ where: { id } });
-  if (!media) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
+  const score = await db.$transaction(async (tx) => {
+    const media = await tx.media.findUnique({ where: { id } });
+    if (!media) throw new Error("NOT_FOUND");
 
-  const existing = await db.mediaVote.findUnique({
-    where: { mediaId_userId: { mediaId: id, userId } },
-  });
+    const existing = await tx.mediaVote.findUnique({
+      where: { mediaId_userId: { mediaId: id, userId } },
+    });
 
-  if (existing) {
-    if (existing.value === value || value === 0) {
-      // Toggle off — remove vote
-      await db.mediaVote.delete({ where: { id: existing.id } });
-    } else {
-      // Change vote direction
-      await db.mediaVote.update({
-        where: { id: existing.id },
-        data: { value },
+    if (existing) {
+      if (existing.value === value || value === 0) {
+        await tx.mediaVote.delete({ where: { id: existing.id } });
+      } else {
+        await tx.mediaVote.update({
+          where: { id: existing.id },
+          data: { value },
+        });
+      }
+    } else if (value !== 0) {
+      await tx.mediaVote.create({
+        data: { mediaId: id, userId, value },
       });
     }
-  } else if (value !== 0) {
-    await db.mediaVote.create({
-      data: { mediaId: id, userId, value },
-    });
-  }
 
-  const score = await recalculateMediaScore(id);
+    // Recalculate score atomically
+    const result = await tx.mediaVote.aggregate({
+      where: { mediaId: id },
+      _sum: { value: true },
+    });
+    const newScore = result._sum.value ?? 0;
+
+    await tx.media.update({
+      where: { id },
+      data: { score: newScore },
+    });
+
+    return newScore;
+  });
+
   await checkAutoModeration(id);
 
   return NextResponse.json({ score });

@@ -3,6 +3,14 @@
 @import "shadcn/tailwind.css";
 @import "react-tweet/theme.css";
 
+/* Override Tailwind preflight for react-tweet components */
+/* Tailwind sets img/video { height: auto } which breaks react-tweet's absolute positioning */
+.react-tweet-theme img,
+.react-tweet-theme video {
+  height: revert;
+  max-width: revert;
+}
+
 /* X/Twitter widget fallback styles */
 .twitter-tweet {
   margin: 1rem auto;

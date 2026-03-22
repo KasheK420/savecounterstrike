@@ -38,9 +38,9 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https:",
               "img-src 'self' data: https: https://pbs.twimg.com https://abs.twimg.com https://*.instagram.com https://*.fbcdn.net https://scontent.cdninstagram.com",
               "media-src 'self' https:",
-              "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.twitch.tv https://clips.twitch.tv https://www.tiktok.com https://www.instagram.com https://www.facebook.com https://platform.twitter.com https://platform.x.com https://syndication.twitter.com https://cdn.syndication.twimg.com https://x.com https://twitter.com https://*.instagram.com https://*.facebook.com",
+              "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.twitch.tv https://clips.twitch.tv https://www.tiktok.com https://www.instagram.com https://www.facebook.com https://platform.twitter.com https://platform.x.com https://syndication.twitter.com https://cdn.syndication.twimg.com https://x.com https://twitter.com https://*.instagram.com https://*.facebook.com https://ko-fi.com https://storage.ko-fi.com",
               "connect-src 'self' https: https://api.x.com https://syndication.x.com",
-              "font-src 'self'",
+              "font-src 'self' https:",
             ].join("; "),
           },
           {

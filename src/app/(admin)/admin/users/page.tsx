@@ -1,17 +1,23 @@
 import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { UserBadges } from "@/components/shared/UserBadges";
+import { UserRoleManager } from "@/components/admin/UserRoleManager";
 import { StatCard } from "@/components/admin/StatCard";
-import { Users, Shield } from "lucide-react";
+import { Users, Shield, Ban } from "lucide-react";
 
 export default async function AdminUsersPage() {
-  const [totalCount, users] = await Promise.all([
+  const session = await auth();
+  const currentUserId = (session?.user as any)?.userId;
+
+  const [totalCount, users, bannedCount] = await Promise.all([
     db.user.count(),
     db.user.findMany({
       orderBy: { createdAt: "desc" },
       take: 100,
     }),
+    db.user.count({ where: { isBanned: true } }),
   ]);
 
   return (
@@ -21,11 +27,11 @@ export default async function AdminUsersPage() {
           Users
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          {totalCount} registered users
+          {totalCount} registered users &middot; Manage roles and bans
         </p>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-3 gap-4">
         <StatCard
           title="Total Users"
           value={totalCount}
@@ -34,11 +40,21 @@ export default async function AdminUsersPage() {
           color="text-cs-blue"
         />
         <StatCard
-          title="Admins"
-          value={users.filter((u) => u.role === "ADMIN").length}
-          subtitle="Admin role users"
+          title="Staff"
+          value={
+            users.filter((u) => u.role === "ADMIN" || u.role === "MODERATOR")
+              .length
+          }
+          subtitle="Admins + Moderators"
           icon={Shield}
           color="text-cs-orange"
+        />
+        <StatCard
+          title="Banned"
+          value={bannedCount}
+          subtitle="Banned users"
+          icon={Ban}
+          color="text-cs-red"
         />
       </div>
 
@@ -50,7 +66,12 @@ export default async function AdminUsersPage() {
         </div>
         <div className="divide-y divide-border/20">
           {users.map((user) => (
-            <div key={user.id} className="flex items-center gap-3 p-4">
+            <div
+              key={user.id}
+              className={`flex items-center gap-3 p-4 ${
+                user.isBanned ? "opacity-50 bg-cs-red/5" : ""
+              }`}
+            >
               <Avatar className="h-9 w-9 border border-border/50 shrink-0">
                 <AvatarImage
                   src={user.avatarUrl || undefined}
@@ -66,22 +87,16 @@ export default async function AdminUsersPage() {
                     {user.displayName}
                   </span>
                   <UserBadges
-                    ownsCs2={user.ownsCs2}
                     cs2PlaytimeHours={user.cs2PlaytimeHours}
-                    cs2Wins={user.cs2Wins}
                     faceitLevel={user.faceitLevel}
-                    profileVisibility={user.profileVisibility}
+                    compact
                   />
-                  {user.role !== "USER" && (
+                  {user.isBanned && (
                     <Badge
                       variant="outline"
-                      className={
-                        user.role === "ADMIN"
-                          ? "border-cs-orange/30 text-cs-orange text-[10px]"
-                          : "border-cs-blue/30 text-cs-blue text-[10px]"
-                      }
+                      className="border-cs-red/30 text-cs-red text-[10px]"
                     >
-                      {user.role}
+                      BANNED
                     </Badge>
                   )}
                 </div>
@@ -90,8 +105,21 @@ export default async function AdminUsersPage() {
                   <span>
                     Joined {new Date(user.createdAt).toLocaleDateString()}
                   </span>
+                  {user.bannedReason && (
+                    <span className="text-cs-red">
+                      Reason: {user.bannedReason}
+                    </span>
+                  )}
                 </div>
               </div>
+              <UserRoleManager
+                userId={user.id}
+                userName={user.displayName}
+                currentRole={user.role}
+                isBanned={user.isBanned}
+                bannedReason={user.bannedReason}
+                isCurrentUser={user.id === currentUserId}
+              />
             </div>
           ))}
         </div>

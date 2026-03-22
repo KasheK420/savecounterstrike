@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAdminApi } from "@/lib/admin";
+import { requireAdminApi, requireModeratorApi } from "@/lib/admin";
 
 export async function GET(
   _request: NextRequest,
@@ -37,7 +37,7 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const result = await requireAdminApi();
+  const result = await requireModeratorApi();
   if (result.error) return result.response;
 
   const { id } = await params;
@@ -63,7 +63,7 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const result = await requireAdminApi();
+  const result = await requireModeratorApi();
   if (result.error) return result.response;
 
   const { id } = await params;

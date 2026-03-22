@@ -15,6 +15,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${siteUrl}/?error=steam_auth_failed`);
     }
 
+    // Check if user is banned before proceeding
+    const existingUser = await db.user.findUnique({
+      where: { steamId },
+      select: { isBanned: true },
+    });
+    if (existingUser?.isBanned) {
+      return NextResponse.redirect(`${siteUrl}/?error=account_banned`);
+    }
+
     const profile = await fetchSteamProfile(steamId);
     if (!profile) {
       return NextResponse.redirect(`${siteUrl}/?error=steam_profile_failed`);

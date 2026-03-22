@@ -18,22 +18,34 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const links = [
+interface NavLink {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+  adminOnly?: boolean;
+}
+
+const links: NavLink[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/articles", label: "Blog Posts", icon: FileText },
+  { href: "/admin/articles", label: "Blog Posts", icon: FileText, adminOnly: true },
   { href: "/admin/opinions", label: "Opinions", icon: MessageSquare },
   { href: "/admin/media", label: "Media", icon: Video },
   { href: "/admin/petitions", label: "Petitions", icon: ScrollText },
-  { href: "/admin/supporters", label: "Supporters", icon: Handshake },
-  { href: "/admin/users", label: "Users", icon: Users },
-  { href: "/admin/ban-waves", label: "Ban Waves", icon: ShieldAlert },
-  { href: "/admin/bot", label: "GC Bot", icon: Bot },
-  { href: "/admin/stats", label: "Stats", icon: BarChart3 },
-  { href: "/admin/analytics", label: "Analytics", icon: Activity },
+  { href: "/admin/supporters", label: "Supporters", icon: Handshake, adminOnly: true },
+  { href: "/admin/users", label: "Users", icon: Users, adminOnly: true },
+  { href: "/admin/ban-waves", label: "Ban Waves", icon: ShieldAlert, adminOnly: true },
+  { href: "/admin/bot", label: "GC Bot", icon: Bot, adminOnly: true },
+  { href: "/admin/stats", label: "Stats", icon: BarChart3, adminOnly: true },
+  { href: "/admin/analytics", label: "Analytics", icon: Activity, adminOnly: true },
 ];
 
-export function AdminSidebar() {
+export function AdminSidebar({ role = "ADMIN" }: { role?: string }) {
   const pathname = usePathname();
+  const isAdmin = role === "ADMIN";
+
+  const visibleLinks = links.filter(
+    (link) => !link.adminOnly || isAdmin
+  );
 
   return (
     <aside className="w-64 shrink-0 border-r border-border/50 bg-card/50 min-h-screen p-4 hidden lg:block">
@@ -42,13 +54,13 @@ export function AdminSidebar() {
           <span className="text-cs-orange">SAVE</span>
           <span className="text-foreground">CS</span>
           <span className="text-muted-foreground text-xs ml-2 font-normal">
-            Admin
+            {isAdmin ? "Admin" : "Mod"}
           </span>
         </Link>
       </div>
 
       <nav className="space-y-1">
-        {links.map((link) => {
+        {visibleLinks.map((link) => {
           const active =
             link.href === "/admin"
               ? pathname === "/admin"

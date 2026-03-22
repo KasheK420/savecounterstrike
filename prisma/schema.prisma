@@ -33,6 +33,11 @@ model User {
   faceitLevel      Int?        // 1-10
   faceitElo        Int?
 
+  // Ban status
+  isBanned     Boolean   @default(false)
+  bannedAt     DateTime?
+  bannedReason String?
+
   petitionSignature PetitionSignature?
   opinions          Opinion[]     @relation("UserOpinions")
   opinionVotes      OpinionVote[] @relation("UserOpinionVotes")

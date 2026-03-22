@@ -22,7 +22,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const steamId = credentials?.steamId as string;
         if (!steamId) return null;
 
-        const role = adminSteamIds.includes(steamId) ? "ADMIN" : "USER";
+        // Check if user exists first
+        const existing = await db.user.findUnique({ where: { steamId } });
+
+        // Block banned users
+        if (existing?.isBanned) {
+          return null;
+        }
+
+        // Determine role:
+        // - Env ADMIN_STEAM_IDS always get ADMIN
+        // - Existing users keep their manually-set role (MODERATOR, etc.)
+        // - New users default to USER
+        let role: "ADMIN" | "MODERATOR" | "USER";
+        if (adminSteamIds.includes(steamId)) {
+          role = "ADMIN";
+        } else if (existing?.role === "MODERATOR") {
+          role = "MODERATOR"; // Preserve manually-assigned MODERATOR
+        } else if (existing?.role === "ADMIN" && !adminSteamIds.includes(steamId)) {
+          role = "ADMIN"; // Preserve manually-assigned ADMIN
+        } else {
+          role = existing?.role || "USER";
+        }
 
         const user = await db.user.upsert({
           where: { steamId },

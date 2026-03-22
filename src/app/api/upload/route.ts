@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 import sharp from "sharp";
 import { randomUUID } from "crypto";
 import { writeFile, mkdir } from "fs/promises";
@@ -10,13 +11,31 @@ const MAX_WIDTH = 1200;
 const QUALITY = 80;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
-// In Docker standalone, process.cwd() is /app
-// Uploads go to /app/public/uploads which is mounted as a volume
+// Magic number signatures for image formats
+const MAGIC_NUMBERS: Record<string, number[][]> = {
+  "image/jpeg": [[0xff, 0xd8, 0xff]],
+  "image/png": [[0x89, 0x50, 0x4e, 0x47]],
+  "image/gif": [[0x47, 0x49, 0x46, 0x38]], // GIF87a or GIF89a
+  "image/webp": [[0x52, 0x49, 0x46, 0x46]], // RIFF header
+};
+
+function validateMagicNumber(buffer: Buffer, mimeType: string): boolean {
+  const signatures = MAGIC_NUMBERS[mimeType];
+  if (!signatures) return false;
+  return signatures.some((sig) =>
+    sig.every((byte, i) => buffer.length > i && buffer[i] === byte)
+  );
+}
+
 function getUploadDir(): string {
   return join(process.cwd(), "public", "uploads");
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 10 uploads per 5 minutes per IP
+  const rl = rateLimitByIp(request, "upload", 10, 300_000);
+  if (rl.limited) return rateLimitResponse(rl);
+
   const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -46,6 +65,15 @@ export async function POST(request: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
+    // Validate file magic number (prevents MIME type spoofing)
+    if (!validateMagicNumber(buffer, file.type)) {
+      return NextResponse.json(
+        { error: "File content doesn't match declared type. Upload rejected." },
+        { status: 400 }
+      );
+    }
+
+    // Process with sharp — reject if it fails (don't save invalid files)
     let processed: Buffer;
     try {
       processed = await sharp(buffer)
@@ -53,8 +81,10 @@ export async function POST(request: NextRequest) {
         .webp({ quality: QUALITY })
         .toBuffer();
     } catch {
-      // If sharp fails (e.g. corrupted image), save original
-      processed = buffer;
+      return NextResponse.json(
+        { error: "Invalid or corrupted image file." },
+        { status: 400 }
+      );
     }
 
     const filename = `${randomUUID()}.webp`;

@@ -5,7 +5,7 @@ import { fetchFaceitStats } from "@/lib/faceit";
 
 export async function POST() {
   const session = await auth();
-  const steamId = (session?.user as any)?.steamId;
+  const steamId = session?.user?.steamId;
   if (!steamId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

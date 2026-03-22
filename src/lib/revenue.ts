@@ -21,7 +21,6 @@
 
 // ── Constants ───────────────────────────────────────────────
 
-const STEAM_API_KEY = process.env.STEAM_API_KEY || "";
 const CS2_APP_ID = 730;
 const KEY_PRICE_USD = 2.50; // Cost per case key in USD
 const STEAM_MARKET_FEE_RATE = 0.15; // 15% Valve cut on market transactions

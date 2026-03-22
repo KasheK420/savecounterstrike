@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
   const skip = (page - 1) * limit;
 
   const session = await auth();
-  const userId = (session?.user as any)?.userId;
-  const isAdmin = (session?.user as any)?.role === "ADMIN";
+  const userId = session?.user?.userId;
+  const isAdmin = session?.user?.role === "ADMIN";
 
   const where = isAdmin
     ? {}
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   const session = await auth();
-  const userId = (session?.user as any)?.userId;
+  const userId = session?.user?.userId;
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

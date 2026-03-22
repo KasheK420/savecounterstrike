@@ -1,4 +1,4 @@
-import { Gamepad2, CheckCircle, Lock, Award } from "lucide-react";
+import { Gamepad2, Award } from "lucide-react";
 
 interface UserBadgesProps {
   ownsCs2?: boolean | null;
@@ -22,11 +22,8 @@ function getFaceitColor(level: number): string {
 }
 
 export function UserBadges({
-  ownsCs2,
   cs2PlaytimeHours,
-  cs2Wins,
   faceitLevel,
-  profileVisibility,
   karma,
   hidePlaytime,
   hideFaceit,

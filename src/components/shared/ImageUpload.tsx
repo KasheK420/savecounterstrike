@@ -56,8 +56,8 @@ export function ImageUpload({
 
       const data = await res.json();
       onChange(data.url);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setUploading(false);
     }

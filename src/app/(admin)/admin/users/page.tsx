@@ -9,7 +9,7 @@ import { Users, Shield, Ban } from "lucide-react";
 
 export default async function AdminUsersPage() {
   const session = await auth();
-  const currentUserId = (session?.user as any)?.userId;
+  const currentUserId = session?.user?.userId;
 
   const [totalCount, users, bannedCount] = await Promise.all([
     db.user.count(),

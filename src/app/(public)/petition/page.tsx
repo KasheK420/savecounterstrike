@@ -20,7 +20,7 @@ const GOAL = 200000;
 
 export default async function PetitionPage() {
   const session = await auth();
-  const userId = (session?.user as any)?.userId;
+  const userId = session?.user?.userId;
 
   const [count, alreadySigned] = await Promise.all([
     db.petitionSignature.count(),

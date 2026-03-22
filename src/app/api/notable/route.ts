@@ -54,7 +54,9 @@ export async function POST(request: NextRequest) {
 
   await db.siteConfig.upsert({
     where: { key: "notable_signers" },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     update: { value: { signers } as any },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     create: { key: "notable_signers", value: { signers } as any },
   });
 

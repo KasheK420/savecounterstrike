@@ -79,7 +79,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
-  const userId = (session?.user as any)?.userId;
+  const userId = session?.user?.userId;
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -95,7 +95,7 @@ export async function PATCH(
   }
 
   const body = await request.json();
-  const data: Record<string, any> = {};
+  const data: Record<string, unknown> = {};
 
   // Update bio (max 500 chars, profanity filtered)
   if (typeof body.bio === "string") {

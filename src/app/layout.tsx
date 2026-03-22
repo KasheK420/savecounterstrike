@@ -115,11 +115,11 @@ export default async function RootLayout({
   const session = await auth();
   const sessionUser = session?.user
     ? {
-        userId: (session.user as any).userId || "",
+        userId: session.user.userId || "",
         name: session.user.name || "Unknown",
         image: session.user.image || "",
-        steamId: (session.user as any).steamId || "",
-        role: (session.user as any).role || "USER",
+        steamId: session.user.steamId || "",
+        role: session.user.role || "USER",
       }
     : null;
 

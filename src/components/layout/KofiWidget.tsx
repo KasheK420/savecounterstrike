@@ -8,7 +8,7 @@ export function KofiWidget() {
       src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"
       strategy="lazyOnload"
       onLoad={() => {
-        (window as any).kofiWidgetOverlay?.draw("savecounterstrike", {
+        (window as unknown as Record<string, { draw?: (id: string, opts: Record<string, string>) => void }>).kofiWidgetOverlay?.draw?.("savecounterstrike", {
           type: "floating-chat",
           "floating-chat.donateButton.text": "Support us",
           "floating-chat.donateButton.background-color": "#de9b35",

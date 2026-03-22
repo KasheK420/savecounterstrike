@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   const page = parseInt(searchParams.get("page") || "1");
   const limit = 50;
 
-  const where: any = {};
+  const where: Record<string, unknown> = {};
   if (filter === "banned") where.vacBanned = true;
   if (filter === "flagged") where.flagged = true;
   if (source) where.source = source;

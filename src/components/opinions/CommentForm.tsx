@@ -9,6 +9,7 @@ import { Send, Loader2 } from "lucide-react";
 interface CommentFormProps {
   opinionId: string;
   parentId?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmitted?: (comment: any) => void;
   onCancel?: () => void;
   placeholder?: string;

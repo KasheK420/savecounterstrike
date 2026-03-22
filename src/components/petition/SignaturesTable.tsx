@@ -22,15 +22,23 @@ interface PageData {
 export function SignaturesTable() {
   const [data, setData] = useState<PageData | null>(null);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [fetched, setFetched] = useState(false);
+  const loading = !fetched || (data !== null && data.page !== page);
 
   useEffect(() => {
-    setLoading(true);
-    fetch(`/api/signatures?page=${page}`)
+    const controller = new AbortController();
+    fetch(`/api/signatures?page=${page}`, { signal: controller.signal })
       .then((r) => r.json())
-      .then(setData)
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .then((result) => {
+        if (!controller.signal.aborted) {
+          setData(result);
+          setFetched(true);
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setFetched(true);
+      });
+    return () => controller.abort();
   }, [page]);
 
   if (loading && !data) {

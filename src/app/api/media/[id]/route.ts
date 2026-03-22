@@ -8,8 +8,8 @@ export async function GET(
 ) {
   const { id } = await params;
   const session = await auth();
-  const userId = (session?.user as any)?.userId;
-  const isAdmin = (session?.user as any)?.role === "ADMIN";
+  const userId = session?.user?.userId;
+  const isAdmin = session?.user?.role === "ADMIN";
 
   const media = await db.media.findUnique({
     where: { id },
@@ -64,7 +64,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
-  if ((session?.user as any)?.role !== "ADMIN") {
+  if (session?.user?.role !== "ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -89,8 +89,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
-  const userId = (session?.user as any)?.userId;
-  const isAdmin = (session?.user as any)?.role === "ADMIN";
+  const userId = session?.user?.userId;
+  const isAdmin = session?.user?.role === "ADMIN";
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

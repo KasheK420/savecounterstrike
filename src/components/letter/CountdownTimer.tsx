@@ -26,12 +26,21 @@ function getTimeLeft(): TimeLeft {
 }
 
 export function CountdownTimer() {
-  const [time, setTime] = useState<TimeLeft>(getTimeLeft);
+  const [time, setTime] = useState<TimeLeft | null>(null);
 
   useEffect(() => {
+    setTime(getTimeLeft());
     const interval = setInterval(() => setTime(getTimeLeft()), 1000);
     return () => clearInterval(interval);
   }, []);
+
+  if (!time) {
+    return (
+      <div className="cs-card rounded-xl p-8 text-center">
+        <Clock className="h-8 w-8 text-cs-orange mx-auto animate-pulse" />
+      </div>
+    );
+  }
 
   const expired = time.total <= 0;
 

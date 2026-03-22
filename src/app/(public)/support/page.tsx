@@ -89,6 +89,25 @@ export default function SupportPage() {
           </div>
         </div>
 
+        {/* Ko-fi */}
+        <div className="cs-card rounded-xl p-8 text-center space-y-4 mb-8">
+          <h2 className="font-heading text-xl font-bold text-foreground">
+            Buy us a Coffee
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            The easiest way to support us — one-time or monthly.
+          </p>
+          <a
+            href="https://ko-fi.com/savecounterstrike"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 cs-btn cs-btn-lg font-bold"
+          >
+            <Coffee className="h-5 w-5" />
+            Support on Ko-fi
+          </a>
+        </div>
+
         <div className="grid lg:grid-cols-2 gap-8">
           {/* PayPal */}
           <div className="cs-card rounded-xl p-8 text-center space-y-4">

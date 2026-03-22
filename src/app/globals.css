@@ -2,12 +2,6 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* X/Twitter oEmbed blockquote styling (before widgets.js transforms it) */
-.twitter-tweet {
-  margin: 1rem auto;
-  max-width: 550px;
-}
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

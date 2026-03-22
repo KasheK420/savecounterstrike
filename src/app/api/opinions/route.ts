@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { opinionSchema } from "@/lib/validations";
 import { sanitizeContent } from "@/lib/sanitize";
+import { filterProfanity } from "@/lib/profanity";
 import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function GET(request: NextRequest) {
@@ -99,7 +100,7 @@ export async function POST(request: NextRequest) {
 
   const opinion = await db.opinion.create({
     data: {
-      title: parsed.data.title,
+      title: filterProfanity(parsed.data.title),
       content: sanitizeContent(parsed.data.content),
       imageUrl: parsed.data.imageUrl || null,
       tags: parsed.data.tags || [],

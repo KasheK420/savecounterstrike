@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { requireAdminApi, requireModeratorApi } from "@/lib/admin";
 import { opinionSchema } from "@/lib/validations";
 import { sanitizeContent } from "@/lib/sanitize";
+import { filterProfanity } from "@/lib/profanity";
 
 export async function GET(
   _request: NextRequest,
@@ -73,7 +74,7 @@ export async function PUT(
   const updated = await db.opinion.update({
     where: { id },
     data: {
-      title: parsed.data.title,
+      title: filterProfanity(parsed.data.title),
       content: sanitizeContent(parsed.data.content),
       imageUrl: parsed.data.imageUrl || null,
       editedAt: new Date(),

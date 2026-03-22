@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { trackPageView } from "@/lib/tracking";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Track page views (non-blocking)
+  trackPageView(request).catch(() => {});
 
   // Redirect old /videos to /media
   if (pathname === "/videos" || pathname.startsWith("/videos/")) {

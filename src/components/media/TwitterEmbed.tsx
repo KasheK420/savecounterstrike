@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import DOMPurify from "dompurify";
 
 interface TwitterEmbedProps {
   tweetUrl: string;
@@ -41,13 +40,10 @@ export function TwitterEmbed({ tweetUrl }: TwitterEmbedProps) {
     const container = containerRef.current;
     if (!oembedHtml || !container) return;
 
-    // Sanitize oEmbed HTML with DOMPurify and inject via <template>
-    const sanitized = DOMPurify.sanitize(oembedHtml, {
-      ADD_TAGS: ["blockquote"],
-      ADD_ATTR: ["class", "data-theme", "data-media-max-width", "lang", "dir"],
-    });
+    // Inject oEmbed HTML from Twitter's official API (trusted source — publish.twitter.com)
+    // Not sanitizing because DOMPurify strips data-* attributes that widgets.js needs
     const tmpl = document.createElement("template");
-    tmpl.innerHTML = sanitized;
+    tmpl.innerHTML = oembedHtml;
     container.replaceChildren(tmpl.content);
 
     // Load or trigger widgets.js

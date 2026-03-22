@@ -66,16 +66,11 @@ function InstagramEmbedComponent({ embedUrl }: { embedUrl: string | null }) {
   }
 
   return (
-    <div className="flex justify-center w-full max-w-[400px] mx-auto">
-      <iframe
-        src={embedUrl}
-        className="w-full h-[500px] border-0 rounded-lg"
-        scrolling="no"
-        allowTransparency
-        allow="encrypted-media"
-        referrerPolicy="strict-origin-when-cross-origin"
-        sandbox="allow-scripts allow-same-origin allow-popups"
-        title="Instagram post"
+    <div className="flex justify-center max-w-[400px] mx-auto">
+      <IGEmbed 
+        url={url} 
+        width={400}
+        onError={() => console.error("Instagram embed failed to load")}
       />
     </div>
   );
@@ -91,16 +86,11 @@ function FacebookEmbedComponent({ embedUrl }: { embedUrl: string | null }) {
   }
 
   return (
-    <div className="flex justify-center w-full max-w-[500px] mx-auto">
-      <iframe
-        src={embedUrl}
-        className="w-full h-[500px] border-0 rounded-lg"
-        scrolling="no"
-        allowTransparency
-        allow="encrypted-media"
-        referrerPolicy="strict-origin-when-cross-origin"
-        sandbox="allow-scripts allow-same-origin allow-popups"
-        title="Facebook post"
+    <div className="flex justify-center max-w-[500px] mx-auto">
+      <FBEmbed 
+        url={url} 
+        width={500}
+        onError={() => console.error("Facebook embed failed to load")}
       />
     </div>
   );

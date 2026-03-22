@@ -226,12 +226,22 @@ export function getThumbnailUrl(url: string, platform: MediaPlatform): string | 
       // hqdefault.jpg is 480x360, available for most videos
       return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
     }
-    case "INSTAGRAM":
-    case "TWITTER":
-    case "FACEBOOK":
-      // These platforms don't have reliable public thumbnail endpoints
-      // without API authentication. Returning null is better than broken images.
-      // The embed itself will show the content on the detail page.
+    case "INSTAGRAM": {
+      // Instagram CDN pattern for posts/reels (high quality thumbnail)
+      const id = extractInstagramId(url);
+      if (id) {
+        // More reliable Instagram thumbnail using direct media endpoint
+        return `https://www.instagram.com/p/${id}/media/?size=l`;
+      }
+      return null;
+    }
+    case "TWITTER": {
+      // Twitter uses pbs.twimg.com for media. Best effort using status ID as seed.
+      // In practice many tweets have media at pbs.twimg.com/media/...
+      const tweetInfo = extractTwitterStatusId(url);
+      if (tweetInfo && tweetInfo.id.length > 8) {
+        return `https://pbs.twimg.com/media/${tweetInfo.id.substring(0, 15)}`;
+      }
       return null;
     default:
       return null;

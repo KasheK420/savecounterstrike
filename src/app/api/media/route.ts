@@ -90,6 +90,22 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Duplicate URL check
+  const existing = await db.media.findFirst({
+    where: { url: parsed.data.url },
+    select: { id: true, title: true },
+  });
+  if (existing) {
+    return NextResponse.json(
+      {
+        error: "This media has already been submitted.",
+        existingId: existing.id,
+        existingTitle: existing.title,
+      },
+      { status: 409 }
+    );
+  }
+
   const platform = detectPlatform(parsed.data.url);
   const embedUrl = getEmbedUrl(parsed.data.url, platform);
   const thumbnailUrl = getThumbnailUrl(parsed.data.url, platform);
@@ -104,6 +120,7 @@ export async function POST(request: NextRequest) {
       platform,
       embedUrl,
       thumbnailUrl,
+      tags: body.tags || [],
       authorId: userId,
     },
     include: {

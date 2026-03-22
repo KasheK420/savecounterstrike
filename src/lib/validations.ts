@@ -18,6 +18,7 @@ export const opinionSchema = z.object({
   title: z.string().min(5).max(200),
   content: z.string().min(10).max(50000),
   imageUrl: z.string().max(2000).optional().transform((v) => v?.trim() || undefined),
+  tags: z.array(z.string().max(50)).max(5).default([]),
 });
 
 export const commentSchema = z.object({

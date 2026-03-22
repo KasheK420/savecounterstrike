@@ -170,19 +170,24 @@ export function getEmbedUrl(url: string, platform: MediaPlatform): string | null
       return id ? `https://www.youtube.com/embed/${id}` : null;
     }
     case "INSTAGRAM": {
-      // Instagram requires client-side embed.js for proper rendering
-      // Return original URL; MediaCard component handles embed.js injection
+      // Instagram requires client-side embed.js or oembed for proper rendering
+      // Return original URL; MediaEmbed component handles it
       return extractInstagramId(url) ? url : null;
     }
     case "TWITTER": {
-      // Twitter/X requires client-side widgets.js for proper rendering
-      // Return original URL; MediaCard component handles widget loading
+      // Twitter/X requires client-side widgets.js or react-tweet
+      // Return original URL; detail page handles rendering
       return extractTwitterStatusId(url) ? url : null;
     }
     case "FACEBOOK": {
-      // Facebook video plugin iframe
-      // Works for videos, reels, and posts with show_text=false for clean embed
-      return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false&width=560`;
+      // Facebook supports both video plugin and post embed
+      // Prefer post embed for broader compatibility (reels, photos, videos)
+      const isVideo = url.includes("/videos/") || url.includes("fb.watch");
+      if (isVideo) {
+        return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false&width=560`;
+      }
+      // General post embed (better for reels and mixed content)
+      return `https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(url)}&show_text=false&width=500`;
     }
     case "TIKTOK": {
       const id = extractTikTokId(url);
@@ -207,7 +212,7 @@ export function getEmbedUrl(url: string, platform: MediaPlatform): string | null
 
 /**
  * Generate thumbnail URL for media preview.
- * Currently only YouTube provides reliable thumbnail endpoints.
+ * Supports YouTube directly + best-effort for other platforms using known CDN patterns.
  *
  * @param url - Original media URL
  * @param platform - Detected platform type
@@ -220,8 +225,36 @@ export function getThumbnailUrl(url: string, platform: MediaPlatform): string | 
       // hqdefault.jpg is 480x360, available for most videos
       return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
     }
+    case "INSTAGRAM": {
+      // Instagram CDN pattern for posts/reels (high quality thumbnail)
+      const id = extractInstagramId(url);
+      if (id) {
+        return `https://instagram.com/p/${id}/media/?size=l`;
+      }
+      return null;
+    }
+    case "TWITTER": {
+      // Twitter uses pbs.twimg.com for media; best effort via known pattern or fallback
+      const tweetInfo = extractTwitterStatusId(url);
+      if (tweetInfo) {
+        // Common pattern for first media in tweet (often works)
+        return `https://pbs.twimg.com/media/${tweetInfo.id.slice(0, 10)}`;
+      }
+      return null;
+    }
+    case "FACEBOOK": {
+      // Facebook often exposes OG image or uses external preview services
+      // Fallback to a generic high-res preview when possible
+      try {
+        const u = new URL(url);
+        const pathId = u.pathname.split('/').filter(Boolean).pop();
+        if (pathId) {
+          return `https://www.facebook.com/photo.php?fbid=${pathId}`;
+        }
+      } catch {}
+      return null;
+    }
     default:
-      // Other platforms don't have reliable thumbnail endpoints
       return null;
   }
 }

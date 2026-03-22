@@ -93,13 +93,22 @@ export default async function MediaDetailPage({ params }: Props) {
   if (!media) notFound();
   if (!isAdmin && media.status !== "APPROVED") notFound();
 
-  // Fetch tweet data server-side (no Suspense needed)
+  // Fetch tweet data server-side for react-tweet
   const tweetId = media.platform === "TWITTER"
     ? media.url.match(/status\/(\d+)/)?.[1]
     : null;
-  const tweetData = tweetId
-    ? await getTweet(tweetId).catch(() => null)
-    : null;
+
+  let tweetData = null;
+  let tweetError = false;
+
+  if (tweetId) {
+    try {
+      tweetData = await getTweet(tweetId);
+    } catch (err) {
+      console.error("Failed to fetch tweet data:", err);
+      tweetError = true;
+    }
+  }
 
   const userVote = (media as Record<string, unknown>).votes
     ? ((media as Record<string, unknown>).votes as { value: number }[])?.[0]?.value ?? 0
@@ -156,6 +165,19 @@ export default async function MediaDetailPage({ params }: Props) {
               <div className="flex justify-center">
                 {tweetData ? (
                   <EmbeddedTweet tweet={tweetData} />
+                ) : tweetError || !tweetId ? (
+                  <div className="w-full max-w-[550px]">
+                    {/* Fallback to official X embed */}
+                    <blockquote className="twitter-tweet" data-theme="dark">
+                      <a href={media.url}>Loading X post...</a>
+                    </blockquote>
+                    <script async src="https://platform.twitter.com/widgets.js" />
+                    {isAdmin && (
+                      <div className="mt-2 text-[10px] text-amber-400 font-mono">
+                        DEBUG: react-tweet failed, using official widget fallback
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <TweetNotFound />
                 )}

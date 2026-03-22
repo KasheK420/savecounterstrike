@@ -1,7 +1,6 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
-import { Tweet } from "react-tweet";
 import {
   InstagramEmbed as IGEmbed,
   FacebookEmbed as FBEmbed,
@@ -58,18 +57,8 @@ function TikTokEmbed({ embedUrl }: { embedUrl: string }) {
   );
 }
 
-// ── Library-based embeds (Twitter, Instagram, Facebook) ─────
-
-function TwitterEmbed({ url }: { url: string }) {
-  const tweetId = url.match(/status\/(\d+)/)?.[1];
-  if (!tweetId) return <FallbackEmbed url={url} />;
-
-  return (
-    <div className="flex justify-center [&_.react-tweet-theme]:!bg-transparent">
-      <Tweet id={tweetId} apiUrl={`/api/tweet/${tweetId}`} />
-    </div>
-  );
-}
+// ── Library-based embeds (Instagram, Facebook) ──────────────
+// Note: Twitter is rendered server-side in media/[id]/page.tsx
 
 function InstagramEmbedComponent({ url }: { url: string }) {
   return (
@@ -118,8 +107,6 @@ export function MediaEmbed({ url, platform, embedUrl, title }: MediaEmbedProps) 
       return embedUrl ? <TwitchEmbed embedUrl={embedUrl} /> : <FallbackEmbed url={url} title={title} />;
     case "TIKTOK":
       return embedUrl ? <TikTokEmbed embedUrl={embedUrl} /> : <FallbackEmbed url={url} title={title} />;
-    case "TWITTER":
-      return <TwitterEmbed url={url} />;
     case "INSTAGRAM":
       return <InstagramEmbedComponent url={url} />;
     case "FACEBOOK":

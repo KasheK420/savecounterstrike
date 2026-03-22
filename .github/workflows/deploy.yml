@@ -77,6 +77,8 @@ jobs:
         with:
           context: .
           file: ./Dockerfile.prod
+          build-args: |
+            GIT_SHA=${{ github.sha }}
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:latest

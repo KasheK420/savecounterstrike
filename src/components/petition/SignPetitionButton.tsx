@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { Textarea } from "@/components/ui/textarea";
 import { Shield, CheckCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface SignPetitionButtonProps {
   alreadySigned: boolean;
@@ -128,6 +129,13 @@ export function SignPetitionButton({ alreadySigned }: SignPetitionButtonProps) {
       {error && (
         <p className="text-cs-red text-sm text-center">{error}</p>
       )}
+
+      <p className="text-[10px] text-muted-foreground/50 text-center">
+        By signing, you agree to our{" "}
+        <Link href="/terms" className="underline hover:text-muted-foreground">Terms of Service</Link>
+        {" "}and{" "}
+        <Link href="/privacy" className="underline hover:text-muted-foreground">Privacy Policy</Link>.
+      </p>
     </div>
   );
 }

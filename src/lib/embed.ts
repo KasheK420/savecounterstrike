@@ -243,6 +243,7 @@ export function getThumbnailUrl(url: string, platform: MediaPlatform): string | 
         return `https://pbs.twimg.com/media/${tweetInfo.id.substring(0, 15)}`;
       }
       return null;
+    }
     default:
       return null;
   }

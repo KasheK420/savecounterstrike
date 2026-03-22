@@ -3,12 +3,13 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { opinionSchema } from "@/lib/validations";
 import { sanitizeContent } from "@/lib/sanitize";
+import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const sort = searchParams.get("sort") || "best";
-  const search = searchParams.get("search") || "";
-  const page = parseInt(searchParams.get("page") || "1", 10);
+  const search = (searchParams.get("search") || "").trim().slice(0, 200);
+  const page = Math.max(1, Math.min(parseInt(searchParams.get("page") || "1", 10) || 1, 1000));
   const limit = 20;
   const skip = (page - 1) * limit;
 
@@ -58,6 +59,10 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 5 opinions per 10 minutes per IP
+  const rl = rateLimitByIp(request, "opinions:post", 5, 600_000);
+  if (rl.limited) return rateLimitResponse(rl);
+
   const session = await auth();
   const userId = (session?.user as any)?.userId;
   if (!userId) {

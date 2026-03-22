@@ -73,6 +73,8 @@ function InstagramEmbedComponent({ embedUrl }: { embedUrl: string | null }) {
         scrolling="no"
         allowTransparency
         allow="encrypted-media"
+        referrerPolicy="strict-origin-when-cross-origin"
+        sandbox="allow-scripts allow-same-origin allow-popups"
         title="Instagram post"
       />
     </div>
@@ -96,6 +98,8 @@ function FacebookEmbedComponent({ embedUrl }: { embedUrl: string | null }) {
         scrolling="no"
         allowTransparency
         allow="encrypted-media"
+        referrerPolicy="strict-origin-when-cross-origin"
+        sandbox="allow-scripts allow-same-origin allow-popups"
         title="Facebook post"
       />
     </div>

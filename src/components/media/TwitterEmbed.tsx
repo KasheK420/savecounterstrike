@@ -10,29 +10,30 @@ export function TwitterEmbed({ tweetUrl }: TwitterEmbedProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Load Twitter widgets script
-    const script = document.createElement("script");
-    script.src = "https://platform.twitter.com/widgets.js";
-    script.async = true;
-    script.charset = "utf-8";
+    // @ts-expect-error Twitter widgets.js exposes twttr global
+    const twttr = window.twttr;
     
-    script.onload = () => {
-      // @ts-expect-error Twitter widgets.js exposes twttr global
-      if (window.twttr && window.twttr.widgets) {
+    if (twttr && twttr.widgets) {
+      // Script already loaded, just load the widgets
+      twttr.widgets.load(containerRef.current);
+    } else {
+      // Load Twitter widgets script
+      const script = document.createElement("script");
+      script.src = "https://platform.twitter.com/widgets.js";
+      script.async = true;
+      script.charset = "utf-8";
+      
+      script.onload = () => {
         // @ts-expect-error Twitter widgets.js exposes twttr global
-        window.twttr.widgets.load(containerRef.current);
-      }
-    };
+        if (window.twttr && window.twttr.widgets) {
+          // @ts-expect-error Twitter widgets.js exposes twttr global
+          window.twttr.widgets.load(containerRef.current);
+        }
+      };
 
-    document.body.appendChild(script);
-
-    return () => {
-      // Cleanup script on unmount
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
+      document.body.appendChild(script);
+    }
+  }, [tweetUrl]);
 
   return (
     <div ref={containerRef} className="w-full max-w-[550px] mx-auto">

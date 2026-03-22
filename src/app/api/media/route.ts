@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Media (video clips, screenshots) API.
+ *
+ * Handles listing media items with voting status and submitting new media.
+ *
+ * @route GET  /api/media?sort={hot|new|top}&page={number}
+ * @route POST /api/media
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
@@ -5,6 +14,12 @@ import { mediaSubmitSchema } from "@/lib/validations";
 import { filterProfanity } from "@/lib/profanity";
 import { detectPlatform, getEmbedUrl, getThumbnailUrl } from "@/lib/embed";
 
+/**
+ * GET /api/media
+ * List media items with sorting and pagination.
+ * Admins see all content; regular users see only APPROVED.
+ * Includes current user's vote status if authenticated.
+ */
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const sort = searchParams.get("sort") || "hot";
@@ -74,6 +89,11 @@ export async function GET(request: NextRequest) {
   });
 }
 
+/**
+ * POST /api/media
+ * Submit new media content.
+ * Rate limit: 5 submissions per hour per IP.
+ */
 export async function POST(request: NextRequest) {
   const session = await auth();
   const userId = (session?.user as any)?.userId;
@@ -81,8 +101,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Rate limit: 5 submissions per hour per IP
   const { rateLimitByIp, rateLimitResponse } = await import("@/lib/rate-limit");
-  const rl = rateLimitByIp(request, "media:create", 5, 3600_000); // 5 per hour
+  const rl = rateLimitByIp(request, "media:create", 5, 3600_000);
   if (rl.limited) return rateLimitResponse(rl);
 
   const body = await request.json();
@@ -94,7 +115,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Duplicate URL check
+  // Check for duplicate URL
   const existing = await db.media.findFirst({
     where: { url: parsed.data.url },
     select: { id: true, title: true },
@@ -110,6 +131,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Extract platform info and generate embed/thumbnail URLs
   const platform = detectPlatform(parsed.data.url);
   const embedUrl = getEmbedUrl(parsed.data.url, platform);
   const thumbnailUrl = getThumbnailUrl(parsed.data.url, platform);

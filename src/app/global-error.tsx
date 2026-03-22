@@ -1,5 +1,21 @@
 "use client";
 
+/**
+ * @fileoverview Global error boundary for root-level errors.
+ *
+ * Handles catastrophic errors that prevent the root layout from rendering.
+ * Uses inline styles to ensure it displays even if CSS fails to load.
+ *
+ * @module app/global-error
+ * @see {@link https://nextjs.org/docs/app/building-your-application/routing/error-handling#handling-errors-in-root-layouts|Next.js Global Error}
+ */
+
+/**
+ * Global error fallback for root layout failures.
+ *
+ * @param error - The root-level error
+ * @param reset - Function to retry rendering
+ */
 export default function GlobalError({
   error,
   reset,

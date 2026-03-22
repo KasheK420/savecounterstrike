@@ -1,9 +1,25 @@
+/**
+ * @fileoverview Community statistics aggregation endpoint.
+ *
+ * Returns comprehensive stats: current players, petition signatures,
+ * community CS2 stats, FACEIT distribution, tracked player ban status,
+ * ban wave history, and Premier rating leaderboard.
+ *
+ * @route GET /api/stats
+ */
+
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+
+// ── Steam API Configuration ─────────────────────────────────
 
 const STEAM_API_BASE = "https://api.steampowered.com";
 const CS2_APP_ID = 730;
 
+/**
+ * Fetch current CS2 player count from Steam API.
+ * Cached for 5 minutes to reduce API calls.
+ */
 async function getCurrentPlayers(): Promise<number> {
   try {
     const apiKey = process.env.STEAM_API_KEY;
@@ -18,6 +34,10 @@ async function getCurrentPlayers(): Promise<number> {
   }
 }
 
+/**
+ * GET /api/stats
+ * Aggregate and return all community statistics.
+ */
 export async function GET() {
   const [
     currentPlayers,

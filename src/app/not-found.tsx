@@ -1,8 +1,21 @@
+/**
+ * @fileoverview 404 Not Found page.
+ *
+ * Displayed when a route doesn't exist. Provides navigation back to
+ * home and to the petition page.
+ *
+ * @module app/not-found
+ * @see {@link https://nextjs.org/docs/app/api-reference/file-conventions/not-found|Next.js Not Found}
+ */
+
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import { Crosshair, Home, Shield } from "lucide-react";
 
+/**
+ * 404 Not Found component.
+ */
 export default function NotFound() {
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4">

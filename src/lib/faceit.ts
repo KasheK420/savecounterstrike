@@ -1,15 +1,38 @@
+/**
+ * @fileoverview FACEIT API integration for CS2 player statistics.
+ *
+ * Fetches player skill level and ELO from FACEIT platform using Steam64 ID lookup.
+ * Handles Cloudflare challenges, rate limits, and missing accounts gracefully.
+ *
+ * @module faceit
+ * @see {@link https://developers.faceit.com/docs/tools/data-api|FACEIT Data API}
+ */
+
+// ── Configuration ───────────────────────────────────────────
+
 const FACEIT_API_BASE = "https://open.faceit.com/data/v4";
 
+// ── Types ───────────────────────────────────────────────────
+
+/** FACEIT CS2 player statistics */
 export interface FaceitStats {
+  /** Skill level 1-10 (10 being highest) */
   level: number;
+  /** Current ELO rating */
   elo: number;
+  /** FACEIT username */
   nickname: string;
 }
+
+// ── Main Function ───────────────────────────────────────────
 
 /**
  * Fetch FACEIT CS2 stats for a player by their Steam64 ID.
  * Returns null if the player has no FACEIT account, API fails,
  * or Cloudflare blocks the request.
+ *
+ * @param steamId - Steam64 ID for lookup
+ * @returns FACEIT stats or null if unavailable
  */
 export async function fetchFaceitStats(
   steamId: string

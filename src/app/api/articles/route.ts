@@ -1,8 +1,22 @@
+/**
+ * @fileoverview Blog articles API (admin only for writes).
+ *
+ * Public read access for published articles; admin access for all.
+ * Handles article CRUD and tag management.
+ *
+ * @route GET  /api/articles          - List articles (public sees published only)
+ * @route POST /api/articles          - Create article (admin only)
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAdmin, requireAdminApi } from "@/lib/admin";
 import { articleSchema } from "@/lib/validations";
 
+/**
+ * Convert tag name to URL-friendly slug.
+ * Lowercases, replaces non-alphanumeric with hyphens, trims edges.
+ */
 function slugifyTag(name: string): string {
   return name
     .toLowerCase()
@@ -10,8 +24,12 @@ function slugifyTag(name: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+/**
+ * GET /api/articles
+ * List all articles. Public users see only published articles.
+ * Admins see all articles including drafts.
+ */
 export async function GET() {
-  // Check admin via server-side session, not client header
   const adminSession = await requireAdmin();
   const isAdmin = !!adminSession;
 
@@ -35,6 +53,11 @@ export async function GET() {
   return NextResponse.json(articles);
 }
 
+/**
+ * POST /api/articles
+ * Create new blog article with tags. Admin only.
+ * Auto-creates tags if they don't exist (connectOrCreate).
+ */
 export async function POST(request: NextRequest) {
   const result = await requireAdminApi();
   if (result.error) return result.response;
@@ -48,6 +71,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Check for duplicate slug
   const existing = await db.article.findUnique({
     where: { slug: parsed.data.slug },
   });
@@ -60,6 +84,7 @@ export async function POST(request: NextRequest) {
 
   const { tags: tagNames, ...articleData } = parsed.data;
 
+  // Create article with tag connections
   const article = await db.article.create({
     data: {
       ...articleData,

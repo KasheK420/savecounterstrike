@@ -1,22 +1,47 @@
-// Simple in-memory rate limiter
-// Resets on server restart. Good enough for basic abuse prevention.
+/**
+ * @fileoverview In-memory rate limiting utilities.
+ *
+ * Simple rate limiter using an in-memory Map. State resets on server restart,
+ * which is acceptable for basic abuse prevention. Not suitable for distributed
+ * deployments (use Redis for multi-server setups).
+ *
+ * @module rate-limit
+ */
 
+// ── Storage ──────────────────────────────────────────────────
+
+/**
+ * In-memory store for rate limit tracking.
+ * Key format: "{endpoint}:{identifier}" (e.g., "petition:192.168.1.1")
+ */
 const store = new Map<string, { count: number; resetAt: number }>();
 
-// Clean up expired entries periodically
+// Cleanup job to prevent memory leaks from stale entries
 setInterval(() => {
   const now = Date.now();
   for (const [key, value] of store) {
     if (now > value.resetAt) store.delete(key);
   }
-}, 60_000);
+}, 60_000); // Run every minute
 
+/** Result of a rate limit check */
 interface RateLimitResult {
+  /** Whether the request should be blocked */
   limited: boolean;
+  /** Remaining requests allowed in current window */
   remaining: number;
+  /** Milliseconds until the rate limit resets */
   resetIn: number;
 }
 
+/**
+ * Check and update rate limit for a given key.
+ *
+ * @param key - Unique identifier (e.g., "petition:192.168.1.1")
+ * @param maxRequests - Maximum allowed requests in the window (default: 10)
+ * @param windowMs - Time window in milliseconds (default: 60000 = 1 minute)
+ * @returns Rate limit status with remaining count and reset time
+ */
 export function rateLimit(
   key: string,
   maxRequests: number = 10,
@@ -25,6 +50,7 @@ export function rateLimit(
   const now = Date.now();
   const entry = store.get(key);
 
+  // Initialize new window if no entry exists or window expired
   if (!entry || now > entry.resetAt) {
     store.set(key, { count: 1, resetAt: now + windowMs });
     return { limited: false, remaining: maxRequests - 1, resetIn: windowMs };
@@ -32,6 +58,7 @@ export function rateLimit(
 
   entry.count++;
 
+  // Block if over limit
   if (entry.count > maxRequests) {
     return {
       limited: true,
@@ -47,13 +74,20 @@ export function rateLimit(
   };
 }
 
+/**
+ * Extract client IP from request headers.
+ * Prioritizes Cloudflare headers, falls back to X-Forwarded-For.
+ *
+ * @param request - Incoming request object
+ * @returns Client IP address or "unknown"
+ */
 export function getClientIp(request: Request): string {
   // Cloudflare Tunnel sets the real client IP — most trusted source
   const cfIp = request.headers.get("cf-connecting-ip");
   if (cfIp) return cfIp.trim();
 
   // Fall back to rightmost non-private IP in x-forwarded-for
-  // (rightmost = added by the closest trusted proxy)
+  // (rightmost = added by the closest trusted proxy, not spoofable by client)
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) {
     const ips = forwarded.split(",").map((ip) => ip.trim());
@@ -64,6 +98,16 @@ export function getClientIp(request: Request): string {
   return request.headers.get("x-real-ip")?.trim() || "unknown";
 }
 
+/**
+ * Convenience wrapper to rate limit by IP address.
+ * Automatically extracts IP and constructs the rate limit key.
+ *
+ * @param request - Incoming request object
+ * @param endpoint - Endpoint identifier for namespacing (e.g., "petition")
+ * @param maxRequests - Maximum allowed requests in the window
+ * @param windowMs - Time window in milliseconds
+ * @returns Rate limit status
+ */
 export function rateLimitByIp(
   request: Request,
   endpoint: string,
@@ -75,6 +119,12 @@ export function rateLimitByIp(
   return rateLimit(key, maxRequests, windowMs);
 }
 
+/**
+ * Generate a standardized 429 Too Many Requests response.
+ *
+ * @param result - Rate limit result from rateLimit() or rateLimitByIp()
+ * @returns Response object with 429 status and retry timing
+ */
 export function rateLimitResponse(result: RateLimitResult): Response {
   return new Response(
     JSON.stringify({

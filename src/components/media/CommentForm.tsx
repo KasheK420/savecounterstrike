@@ -8,6 +8,7 @@ import { EyeOff, Send } from "lucide-react";
 interface CommentFormProps {
   mediaId: string;
   parentId?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit: (comment: any) => void;
   onCancel?: () => void;
   placeholder?: string;

@@ -56,7 +56,11 @@ export function RevenueTickerHero() {
   const [todayEarned, setTodayEarned] = useState(0);
   const [pageEarned, setPageEarned] = useState(0);
   const [loaded, setLoaded] = useState(false);
-  const startRef = useRef(Date.now());
+  const startRef = useRef(0);
+
+  useEffect(() => {
+    startRef.current = Date.now();
+  }, []);
   const frameRef = useRef<number>(0);
   const rateRef = useRef(FALLBACK.perSecondRevenue);
 

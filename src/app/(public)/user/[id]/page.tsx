@@ -37,7 +37,7 @@ export default async function UserProfilePage({
 }) {
   const { id } = await params;
   const session = await auth();
-  const isOwner = (session?.user as any)?.userId === id;
+  const isOwner = session?.user?.userId === id;
 
   const user = await db.user.findUnique({
     where: { id },

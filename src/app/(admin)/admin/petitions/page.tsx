@@ -34,6 +34,7 @@ export default async function AdminPetitionsPage() {
   );
 
   const notableSigners =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (notableConfig?.value as any)?.signers || [];
 
   return (

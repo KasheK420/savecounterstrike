@@ -12,7 +12,7 @@ export async function POST(
   if (rl.limited) return rateLimitResponse(rl);
 
   const session = await auth();
-  const userId = (session?.user as any)?.userId;
+  const userId = session?.user?.userId;
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

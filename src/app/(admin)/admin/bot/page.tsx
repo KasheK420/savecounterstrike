@@ -26,7 +26,7 @@ interface BotStatus {
     id: string;
     command: string;
     status: string;
-    result: any;
+    result: unknown;
     createdAt: string;
   }[];
 }
@@ -88,7 +88,7 @@ export default function AdminBotPage() {
     return () => clearInterval(interval);
   }, [fetchStatus, fetchPlayers]);
 
-  async function sendCommand(command: string, payload?: any) {
+  async function sendCommand(command: string, payload?: unknown) {
     setSending(true);
     try {
       await fetch("/api/admin/bot/command", {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { OpinionCard } from "@/components/opinions/OpinionCard";
 import { OpinionForm } from "@/components/opinions/OpinionForm";
 import { Input } from "@/components/ui/input";
@@ -35,7 +35,6 @@ const SORT_OPTIONS = [
 
 export default function OpinionsPage() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const [opinions, setOpinions] = useState<OpinionData[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -44,7 +43,7 @@ export default function OpinionsPage() {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
 
-  async function fetchOpinions(pageNum = 1) {
+  const fetchOpinions = useCallback(async (pageNum = 1) => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -66,11 +65,11 @@ export default function OpinionsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [sort, search]);
 
   useEffect(() => {
     fetchOpinions(1);
-  }, [sort, search]);
+  }, [fetchOpinions]);
 
   function handleSortChange(newSort: string) {
     setSort(newSort);

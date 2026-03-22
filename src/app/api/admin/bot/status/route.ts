@@ -19,7 +19,7 @@ export async function GET() {
       }),
     ]);
 
-  const heartbeat = heartbeatConfig?.value as any;
+  const heartbeat = heartbeatConfig?.value as unknown;
 
   return NextResponse.json({
     heartbeat,

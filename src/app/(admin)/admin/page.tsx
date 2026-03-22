@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { StatCard } from "@/components/admin/StatCard";
-import { Users, ScrollText, FileText, DollarSign, Video } from "lucide-react";
+import { Users, ScrollText, FileText, Video } from "lucide-react";
 import Link from "next/link";
 
 export default async function AdminDashboard() {

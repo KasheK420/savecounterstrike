@@ -106,8 +106,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
      */
     jwt({ token, user }) {
       if (user) {
-        token.steamId = (user as any).steamId;
-        token.role = (user as any).role;
+        token.steamId = (user as unknown as { steamId?: string }).steamId;
+        token.role = (user as unknown as { role?: string }).role;
         token.userId = user.id;
       }
       return token;
@@ -118,9 +118,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
      */
     session({ session, token }) {
       if (session.user) {
-        (session.user as any).steamId = token.steamId;
-        (session.user as any).role = token.role;
-        (session.user as any).userId = token.userId;
+        session.user.steamId = token.steamId as string | undefined;
+        session.user.role = token.role as string | undefined;
+        session.user.userId = token.userId as string | undefined;
       }
       return session;
     },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { UserBadges } from "@/components/shared/UserBadges";
 import { VoteButtons } from "./VoteButtons";
@@ -35,7 +35,7 @@ export function CommentSection({ opinionId }: CommentSectionProps) {
   const [comments, setComments] = useState<CommentData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  async function fetchComments() {
+  const fetchComments = useCallback(async () => {
     try {
       const res = await fetch(`/api/opinions/${opinionId}/comments`);
       const data = await res.json();
@@ -45,11 +45,11 @@ export function CommentSection({ opinionId }: CommentSectionProps) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [opinionId]);
 
   useEffect(() => {
     fetchComments();
-  }, [opinionId]);
+  }, [fetchComments]);
 
   function handleNewComment() {
     fetchComments();

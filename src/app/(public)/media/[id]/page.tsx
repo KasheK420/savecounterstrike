@@ -1,13 +1,33 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ArrowLeft, ExternalLink, Clock, Shield } from "lucide-react";
+import { Tweet } from "react-tweet";
 import { MediaEmbed } from "@/components/media/MediaEmbed";
 import { VoteButtons } from "@/components/media/VoteButtons";
 import { CommentSection } from "@/components/media/CommentSection";
 import { AdminMediaControls } from "./AdminMediaControls";
+
+function ServerTweetEmbed({ url }: { url: string }) {
+  const tweetId = url.match(/status\/(\d+)/)?.[1];
+  if (!tweetId) {
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer" className="text-cs-blue hover:underline">
+        {url}
+      </a>
+    );
+  }
+  return (
+    <Suspense fallback={<div className="py-8 text-center text-muted-foreground text-sm">Loading tweet...</div>}>
+      <div className="flex justify-center">
+        <Tweet id={tweetId} />
+      </div>
+    </Suspense>
+  );
+}
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -144,12 +164,16 @@ export default async function MediaDetailPage({ params }: Props) {
             </div>
 
             {/* Embed */}
-            <MediaEmbed
-              url={media.url}
-              platform={media.platform}
-              embedUrl={media.embedUrl}
-              title={media.title}
-            />
+            {media.platform === "TWITTER" ? (
+              <ServerTweetEmbed url={media.url} />
+            ) : (
+              <MediaEmbed
+                url={media.url}
+                platform={media.platform}
+                embedUrl={media.embedUrl}
+                title={media.title}
+              />
+            )}
 
             {/* Source link */}
             <a

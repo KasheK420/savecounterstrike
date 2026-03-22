@@ -30,7 +30,7 @@ export async function HeroSection() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left — Message */}
-          <div className="relative space-y-8">
+          <div className="relative space-y-8 overflow-hidden lg:overflow-visible">
             {/* Cheater characters art — right side next to text */}
             <img
               src="/images/dashboard_bg.png"
@@ -47,7 +47,7 @@ export async function HeroSection() {
               CS2 has a cheating epidemic
             </div>
 
-            <h1 className="font-heading text-5xl sm:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tight">
+            <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tight">
               <span className="text-foreground">VALVE,</span>
               <br />
               <span className="text-cs-orange cs-glow">FIX YOUR</span>
@@ -87,8 +87,8 @@ export async function HeroSection() {
           </div>
 
           {/* Right — Stats */}
-          <div className="space-y-6">
-            <div className="cs-card rounded-xl p-8">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="cs-card rounded-xl p-5 sm:p-8">
               <SignatureCounter initialCount={signatureCount} />
             </div>
 

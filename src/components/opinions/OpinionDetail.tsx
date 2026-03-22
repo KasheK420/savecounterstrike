@@ -6,7 +6,9 @@ import { VoteButtons } from "./VoteButtons";
 import { SafeHtml } from "./SafeHtml";
 import { CommentSection } from "./CommentSection";
 import { ImageLightbox } from "@/components/shared/ImageLightbox";
-import { Calendar, MessageSquare } from "lucide-react";
+import { useSession } from "@/components/auth/SessionProvider";
+import Link from "next/link";
+import { Calendar, MessageSquare, Edit3 } from "lucide-react";
 
 interface OpinionDetailProps {
   opinion: {
@@ -16,6 +18,7 @@ interface OpinionDetailProps {
     imageUrl?: string | null;
     score: number;
     createdAt: string;
+    editedAt?: string | null;
     author: {
       id: string;
       displayName: string;
@@ -31,6 +34,9 @@ interface OpinionDetailProps {
 }
 
 export function OpinionDetail({ opinion }: OpinionDetailProps) {
+  const { user } = useSession();
+  const isAuthor = user?.userId === opinion.author.id;
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -42,23 +48,44 @@ export function OpinionDetail({ opinion }: OpinionDetailProps) {
             initialScore={opinion.score}
           />
         </div>
-        <div>
-          <h1 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">
-            {opinion.title}
-          </h1>
+        <div className="flex-1">
+          <div className="flex items-start justify-between gap-3">
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">
+              {opinion.title}
+            </h1>
+            {isAuthor && (
+              <Link
+                href={`/opinions/${opinion.id}/edit`}
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-cs-orange transition-colors shrink-0 mt-2"
+              >
+                <Edit3 className="h-3 w-3" />
+                Edit
+              </Link>
+            )}
+          </div>
+          {opinion.editedAt && (
+            <p className="text-xs text-muted-foreground/50 mt-1 italic">
+              edited {new Date(opinion.editedAt).toLocaleDateString()}
+            </p>
+          )}
           <div className="flex items-center gap-3 mt-3 flex-wrap">
-            <Avatar className="h-6 w-6 border border-border/50">
-              <AvatarImage
-                src={opinion.author.avatarUrl || undefined}
-                alt={opinion.author.displayName}
-              />
-              <AvatarFallback className="bg-cs-navy text-cs-orange text-[8px]">
-                {opinion.author.displayName?.charAt(0)?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm text-foreground">
+            <Link href={`/user/${opinion.author.id}`}>
+              <Avatar className="h-6 w-6 border border-border/50">
+                <AvatarImage
+                  src={opinion.author.avatarUrl || undefined}
+                  alt={opinion.author.displayName}
+                />
+                <AvatarFallback className="bg-cs-navy text-cs-orange text-[8px]">
+                  {opinion.author.displayName?.charAt(0)?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+            <Link
+              href={`/user/${opinion.author.id}`}
+              className="text-sm text-foreground hover:text-cs-orange transition-colors"
+            >
               {opinion.author.displayName}
-            </span>
+            </Link>
             <UserBadges
               cs2PlaytimeHours={opinion.author.cs2PlaytimeHours}
               faceitLevel={opinion.author.faceitLevel}

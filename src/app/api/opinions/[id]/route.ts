@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { requireAdminApi, requireModeratorApi } from "@/lib/admin";
+import { opinionSchema } from "@/lib/validations";
+import { sanitizeContent } from "@/lib/sanitize";
 
 export async function GET(
   _request: NextRequest,
@@ -33,6 +36,54 @@ export async function GET(
   return NextResponse.json(opinion);
 }
 
+// PUT — User edits their own opinion
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+  const userId = (session?.user as any)?.userId;
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const opinion = await db.opinion.findUnique({ where: { id } });
+
+  if (!opinion) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  if (opinion.authorId !== userId) {
+    return NextResponse.json(
+      { error: "You can only edit your own opinions" },
+      { status: 403 }
+    );
+  }
+
+  const body = await request.json();
+  const parsed = opinionSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.flatten().fieldErrors },
+      { status: 400 }
+    );
+  }
+
+  const updated = await db.opinion.update({
+    where: { id },
+    data: {
+      title: parsed.data.title,
+      content: sanitizeContent(parsed.data.content),
+      imageUrl: parsed.data.imageUrl || null,
+      editedAt: new Date(),
+    },
+  });
+
+  return NextResponse.json(updated);
+}
+
+// PATCH — Moderator/Admin changes status
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

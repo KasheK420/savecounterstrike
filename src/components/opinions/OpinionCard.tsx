@@ -64,12 +64,16 @@ export function OpinionCard({ opinion }: OpinionCardProps) {
               {opinion.author.displayName?.charAt(0)?.toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="text-xs text-muted-foreground">
+          <Link
+            href={`/user/${opinion.author.id}`}
+            className="text-xs text-muted-foreground hover:text-cs-orange transition-colors"
+          >
             {opinion.author.displayName}
-          </span>
+          </Link>
           <UserBadges
             cs2PlaytimeHours={opinion.author.cs2PlaytimeHours}
             faceitLevel={opinion.author.faceitLevel}
+            compact
           />
           <span className="text-xs text-muted-foreground flex items-center gap-1">
             <MessageSquare className="h-3 w-3" />

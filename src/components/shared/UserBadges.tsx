@@ -1,4 +1,4 @@
-import { Gamepad2, CheckCircle, Lock } from "lucide-react";
+import { Gamepad2, CheckCircle, Lock, Award } from "lucide-react";
 
 interface UserBadgesProps {
   ownsCs2?: boolean | null;
@@ -7,6 +7,7 @@ interface UserBadgesProps {
   cs2Kills?: number | null;
   faceitLevel?: number | null;
   profileVisibility?: number | null;
+  karma?: number | null;
   compact?: boolean;
 }
 
@@ -24,6 +25,7 @@ export function UserBadges({
   cs2Wins,
   faceitLevel,
   profileVisibility,
+  karma,
   compact = false,
 }: UserBadgesProps) {
   const badges: React.ReactNode[] = [];
@@ -37,6 +39,21 @@ export function UserBadges({
       >
         <Gamepad2 className="h-2.5 w-2.5" />
         {cs2PlaytimeHours.toLocaleString()}h
+      </span>
+    );
+  }
+
+  if (karma != null && karma !== 0 && !compact) {
+    badges.push(
+      <span
+        key="karma"
+        className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${
+          karma > 0 ? "bg-cs-gold/15 text-cs-gold" : "bg-cs-red/15 text-cs-red"
+        }`}
+        title={`${karma} karma`}
+      >
+        <Award className="h-2.5 w-2.5" />
+        {karma}
       </span>
     );
   }

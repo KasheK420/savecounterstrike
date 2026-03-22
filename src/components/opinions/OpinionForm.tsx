@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/components/auth/SessionProvider";
-import { RichTextEditor } from "./RichTextEditor";
+import { SharedTiptapEditor } from "@/components/shared/TiptapEditor";
 import { SafeHtml } from "./SafeHtml";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -126,7 +126,7 @@ export function OpinionForm() {
           className="min-h-[200px] p-4 border border-border rounded-lg prose prose-invert prose-sm max-w-none prose-headings:font-heading prose-a:text-cs-orange"
         />
       ) : (
-        <RichTextEditor
+        <SharedTiptapEditor
           content={content}
           onChange={setContent}
           placeholder="Describe your opinion, suggestion, or what needs to change..."

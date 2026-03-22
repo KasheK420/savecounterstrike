@@ -3,6 +3,14 @@
 import { useEffect, useState } from "react";
 import { Heart, MessageCircle, ExternalLink } from "lucide-react";
 
+// Proxy twimg URLs through our API to bypass Edge Tracking Prevention
+function proxyUrl(url: string): string {
+  if (url.includes("twimg.com")) {
+    return `/api/media-proxy?url=${encodeURIComponent(url)}`;
+  }
+  return url;
+}
+
 interface TweetData {
   id: string;
   text: string;
@@ -98,7 +106,7 @@ export function TwitterEmbed({ tweetUrl }: TwitterEmbedProps) {
       <div className="flex items-start gap-3 p-4 pb-0">
         <a href={`https://x.com/${tweet.author.handle}`} target="_blank" rel="noopener noreferrer">
           <img
-            src={tweet.author.avatar}
+            src={proxyUrl(tweet.author.avatar)}
             alt={tweet.author.name}
             className="w-12 h-12 rounded-full"
           />
@@ -137,10 +145,10 @@ export function TwitterEmbed({ tweetUrl }: TwitterEmbedProps) {
             controls
             playsInline
             preload="metadata"
-            poster={tweet.media.video.poster}
+            poster={proxyUrl(tweet.media.video.poster)}
             className="w-full"
           >
-            <source src={tweet.media.video.src} type="video/mp4" />
+            <source src={proxyUrl(tweet.media.video.src)} type="video/mp4" />
           </video>
         </div>
       )}
@@ -148,7 +156,7 @@ export function TwitterEmbed({ tweetUrl }: TwitterEmbedProps) {
       {tweet.media.type === "photo" && tweet.media.photos.length > 0 && (
         <div className="mt-3 mx-4 rounded-xl overflow-hidden border border-[#2f3336]">
           {tweet.media.photos.map((url, i) => (
-            <img key={i} src={url} alt="" className="w-full" />
+            <img key={i} src={proxyUrl(url)} alt="" className="w-full" />
           ))}
         </div>
       )}

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { verifySteamLogin, fetchSteamProfile } from "@/lib/steam";
 import { fetchCS2Stats } from "@/lib/steam-stats";
 import { db } from "@/lib/db";
@@ -8,7 +9,17 @@ export async function GET(request: NextRequest) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   try {
+    // Validate CSRF state parameter
     const params = request.nextUrl.searchParams;
+    const state = params.get("state");
+    const cookieStore = await cookies();
+    const storedState = cookieStore.get("steam_oauth_state")?.value;
+    cookieStore.delete("steam_oauth_state");
+
+    if (!state || !storedState || state !== storedState) {
+      return NextResponse.redirect(`${siteUrl}/?error=invalid_state`);
+    }
+
     const steamId = await verifySteamLogin(params);
 
     if (!steamId) {

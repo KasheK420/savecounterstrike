@@ -1,29 +1,32 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { fetchFaceitStats } from "@/lib/faceit";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   const session = await auth();
-  if (!session?.user?.steamId) {
+  const steamId = (session?.user as any)?.steamId;
+  if (!steamId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await request.json();
-  const { faceitLevel, faceitElo } = body;
+  // Server-side verification — fetch directly from FACEIT API
+  const stats = await fetchFaceitStats(steamId);
 
-  if (
-    typeof faceitLevel !== "number" ||
-    typeof faceitElo !== "number" ||
-    faceitLevel < 1 ||
-    faceitLevel > 10
-  ) {
-    return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+  if (!stats) {
+    return NextResponse.json(
+      { error: "Could not fetch FACEIT stats. You may not have a FACEIT account or the API is temporarily unavailable." },
+      { status: 404 }
+    );
   }
 
   await db.user.update({
-    where: { steamId: session.user.steamId },
-    data: { faceitLevel, faceitElo },
+    where: { steamId },
+    data: {
+      faceitLevel: stats.level,
+      faceitElo: stats.elo,
+    },
   });
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, level: stats.level, elo: stats.elo });
 }

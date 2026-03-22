@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { contactSchema } from "@/lib/validations";
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 const rateLimit = new Map<string, { count: number; reset: number }>();
 
 function checkRateLimit(ip: string): boolean {
@@ -55,10 +64,10 @@ export async function POST(request: NextRequest) {
       text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\n\n${message}`,
       html: `
         <h3>New Contact Form Submission</h3>
-        <p><strong>From:</strong> ${name} &lt;${email}&gt;</p>
-        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>From:</strong> ${escapeHtml(name)} &lt;${escapeHtml(email)}&gt;</p>
+        <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
         <hr/>
-        <p>${message.replace(/\n/g, "<br/>")}</p>
+        <p>${escapeHtml(message).replace(/\n/g, "<br/>")}</p>
       `,
     });
 

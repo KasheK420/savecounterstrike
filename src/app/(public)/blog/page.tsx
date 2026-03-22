@@ -34,8 +34,8 @@ export default async function BlogPage({
     orderBy: { name: "asc" },
   });
 
-  const featured = articles.find((a) => a.featured) || articles[0];
-  const rest = articles.filter((a) => a.id !== featured?.id);
+  const featured = articles.find((a: typeof articles[0]) => a.featured) || articles[0];
+  const rest = articles.filter((a: typeof articles[0]) => a.id !== featured?.id);
 
   if (articles.length === 0) {
     return (
@@ -91,7 +91,7 @@ export default async function BlogPage({
                 All
               </Badge>
             </Link>
-            {allTags.map((tag) => (
+            {allTags.map((tag: typeof allTags[0]) => (
               <Link key={tag.id} href={`/blog?tag=${tag.slug}`}>
                 <Badge
                   variant={tagFilter === tag.slug ? "default" : "outline"}
@@ -163,7 +163,7 @@ export default async function BlogPage({
                   </span>
                   {featured.tags.length > 0 && (
                     <div className="hidden sm:flex items-center gap-1.5">
-                      {featured.tags.slice(0, 3).map((tag) => (
+                      {featured.tags.slice(0, 3).map((tag: typeof featured.tags[0]) => (
                         <span
                           key={tag.id}
                           className="px-2 py-0.5 rounded-full bg-cs-orange/10 text-cs-orange border border-cs-orange/20 text-[0.65rem]"
@@ -182,7 +182,7 @@ export default async function BlogPage({
         {/* Article Grid */}
         {rest.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(tagFilter ? articles : rest).map((article) => (
+            {(tagFilter ? articles : rest).map((article: typeof articles[0]) => (
               <Link
                 key={article.id}
                 href={`/blog/${article.slug}`}
@@ -241,7 +241,7 @@ export default async function BlogPage({
                     </div>
                     {article.tags.length > 0 && (
                       <div className="flex items-center gap-1">
-                        {article.tags.slice(0, 2).map((tag) => (
+                        {article.tags.slice(0, 2).map((tag: typeof article.tags[0]) => (
                           <span
                             key={tag.id}
                             className="px-1.5 py-0.5 rounded bg-muted/50 text-[0.6rem] text-muted-foreground"

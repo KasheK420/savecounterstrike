@@ -97,7 +97,8 @@ export function ArticleContent({ html }: { html: string }) {
       });
 
       loadScript("https://platform.twitter.com/widgets.js").then(() => {
-        window.twttr?.widgets.load(el);
+        // @ts-expect-error Twitter widgets.js exposes twttr global
+        window.twttr?.widgets?.load(el);
       });
     }
 

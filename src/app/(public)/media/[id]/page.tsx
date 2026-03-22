@@ -4,12 +4,11 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ArrowLeft, ExternalLink, Clock, Shield } from "lucide-react";
-import { EmbeddedTweet, TweetNotFound } from "react-tweet";
-import { getTweet } from "react-tweet/api";
 import { MediaEmbed } from "@/components/media/MediaEmbed";
 import { VoteButtons } from "@/components/media/VoteButtons";
 import { CommentSection } from "@/components/media/CommentSection";
 import { AdminMediaControls } from "./AdminMediaControls";
+import { TwitterEmbed } from "@/components/media/TwitterEmbed";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -93,22 +92,8 @@ export default async function MediaDetailPage({ params }: Props) {
   if (!media) notFound();
   if (!isAdmin && media.status !== "APPROVED") notFound();
 
-  // Fetch tweet data server-side for react-tweet
-  const tweetId = media.platform === "TWITTER"
-    ? media.url.match(/status\/(\d+)/)?.[1]
-    : null;
-
-  let tweetData = null;
-  let tweetError = false;
-
-  if (tweetId) {
-    try {
-      tweetData = await getTweet(tweetId);
-    } catch (err) {
-      console.error("Failed to fetch tweet data:", err);
-      tweetError = true;
-    }
-  }
+  // Check if Twitter platform for client-side rendering
+  const isTwitter = media.platform === "TWITTER";
 
   const userVote = (media as Record<string, unknown>).votes
     ? ((media as Record<string, unknown>).votes as { value: number }[])?.[0]?.value ?? 0
@@ -161,27 +146,8 @@ export default async function MediaDetailPage({ params }: Props) {
             </div>
 
             {/* Embed */}
-            {media.platform === "TWITTER" ? (
-              <div className="flex justify-center">
-                {tweetData ? (
-                  <EmbeddedTweet tweet={tweetData} />
-                ) : tweetError || !tweetId ? (
-                  <div className="w-full max-w-[550px]">
-                    {/* Fallback to official X embed */}
-                    <blockquote className="twitter-tweet" data-theme="dark">
-                      <a href={media.url}>Loading X post...</a>
-                    </blockquote>
-                    <script async src="https://platform.twitter.com/widgets.js" />
-                    {isAdmin && (
-                      <div className="mt-2 text-[10px] text-amber-400 font-mono">
-                        DEBUG: react-tweet failed, using official widget fallback
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <TweetNotFound />
-                )}
-              </div>
+            {isTwitter ? (
+              <TwitterEmbed tweetUrl={media.url} />
             ) : (
               <MediaEmbed
                 url={media.url}

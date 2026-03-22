@@ -27,7 +27,7 @@ export default async function PetitionPage() {
     userId
       ? db.petitionSignature
           .findUnique({ where: { userId } })
-          .then((s) => !!s)
+          .then((s: { id: string } | null) => !!s)
       : false,
   ]);
 

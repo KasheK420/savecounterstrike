@@ -44,7 +44,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     select: { slug: true, updatedAt: true },
   });
 
-  const articleRoutes = articles.map((article) => ({
+  const articleRoutes = articles.map((article: typeof articles[0]) => ({
     url: `${BASE_URL}/blog/${article.slug}`,
     lastModified: article.updatedAt,
     changeFrequency: "weekly" as const,
@@ -59,7 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     orderBy: { score: "desc" },
   });
 
-  const opinionRoutes = opinions.map((opinion) => ({
+  const opinionRoutes = opinions.map((opinion: typeof opinions[0]) => ({
     url: `${BASE_URL}/opinions/${opinion.id}`,
     lastModified: opinion.updatedAt,
     changeFrequency: "weekly" as const,

@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
   ]);
 
   // Mask all sensitive data server-side before sending to client
-  const masked = signatures.map((sig) => ({
+  const masked = signatures.map((sig: typeof signatures[0]) => ({
     id: sig.id,
     maskedName: maskDisplayName(sig.user.displayName),
     maskedSteamId: maskSteamId(sig.user.steamId),

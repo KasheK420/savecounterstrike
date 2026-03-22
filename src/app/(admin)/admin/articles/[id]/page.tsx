@@ -36,7 +36,7 @@ export default async function EditArticlePage({
           coverImage: article.coverImage || "",
           published: article.published,
           featured: article.featured,
-          tags: article.tags.map((t) => t.name),
+          tags: article.tags.map((t: { name: string }) => t.name),
         }}
       />
     </div>

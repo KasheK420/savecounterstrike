@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * @fileoverview Error boundary component for route-level errors.
+ *
+ * Catches and displays errors that occur during rendering.
+ * Provides retry and navigation options.
+ *
+ * @module app/error
+ * @see {@link https://nextjs.org/docs/app/building-your-application/routing/error-handling|Next.js Error Handling}
+ */
+
 import { useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -7,6 +17,12 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 
+/**
+ * Error boundary component for handling route errors.
+ *
+ * @param error - The error that occurred
+ * @param reset - Function to retry rendering
+ */
 export default function Error({
   error,
   reset,
@@ -14,6 +30,7 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // Log error for monitoring
   useEffect(() => {
     console.error("Page error:", error);
   }, [error]);

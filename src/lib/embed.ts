@@ -1,10 +1,31 @@
+/**
+ * @fileoverview Media platform URL parsing and embed generation.
+ *
+ * Detects media platforms from URLs and extracts embeddable content IDs.
+ * Supports YouTube, Instagram, Twitter/X, TikTok, Twitch, and Facebook.
+ *
+ * @module embed
+ */
+
+// ── Types ───────────────────────────────────────────────────
+
+/** Supported media platforms for embed generation */
 type MediaPlatform = "YOUTUBE" | "INSTAGRAM" | "TWITTER" | "TIKTOK" | "TWITCH" | "FACEBOOK" | "OTHER";
 
+// ── Platform Detection ──────────────────────────────────────
+
+/**
+ * Detect media platform from a URL string.
+ *
+ * @param url - URL to analyze
+ * @returns Detected platform or "OTHER" if unrecognized
+ */
 export function detectPlatform(url: string): MediaPlatform {
   try {
     const u = new URL(url);
     const host = u.hostname.replace("www.", "");
 
+    // Check for YouTube variants (standard, short, mobile)
     if (host === "youtube.com" || host === "youtu.be" || host === "m.youtube.com") return "YOUTUBE";
     if (host === "instagram.com") return "INSTAGRAM";
     if (host === "x.com" || host === "twitter.com") return "TWITTER";
@@ -17,16 +38,28 @@ export function detectPlatform(url: string): MediaPlatform {
   }
 }
 
+// ── ID Extraction Functions ─────────────────────────────────
+
+/**
+ * Extract YouTube video ID from various URL formats.
+ * Supports: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/shorts/ID,
+ *           youtube.com/embed/ID, youtube.com/live/ID
+ *
+ * @param url - YouTube URL
+ * @returns Video ID or null if not found
+ */
 function extractYouTubeId(url: string): string | null {
   try {
     const u = new URL(url);
     const host = u.hostname.replace("www.", "").replace("m.", "");
 
+    // Short URL format: youtu.be/VIDEO_ID
     if (host === "youtu.be") return u.pathname.slice(1).split("/")[0] || null;
+
     if (host === "youtube.com") {
-      // /watch?v=ID
+      // Standard watch URL: /watch?v=VIDEO_ID
       if (u.searchParams.has("v")) return u.searchParams.get("v");
-      // /shorts/ID or /embed/ID or /live/ID
+      // Shorts, embed, and live URLs: /shorts/ID, /embed/ID, /live/ID
       const match = u.pathname.match(/^\/(shorts|embed|live)\/([^/?]+)/);
       if (match) return match[2];
     }
@@ -36,20 +69,27 @@ function extractYouTubeId(url: string): string | null {
   }
 }
 
+/**
+ * Extract Twitch content ID from URL.
+ * Supports: /videos/{id}, /clip/{slug}, /channel (live), clips.twitch.tv/{slug}
+ *
+ * @param url - Twitch URL
+ * @returns Object with type and ID, or null if not found
+ */
 function extractTwitchId(url: string): { type: "video" | "clip" | "channel"; id: string } | null {
   try {
     const u = new URL(url);
     const path = u.pathname;
 
-    // /videos/123456
+    // VOD format: /videos/123456
     const videoMatch = path.match(/^\/videos\/(\d+)/);
     if (videoMatch) return { type: "video", id: videoMatch[1] };
 
-    // /user/clip/slug or clips.twitch.tv/slug
+    // Clip formats: /clip/slug or clips.twitch.tv/slug
     const clipMatch = path.match(/\/clip\/([^/?]+)/) || path.match(/^\/([^/?]+)$/) && u.hostname === "clips.twitch.tv";
     if (clipMatch) return { type: "clip", id: typeof clipMatch === "object" && clipMatch ? clipMatch[1] : "" };
 
-    // /channelname (live stream)
+    // Live channel: /channelname
     const channelMatch = path.match(/^\/([a-zA-Z0-9_]+)\/?$/);
     if (channelMatch) return { type: "channel", id: channelMatch[1] };
 
@@ -59,6 +99,13 @@ function extractTwitchId(url: string): { type: "video" | "clip" | "channel"; id:
   }
 }
 
+/**
+ * Extract TikTok video ID from URL.
+ * Supports: tiktok.com/@user/video/ID format
+ *
+ * @param url - TikTok URL
+ * @returns Video ID or null if not found
+ */
 function extractTikTokId(url: string): string | null {
   try {
     const u = new URL(url);
@@ -69,10 +116,17 @@ function extractTikTokId(url: string): string | null {
   }
 }
 
+/**
+ * Extract Instagram content ID from URL.
+ * Supports: /p/CODE (posts), /reel/CODE (reels), /tv/CODE (IGTV)
+ *
+ * @param url - Instagram URL
+ * @returns Content shortcode or null if not found
+ */
 function extractInstagramId(url: string): string | null {
   try {
     const u = new URL(url);
-    // /p/CODE/ or /reel/CODE/ or /username/reel/CODE/
+    // Match /p/CODE, /reel/CODE, or /tv/CODE (posts, reels, IGTV)
     const match = u.pathname.match(/\/(p|reel|tv)\/([^/?]+)/);
     return match ? match[2] : null;
   } catch {
@@ -80,9 +134,17 @@ function extractInstagramId(url: string): string | null {
   }
 }
 
+/**
+ * Extract Twitter/X status ID and username from URL.
+ * Supports: x.com/username/status/ID and twitter.com/username/status/ID
+ *
+ * @param url - Twitter/X URL
+ * @returns Object with username and status ID, or null if not found
+ */
 function extractTwitterStatusId(url: string): { user: string; id: string } | null {
   try {
     const u = new URL(url);
+    // Match: /username/status/1234567890
     const match = u.pathname.match(/^\/([^/]+)\/status\/(\d+)/);
     return match ? { user: match[1], id: match[2] } : null;
   } catch {
@@ -90,22 +152,36 @@ function extractTwitterStatusId(url: string): { user: string; id: string } | nul
   }
 }
 
+// ── Embed URL Generation ─────────────────────────────────────
+
+/**
+ * Generate embeddable iframe URL for a given platform.
+ * Some platforms (Instagram, Twitter) return original URL for client-side rendering.
+ *
+ * @param url - Original media URL
+ * @param platform - Detected platform type
+ * @returns Embed URL or null if platform unsupported/invalid
+ */
 export function getEmbedUrl(url: string, platform: MediaPlatform): string | null {
   switch (platform) {
     case "YOUTUBE": {
       const id = extractYouTubeId(url);
+      // Standard YouTube embed with privacy-enhanced mode
       return id ? `https://www.youtube.com/embed/${id}` : null;
     }
     case "INSTAGRAM": {
-      // Use original URL — rendered via blockquote + embed.js on the client
+      // Instagram requires client-side embed.js for proper rendering
+      // Return original URL; MediaCard component handles embed.js injection
       return extractInstagramId(url) ? url : null;
     }
     case "TWITTER": {
-      // Use original URL — rendered via twttr.widgets.createTweet on the client
+      // Twitter/X requires client-side widgets.js for proper rendering
+      // Return original URL; MediaCard component handles widget loading
       return extractTwitterStatusId(url) ? url : null;
     }
     case "FACEBOOK": {
-      // Facebook plugin iframe — works for videos, reels, and posts
+      // Facebook video plugin iframe
+      // Works for videos, reels, and posts with show_text=false for clean embed
       return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false&width=560`;
     }
     case "TIKTOK": {
@@ -115,6 +191,7 @@ export function getEmbedUrl(url: string, platform: MediaPlatform): string | null
     case "TWITCH": {
       const info = extractTwitchId(url);
       if (!info) return null;
+      // Twitch requires parent domain for embed security
       const parent = typeof window !== "undefined" ? window.location.hostname : "localhost";
       if (info.type === "video") return `https://player.twitch.tv/?video=${info.id}&parent=${parent}&autoplay=false`;
       if (info.type === "clip") return `https://clips.twitch.tv/embed?clip=${info.id}&parent=${parent}&autoplay=false`;
@@ -126,13 +203,25 @@ export function getEmbedUrl(url: string, platform: MediaPlatform): string | null
   }
 }
 
+// ── Thumbnail Generation ───────────────────────────────────
+
+/**
+ * Generate thumbnail URL for media preview.
+ * Currently only YouTube provides reliable thumbnail endpoints.
+ *
+ * @param url - Original media URL
+ * @param platform - Detected platform type
+ * @returns Thumbnail URL or null if unavailable
+ */
 export function getThumbnailUrl(url: string, platform: MediaPlatform): string | null {
   switch (platform) {
     case "YOUTUBE": {
       const id = extractYouTubeId(url);
+      // hqdefault.jpg is 480x360, available for most videos
       return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
     }
     default:
+      // Other platforms don't have reliable thumbnail endpoints
       return null;
   }
 }

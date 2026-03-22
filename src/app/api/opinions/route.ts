@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Opinions (community posts) API.
+ *
+ * Handles listing approved opinions with filtering/sorting and creating new posts.
+ *
+ * @route GET  /api/opinions?sort={best|newest|discussed}&search={query}&page={number}
+ * @route POST /api/opinions
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
@@ -6,6 +15,15 @@ import { sanitizeContent } from "@/lib/sanitize";
 import { filterProfanity } from "@/lib/profanity";
 import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 
+/**
+ * GET /api/opinions
+ * List approved opinions with sorting, search, and pagination.
+ *
+ * Query params:
+ * - sort: "best" (score), "newest" (createdAt), "discussed" (comment count)
+ * - search: Title search query (max 200 chars)
+ * - page: Page number (1-1000, default 1)
+ */
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const sort = searchParams.get("sort") || "best";
@@ -14,17 +32,19 @@ export async function GET(request: NextRequest) {
   const limit = 20;
   const skip = (page - 1) * limit;
 
+  // Build where clause for filtering
   const where = {
     status: "APPROVED" as const,
     ...(search ? { title: { contains: search, mode: "insensitive" as const } } : {}),
   };
 
+  // Determine sort order based on sort parameter
   const orderBy =
     sort === "newest"
       ? { createdAt: "desc" as const }
       : sort === "discussed"
         ? { comments: { _count: "desc" as const } }
-        : { score: "desc" as const };
+        : { score: "desc" as const }; // Default: "best"
 
   const [opinions, total] = await Promise.all([
     db.opinion.findMany({
@@ -59,6 +79,14 @@ export async function GET(request: NextRequest) {
   });
 }
 
+/**
+ * POST /api/opinions
+ * Create a new opinion post.
+ * Rate limit: 5 posts per 10 minutes per IP.
+ *
+ * Duplicate detection: If similar titles exist, returns 200 with possibleDuplicates
+ * instead of creating. Client can retry with force=true to bypass.
+ */
 export async function POST(request: NextRequest) {
   // Rate limit: 5 opinions per 10 minutes per IP
   const rl = rateLimitByIp(request, "opinions:post", 5, 600_000);
@@ -98,6 +126,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Create opinion with sanitized content and profanity filtering
   const opinion = await db.opinion.create({
     data: {
       title: filterProfanity(parsed.data.title),

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Image upload and processing endpoint.
+ *
+ * Handles secure image uploads with validation, processing, and storage.
+ * Resizes images to max 1200px width, converts to WebP, limits to 500KB.
+ *
+ * @route POST /api/upload
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
@@ -6,12 +15,17 @@ import { randomUUID } from "crypto";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 
-const MAX_FILE_SIZE = 500 * 1024; // 500KB
-const MAX_WIDTH = 1200;
-const QUALITY = 80;
+// ── Configuration ───────────────────────────────────────────
+
+const MAX_FILE_SIZE = 500 * 1024; // 500KB max
+const MAX_WIDTH = 1200; // Resize if wider
+const QUALITY = 80; // WebP quality
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
-// Magic number signatures for image formats
+/**
+ * Magic number signatures for file type validation.
+ * Prevents MIME type spoofing attacks.
+ */
 const MAGIC_NUMBERS: Record<string, number[][]> = {
   "image/jpeg": [[0xff, 0xd8, 0xff]],
   "image/png": [[0x89, 0x50, 0x4e, 0x47]],
@@ -19,6 +33,10 @@ const MAGIC_NUMBERS: Record<string, number[][]> = {
   "image/webp": [[0x52, 0x49, 0x46, 0x46]], // RIFF header
 };
 
+/**
+ * Validate file content matches declared MIME type using magic numbers.
+ * Security measure against MIME type spoofing.
+ */
 function validateMagicNumber(buffer: Buffer, mimeType: string): boolean {
   const signatures = MAGIC_NUMBERS[mimeType];
   if (!signatures) return false;
@@ -27,10 +45,18 @@ function validateMagicNumber(buffer: Buffer, mimeType: string): boolean {
   );
 }
 
+/**
+ * Get the upload directory path (project-root/public/uploads).
+ */
 function getUploadDir(): string {
   return join(process.cwd(), "public", "uploads");
 }
 
+/**
+ * POST /api/upload
+ * Upload and process an image.
+ * Rate limit: 10 uploads per 5 minutes per IP.
+ */
 export async function POST(request: NextRequest) {
   // Rate limit: 10 uploads per 5 minutes per IP
   const rl = rateLimitByIp(request, "upload", 10, 300_000);
@@ -49,6 +75,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
+    // Validate file type
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
         { error: "Invalid file type. Allowed: JPEG, PNG, GIF, WebP" },
@@ -56,6 +83,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
         { error: `File too large (${Math.round(file.size / 1024)}KB). Maximum 500KB.` },
@@ -87,6 +115,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Save processed file
     const filename = `${randomUUID()}.webp`;
     const uploadDir = getUploadDir();
 

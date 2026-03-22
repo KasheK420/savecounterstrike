@@ -1,10 +1,32 @@
+/**
+ * @fileoverview Opinion and content tagging system.
+ *
+ * Defines all available tags for categorizing opinions, with color coding
+ * and category organization. Tags are used for filtering and discovery.
+ *
+ * @module tags
+ */
+
+// ── Types ───────────────────────────────────────────────────
+
+/** Tag definition with display properties and categorization */
 export interface TagDefinition {
+  /** Unique identifier for the tag */
   id: string;
+  /** Human-readable label */
   label: string;
+  /** Color key (references TAG_COLORS) */
   color: string;
+  /** Category for grouping in UI */
   category: string;
 }
 
+// ── Color Palette ───────────────────────────────────────────
+
+/**
+ * Tailwind CSS classes for each tag color.
+ * Includes background, text, and border for consistent styling.
+ */
 const TAG_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   red: { bg: "bg-cs-red/10", text: "text-cs-red", border: "border-cs-red/20" },
   orange: { bg: "bg-cs-orange/10", text: "text-cs-orange", border: "border-cs-orange/20" },
@@ -15,6 +37,9 @@ const TAG_COLORS: Record<string, { bg: string; text: string; border: string }> =
   cyan: { bg: "bg-[#00bcd4]/10", text: "text-[#00bcd4]", border: "border-[#00bcd4]/20" },
 };
 
+// ── Tag Definitions ───────────────────────────────────────
+
+/** All available tags organized by category */
 export const TAGS: TagDefinition[] = [
   // Anti-cheat
   { id: "anti-cheat", label: "Anti-Cheat", color: "red", category: "Anti-Cheat" },
@@ -52,10 +77,25 @@ export const TAGS: TagDefinition[] = [
   { id: "discussion", label: "Discussion", color: "cyan", category: "Meta" },
 ];
 
+// ── Helper Functions ───────────────────────────────────────
+
+/**
+ * Look up a tag definition by its ID.
+ *
+ * @param id - Tag identifier
+ * @returns TagDefinition or undefined if not found
+ */
 export function getTagById(id: string): TagDefinition | undefined {
   return TAGS.find((t) => t.id === id);
 }
 
+/**
+ * Get Tailwind color classes for a tag color key.
+ * Falls back to blue if color not found.
+ *
+ * @param color - Color key (e.g., "red", "blue", "gold")
+ * @returns Object with bg, text, and border classes
+ */
 export function getTagColors(color: string) {
   return TAG_COLORS[color] || TAG_COLORS.blue;
 }

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Root layout component with global providers and metadata.
+ *
+ * Sets up fonts, global CSS, session provider, navigation, and footer.
+ * Includes SEO metadata and OpenGraph configuration.
+ *
+ * @module app/layout
+ */
+
 import type { Metadata } from "next";
 import { Inter, Chakra_Petch, Caveat, Lora } from "next/font/google";
 import { KofiWidget } from "@/components/layout/KofiWidget";
@@ -8,23 +17,29 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
 
+// ── Font Configuration ──────────────────────────────────────
+
+/** Primary sans-serif font for body text */
 const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
 });
 
+/** Display font for headings (CS/tech aesthetic) */
 const chakraPetch = Chakra_Petch({
   variable: "--font-heading",
   weight: ["400", "600", "700"],
   subsets: ["latin"],
 });
 
+/** Handwriting font for special emphasis */
 const caveat = Caveat({
   variable: "--font-handwriting",
   weight: ["400", "700"],
   subsets: ["latin"],
 });
 
+/** Serif font for long-form content */
 const lora = Lora({
   variable: "--font-serif",
   weight: ["400", "600", "700"],
@@ -32,6 +47,9 @@ const lora = Lora({
   subsets: ["latin"],
 });
 
+// ── Metadata Configuration ───────────────────────────────────
+
+/** Global SEO metadata and OpenGraph configuration */
 export const metadata: Metadata = {
   metadataBase: new URL("https://savecounterstrike.com"),
   title: {
@@ -78,11 +96,22 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Root layout component — wraps all pages with global structure.
+ *
+ * Features:
+ * - Font CSS variables for consistent typography
+ * - SessionProvider for authentication state
+ * - FaceitSync for FACEIT stats synchronization
+ * - Navbar/Footer for site navigation
+ * - KofiWidget for donation support
+ */
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch server-side session for initial state
   const session = await auth();
   const sessionUser = session?.user
     ? {

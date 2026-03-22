@@ -1,7 +1,20 @@
+/**
+ * @fileoverview Contact form submission handler.
+ *
+ * Sends contact form submissions via email using nodemailer.
+ * Rate limited to 5 submissions per hour per IP.
+ *
+ * @route POST /api/contact
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { contactSchema } from "@/lib/validations";
 
+/**
+ * Escape HTML special characters for safe email HTML rendering.
+ * Prevents HTML injection in email bodies.
+ */
 function escapeHtml(str: string): string {
   return str
     .replace(/&/g, "&amp;")
@@ -11,22 +24,36 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#039;");
 }
 
+// ── Rate Limiting ───────────────────────────────────────────
+
+/** In-memory rate limit store: IP -> { count, resetTime } */
 const rateLimit = new Map<string, { count: number; reset: number }>();
 
+/**
+ * Check if IP is within rate limit (5 per hour).
+ * @param ip - Client IP address
+ * @returns true if allowed, false if rate limited
+ */
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
   const entry = rateLimit.get(ip);
   if (!entry || now > entry.reset) {
+    // New window: allow and set expiry to 1 hour
     rateLimit.set(ip, { count: 1, reset: now + 3600000 });
     return true;
   }
-  if (entry.count >= 5) return false;
+  if (entry.count >= 5) return false; // Limit exceeded
   entry.count++;
   return true;
 }
 
+/**
+ * POST /api/contact
+ * Send contact form email. Rate limited to 5 per hour per IP.
+ */
 export async function POST(request: NextRequest) {
   try {
+    // Check rate limit
     const ip = request.headers.get("x-forwarded-for") || "unknown";
     if (!checkRateLimit(ip)) {
       return NextResponse.json(
@@ -35,6 +62,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate input
     const body = await request.json();
     const parsed = contactSchema.safeParse(body);
     if (!parsed.success) {
@@ -46,6 +74,7 @@ export async function POST(request: NextRequest) {
 
     const { name, email, subject, message } = parsed.data;
 
+    // Configure SMTP transport
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || "smtp.protonmail.ch",
       port: Number(process.env.SMTP_PORT || 587),
@@ -56,6 +85,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Send email with both text and HTML versions
     await transporter.sendMail({
       from: `"SaveCounterStrike Contact" <${process.env.SMTP_USER || "contact@savecounterstrike.com"}>`,
       to: process.env.CONTACT_EMAIL || "contact@savecounterstrike.com",

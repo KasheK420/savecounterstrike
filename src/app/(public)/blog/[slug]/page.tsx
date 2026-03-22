@@ -38,7 +38,8 @@ export default async function BlogPostPage({
   if (!article || !article.published) notFound();
 
   const readingTime = estimateReadingTime(article.content);
-  const shareUrl = `/blog/${article.slug}`;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://savecounterstrike.com";
+  const shareUrl = `${siteUrl}/blog/${article.slug}`;
 
   return (
     <div className="min-h-screen">

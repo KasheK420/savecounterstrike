@@ -21,46 +21,43 @@ export async function POST(
   const body = await request.json();
   const value = body.value === 1 ? 1 : body.value === -1 ? -1 : 0;
 
-  if (value === 0) {
-    // Remove vote
-    const existing = await db.opinionVote.findUnique({
-      where: { opinionId_userId: { opinionId: id, userId } },
-    });
-    if (existing) {
-      await db.opinionVote.delete({
-        where: { id: existing.id },
-      });
-      await db.opinion.update({
-        where: { id },
-        data: { score: { decrement: existing.value } },
-      });
-    }
-    return NextResponse.json({ score: (await db.opinion.findUnique({ where: { id } }))?.score || 0 });
+  // Get opinion to know author (for karma)
+  const opinion = await db.opinion.findUnique({
+    where: { id },
+    select: { authorId: true },
+  });
+  if (!opinion) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+  const isOwnContent = opinion.authorId === userId;
 
   const existing = await db.opinionVote.findUnique({
     where: { opinionId_userId: { opinionId: id, userId } },
   });
 
-  if (existing) {
-    if (existing.value === value) {
-      // Same vote — remove it (toggle off)
+  let karmaChange = 0;
+
+  if (value === 0 || (existing && existing.value === value)) {
+    // Remove vote (explicit 0 or toggle off)
+    if (existing) {
       await db.opinionVote.delete({ where: { id: existing.id } });
       await db.opinion.update({
         where: { id },
-        data: { score: { decrement: value } },
+        data: { score: { decrement: existing.value } },
       });
-    } else {
-      // Change vote direction
-      await db.opinionVote.update({
-        where: { id: existing.id },
-        data: { value },
-      });
-      await db.opinion.update({
-        where: { id },
-        data: { score: { increment: value * 2 } }, // remove old + add new
-      });
+      karmaChange = -existing.value; // Reverse karma
     }
+  } else if (existing) {
+    // Change vote direction
+    await db.opinionVote.update({
+      where: { id: existing.id },
+      data: { value },
+    });
+    await db.opinion.update({
+      where: { id },
+      data: { score: { increment: value * 2 } },
+    });
+    karmaChange = value * 2; // Reverse old + add new
   } else {
     // New vote
     await db.opinionVote.create({
@@ -70,6 +67,15 @@ export async function POST(
       where: { id },
       data: { score: { increment: value } },
     });
+    karmaChange = value;
+  }
+
+  // Update author karma (don't give karma for self-votes)
+  if (karmaChange !== 0 && !isOwnContent) {
+    await db.user.update({
+      where: { id: opinion.authorId },
+      data: { karma: { increment: karmaChange } },
+    }).catch(() => {}); // Non-fatal
   }
 
   const updated = await db.opinion.findUnique({ where: { id } });

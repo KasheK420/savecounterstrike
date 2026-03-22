@@ -33,6 +33,10 @@ model User {
   faceitLevel      Int?        // 1-10
   faceitElo        Int?
 
+  // Profile
+  bio   String? @db.VarChar(500)
+  karma Int     @default(0)
+
   // Ban status
   isBanned     Boolean   @default(false)
   bannedAt     DateTime?
@@ -106,6 +110,7 @@ model Opinion {
   score     Int           @default(0)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+  editedAt  DateTime?
 
   author   User          @relation("UserOpinions", fields: [authorId], references: [id], onDelete: Cascade)
   votes    OpinionVote[]

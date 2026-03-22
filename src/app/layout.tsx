@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, Chakra_Petch, Caveat, Lora } from "next/font/google";
 import { auth } from "@/lib/auth";
 import { SessionProvider } from "@/components/auth/SessionProvider";
@@ -105,6 +106,18 @@ export default async function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
         </SessionProvider>
+        <Script
+          src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"
+          strategy="lazyOnload"
+          onLoad={() => {
+            (window as any).kofiWidgetOverlay?.draw('savecounterstrike', {
+              'type': 'floating-chat',
+              'floating-chat.donateButton.text': 'Support us',
+              'floating-chat.donateButton.background-color': '#de9b35',
+              'floating-chat.donateButton.text-color': '#fff'
+            });
+          }}
+        />
       </body>
     </html>
   );

@@ -80,6 +80,12 @@ export function Footer() {
                 Support Us
               </Link>
               <Link
+                href="/faq"
+                className="text-sm text-muted-foreground hover:text-cs-orange transition-colors"
+              >
+                FAQ
+              </Link>
+              <Link
                 href="/contact"
                 className="text-sm text-muted-foreground hover:text-cs-orange transition-colors"
               >

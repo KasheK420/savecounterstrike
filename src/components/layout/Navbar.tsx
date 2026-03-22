@@ -11,7 +11,7 @@ import {
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Menu, Shield, BookOpen, Video, MessageSquare, BarChart3, DollarSign, Info, Heart } from "lucide-react";
+import { Menu, Shield, BookOpen, Video, MessageSquare, BarChart3, DollarSign, Info, HelpCircle, Heart } from "lucide-react";
 
 const navLinks = [
   { href: "/petition", label: "Petition", icon: Shield },
@@ -21,6 +21,7 @@ const navLinks = [
   { href: "/stats", label: "Stats", icon: BarChart3, adminOnly: true },
   { href: "/revenue", label: "Valve Revenue", icon: DollarSign },
   { href: "/about", label: "About", icon: Info },
+  { href: "/faq", label: "FAQ", icon: HelpCircle },
 ];
 
 export function Navbar() {

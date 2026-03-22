@@ -106,7 +106,20 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-border/30 text-center space-y-1">
+        {/* Legal */}
+        <div className="mt-6 pt-4 border-t border-border/30 flex flex-wrap justify-center gap-4">
+          <Link href="/terms" className="text-[11px] text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+            Terms of Service
+          </Link>
+          <Link href="/privacy" className="text-[11px] text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+            Privacy Policy
+          </Link>
+          <Link href="/cookies" className="text-[11px] text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+            Cookie Policy
+          </Link>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-border/30 text-center space-y-1">
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} SaveCounterStrike.com — Created by{" "}
             <a href="https://majorluk.pl" target="_blank" rel="noopener noreferrer" className="hover:text-cs-orange transition-colors">Lukas Majoros</a>. Built by the community, for the community.

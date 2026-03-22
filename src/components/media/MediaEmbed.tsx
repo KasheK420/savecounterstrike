@@ -66,11 +66,13 @@ function InstagramEmbedComponent({ embedUrl }: { embedUrl: string | null }) {
   }
 
   return (
-    <div className="flex justify-center max-w-[400px] mx-auto">
-      <IGEmbed 
-        url={url} 
-        width={400}
-        onError={() => console.error("Instagram embed failed to load")}
+    <div className="flex justify-center w-full max-w-[400px] mx-auto">
+      <iframe
+        src={embedUrl}
+        className="w-full h-[500px] border-0 rounded-lg"
+        scrolling="no"
+        allow="encrypted-media"
+        title="Instagram post"
       />
     </div>
   );
@@ -86,11 +88,13 @@ function FacebookEmbedComponent({ embedUrl }: { embedUrl: string | null }) {
   }
 
   return (
-    <div className="flex justify-center max-w-[500px] mx-auto">
-      <FBEmbed 
-        url={url} 
-        width={500}
-        onError={() => console.error("Facebook embed failed to load")}
+    <div className="flex justify-center w-full max-w-[500px] mx-auto">
+      <iframe
+        src={embedUrl}
+        className="w-full h-[500px] border-0 rounded-lg"
+        scrolling="no"
+        allow="encrypted-media"
+        title="Facebook post"
       />
     </div>
   );

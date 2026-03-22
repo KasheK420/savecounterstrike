@@ -108,6 +108,7 @@ model Opinion {
   authorId  String
   status    ContentStatus @default(APPROVED)
   score     Int           @default(0)
+  tags      String[]      @default([])
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
   editedAt  DateTime?
@@ -188,6 +189,7 @@ model Media {
   authorId     String
   status       ContentStatus @default(APPROVED)
   score        Int           @default(0)
+  tags         String[]      @default([])
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 

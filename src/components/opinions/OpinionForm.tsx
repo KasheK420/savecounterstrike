@@ -8,7 +8,15 @@ import { SafeHtml } from "./SafeHtml";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/shared/ImageUpload";
+import { TagSelector } from "@/components/shared/TagSelector";
 import { Send, Loader2, Eye, Edit3 } from "lucide-react";
+import Link from "next/link";
+
+interface Duplicate {
+  id: string;
+  title: string;
+  score: number;
+}
 
 export function OpinionForm() {
   const { user } = useSession();
@@ -16,8 +24,11 @@ export function OpinionForm() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [preview, setPreview] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [duplicates, setDuplicates] = useState<Duplicate[]>([]);
+  const [forceSend, setForceSend] = useState(false);
   const [error, setError] = useState("");
 
   if (!user) {
@@ -36,10 +47,11 @@ export function OpinionForm() {
     );
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(force = false) {
     if (!title.trim() || content.length < 10) return;
     setSaving(true);
     setError("");
+    setDuplicates([]);
 
     try {
       const res = await fetch("/api/opinions", {
@@ -49,11 +61,21 @@ export function OpinionForm() {
           title: title.trim(),
           content,
           imageUrl: imageUrl || undefined,
+          tags,
+          force: force || forceSend,
         }),
       });
 
+      const data = await res.json();
+
+      // Duplicate check response
+      if (res.ok && data.possibleDuplicates) {
+        setDuplicates(data.possibleDuplicates);
+        setSaving(false);
+        return;
+      }
+
       if (!res.ok) {
-        const data = await res.json();
         throw new Error(
           typeof data.error === "string"
             ? data.error
@@ -133,13 +155,52 @@ export function OpinionForm() {
         />
       )}
 
+      <TagSelector selected={tags} onChange={setTags} max={5} />
+
+      {/* Duplicate warning */}
+      {duplicates.length > 0 && (
+        <div className="p-4 rounded-lg bg-cs-gold/5 border border-cs-gold/20 space-y-3">
+          <p className="text-sm text-cs-gold font-medium">
+            Similar opinions already exist:
+          </p>
+          <div className="space-y-1">
+            {duplicates.map((d) => (
+              <Link
+                key={d.id}
+                href={`/opinions/${d.id}`}
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-cs-orange transition-colors"
+              >
+                <span className="cs-stat-number text-xs text-cs-orange w-6 text-center">
+                  {d.score}
+                </span>
+                {d.title}
+              </Link>
+            ))}
+          </div>
+          <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+            <input
+              type="checkbox"
+              checked={forceSend}
+              onChange={(e) => setForceSend(e.target.checked)}
+              className="rounded border-border"
+            />
+            I&apos;ve checked — this is not a duplicate
+          </label>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground">
           Be constructive. Your opinion shapes the open letter to Valve.
         </p>
         <Button
-          onClick={handleSubmit}
-          disabled={saving || !title.trim() || content.length < 10}
+          onClick={() => handleSubmit(forceSend)}
+          disabled={
+            saving ||
+            !title.trim() ||
+            content.length < 10 ||
+            (duplicates.length > 0 && !forceSend)
+          }
           className="bg-cs-orange hover:bg-cs-orange-light text-background font-heading"
         >
           {saving ? (
@@ -147,7 +208,7 @@ export function OpinionForm() {
           ) : (
             <Send className="h-4 w-4 mr-2" />
           )}
-          Submit
+          {duplicates.length > 0 ? "Submit Anyway" : "Submit"}
         </Button>
       </div>
     </div>

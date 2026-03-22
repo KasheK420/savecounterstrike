@@ -310,7 +310,7 @@ export default function AdminBotPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/20">
-              {players.map((p) => (
+              {players.map((p: typeof players[0]) => (
                 <tr
                   key={p.id}
                   className={
@@ -381,7 +381,7 @@ export default function AdminBotPage() {
             </h3>
           </div>
           <div className="divide-y divide-border/20">
-            {status.recentCommands.map((cmd) => (
+            {status.recentCommands.map((cmd: typeof status.recentCommands[0]) => (
               <div key={cmd.id} className="flex items-center gap-3 p-3">
                 <Send className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                 <span className="text-sm font-mono">{cmd.command}</span>

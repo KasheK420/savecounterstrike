@@ -70,7 +70,7 @@ export async function GET() {
     db.trackedPlayer.aggregate({
       _count: { id: true },
       where: {},
-    }).then(async (total) => {
+    }).then(async (total: { _count: { id: number } }) => {
       const vacBanned = await db.trackedPlayer.count({
         where: { vacBanned: true },
       });
@@ -121,7 +121,7 @@ export async function GET() {
       averagePlaytimeHours: Math.round(communityStats._avg.cs2PlaytimeHours ?? 0),
       totalPlaytimeHours: communityStats._sum.cs2PlaytimeHours ?? 0,
     },
-    faceitDistribution: faceitDistribution.map((f) => ({
+    faceitDistribution: faceitDistribution.map((f: typeof faceitDistribution[0]) => ({
       level: f.faceitLevel,
       count: f._count.id,
     })),

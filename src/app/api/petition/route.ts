@@ -28,7 +28,7 @@ export async function GET() {
     const [count, recentSigners] = await Promise.all([
       db.petitionSignature.count(),
       db.petitionSignature.findMany({
-        take: 20,
+        take: 100,
         orderBy: { createdAt: "desc" },
         include: {
           user: { select: USER_SELECT_WITH_STATS },
@@ -41,7 +41,7 @@ export async function GET() {
     const [count, recentSigners] = await Promise.all([
       db.petitionSignature.count(),
       db.petitionSignature.findMany({
-        take: 20,
+        take: 100,
         orderBy: { createdAt: "desc" },
         include: {
           user: { select: USER_SELECT_BASE },

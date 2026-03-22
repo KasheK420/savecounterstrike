@@ -89,6 +89,18 @@ The app will be running at [http://localhost:3000](http://localhost:3000).
 | `npm run lint` | Run ESLint |
 | `npm test` | Run tests (Vitest) |
 
+## 🏷️ Versioning
+
+This project uses **automatic semantic versioning** on every push to `master`:
+
+| Commit prefix | Bump | Example |
+|--------------|------|---------|
+| `BREAKING` / `BREAKING CHANGE` | **Major** | `1.0.0` → `2.0.0` |
+| `feat:` | **Minor** | `1.0.0` → `1.1.0` |
+| `fix:`, `docs:`, `refactor:`, etc. | **Patch** | `1.0.0` → `1.0.1` |
+
+The current version and git commit SHA are displayed in the site footer.
+
 ## 📁 Project Structure
 
 ```

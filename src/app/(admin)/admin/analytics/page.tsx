@@ -250,7 +250,7 @@ export default function AdminAnalyticsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.topPages.map((page) => (
+                    {data.topPages.map((page: typeof data.topPages[0]) => (
                       <tr
                         key={page.path}
                         className="border-b border-border/30"
@@ -279,7 +279,7 @@ export default function AdminAnalyticsPage() {
               {data.topCountries.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart
-                    data={data.topCountries.map((c) => ({
+                    data={data.topCountries.map((c: typeof data.topCountries[0]) => ({
                       ...c,
                       label: countryLabel(c.country),
                     }))}
@@ -459,7 +459,7 @@ export default function AdminAnalyticsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.topReferrers.map((ref) => (
+                  {data.topReferrers.map((ref: typeof data.topReferrers[0]) => (
                     <tr
                       key={ref.referrer}
                       className="border-b border-border/30"
@@ -506,7 +506,7 @@ export default function AdminAnalyticsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.recentViews.map((view, i) => (
+                    {data.recentViews.map((view: typeof data.recentViews[0], i) => (
                       <tr key={i} className="border-b border-border/30">
                         <td className="py-2 text-muted-foreground whitespace-nowrap">
                           {new Date(view.createdAt).toLocaleString()}

@@ -301,6 +301,33 @@ model BanSnapshot {
   @@index([date])
 }
 
+// ── Outreach Tracker ──────────────────────────────────
+
+model OutreachContact {
+  id              String   @id @default(cuid())
+  name            String
+  role            String   @default("Other")
+  email           String?
+  socialUrl       String?
+  websiteUrl      String?
+  avatarUrl       String?
+  emailBody       String?
+  emailSent       Boolean  @default(false)
+  sentAt          DateTime?
+  replied         Boolean  @default(false)
+  repliedAt       DateTime?
+  engaged         Boolean  @default(false)
+  notes           String?
+  addToSupporters Boolean  @default(false)
+  addToNotable    Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([role])
+  @@index([emailSent])
+  @@index([engaged])
+}
+
 // ── Site Configuration ──────────────────────────────────
 
 model SiteConfig {

@@ -1,6 +1,7 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
+import { InstagramEmbed } from "react-social-media-embed";
 
 type MediaPlatform = "YOUTUBE" | "INSTAGRAM" | "TWITTER" | "TIKTOK" | "TWITCH" | "FACEBOOK" | "OTHER";
 
@@ -53,30 +54,19 @@ function TikTokEmbed({ embedUrl }: { embedUrl: string }) {
   );
 }
 
-// ── Official iframe embeds (Instagram, Facebook) ──────────────
-// Using official iframe URLs instead of react-social-media-embed for reliability
+// ── react-social-media-embed (Instagram) ────────────────────
+// Instagram blocks direct iframes since Nov 2025.
+// This library handles embed.js SDK internally.
 
-function InstagramEmbedComponent({ embedUrl }: { embedUrl: string | null }) {
-  if (!embedUrl) {
-    return (
-      <div className="p-4 text-center text-muted-foreground">
-        <p>Unable to load Instagram embed</p>
-      </div>
-    );
-  }
-
+function InstagramEmbedComponent({ url }: { url: string }) {
   return (
-    <div className="flex justify-center w-full max-w-[400px] mx-auto">
-      <iframe
-        src={embedUrl}
-        className="w-full h-[500px] border-0 rounded-lg"
-        scrolling="no"
-        allow="encrypted-media"
-        title="Instagram post"
-      />
+    <div className="flex justify-center">
+      <InstagramEmbed url={url} width={400} />
     </div>
   );
 }
+
+// ── Facebook iframe (still works for public content) ────────
 
 function FacebookEmbedComponent({ embedUrl }: { embedUrl: string | null }) {
   if (!embedUrl) {
@@ -88,12 +78,12 @@ function FacebookEmbedComponent({ embedUrl }: { embedUrl: string | null }) {
   }
 
   return (
-    <div className="flex justify-center w-full max-w-[500px] mx-auto">
+    <div className="relative w-full aspect-video rounded-lg overflow-hidden max-w-[560px] mx-auto">
       <iframe
         src={embedUrl}
-        className="w-full h-[500px] border-0 rounded-lg"
-        scrolling="no"
-        allow="encrypted-media"
+        className="absolute inset-0 w-full h-full border-0"
+        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+        allowFullScreen
         title="Facebook post"
       />
     </div>
@@ -122,6 +112,7 @@ function FallbackEmbed({ url, title }: { url: string; title?: string }) {
 }
 
 // ── Main component ──────────────────────────────────────────
+// Note: Twitter is rendered server-side in media/[id]/page.tsx via react-tweet
 
 export function MediaEmbed({ url, platform, embedUrl, title }: MediaEmbedProps) {
   switch (platform) {
@@ -132,7 +123,7 @@ export function MediaEmbed({ url, platform, embedUrl, title }: MediaEmbedProps) 
     case "TIKTOK":
       return embedUrl ? <TikTokEmbed embedUrl={embedUrl} /> : <FallbackEmbed url={url} title={title} />;
     case "INSTAGRAM":
-      return <InstagramEmbedComponent embedUrl={embedUrl} />;
+      return <InstagramEmbedComponent url={url} />;
     case "FACEBOOK":
       return <FacebookEmbedComponent embedUrl={embedUrl} />;
     default:

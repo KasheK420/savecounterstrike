@@ -97,8 +97,8 @@ export function ArticleContent({ html }: { html: string }) {
       });
 
       loadScript("https://platform.twitter.com/widgets.js").then(() => {
-        // @ts-expect-error Twitter widgets.js exposes twttr global
-        window.twttr?.widgets?.load(el);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).twttr?.widgets?.load(el);
       });
     }
 
@@ -132,7 +132,7 @@ export function ArticleContent({ html }: { html: string }) {
   return (
     <div
       ref={containerRef}
-      className="prose prose-invert prose-orange max-w-none text-muted-foreground prose-headings:text-foreground prose-headings:font-heading prose-strong:text-foreground prose-a:text-cs-orange prose-a:no-underline hover:prose-a:underline prose-code:text-cs-orange prose-blockquote:border-cs-orange/30 prose-img:rounded-lg prose-hr:border-border/50"
+      className="rendered-content prose prose-invert prose-orange max-w-none text-muted-foreground prose-headings:text-foreground prose-headings:font-heading prose-strong:text-foreground prose-a:text-cs-orange prose-a:no-underline hover:prose-a:underline prose-code:text-cs-orange prose-blockquote:border-cs-orange/30 prose-img:rounded-lg prose-hr:border-border/50"
       dangerouslySetInnerHTML={{ __html: sanitized }}
     />
   );

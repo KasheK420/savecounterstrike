@@ -97,7 +97,7 @@ export default async function BlogPostPage({
         {/* Tags */}
         {article.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-8">
-            {article.tags.map((tag) => (
+            {article.tags.map((tag: typeof article.tags[0]) => (
               <Link key={tag.id} href={`/blog?tag=${tag.slug}`}>
                 <Badge
                   variant="outline"

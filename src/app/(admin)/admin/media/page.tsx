@@ -70,7 +70,7 @@ export default async function AdminMediaPage() {
 
       <div className="cs-card rounded-lg overflow-hidden">
         <div className="divide-y divide-border/20">
-          {media.map((m) => (
+          {media.map((m: typeof media[0]) => (
             <Link
               key={m.id}
               href={`/media/${m.id}`}

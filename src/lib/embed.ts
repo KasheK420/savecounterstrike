@@ -170,9 +170,9 @@ export function getEmbedUrl(url: string, platform: MediaPlatform): string | null
       return id ? `https://www.youtube.com/embed/${id}` : null;
     }
     case "INSTAGRAM": {
-      // Instagram requires client-side embed.js or oembed for proper rendering
-      // Return original URL; MediaEmbed component handles it
-      return extractInstagramId(url) ? url : null;
+      // Official Instagram iframe embed URL
+      const shortcode = extractInstagramId(url);
+      return shortcode ? `https://www.instagram.com/p/${shortcode}/embed/` : null;
     }
     case "TWITTER": {
       // Twitter/X requires client-side widgets.js or react-tweet
@@ -212,7 +212,8 @@ export function getEmbedUrl(url: string, platform: MediaPlatform): string | null
 
 /**
  * Generate thumbnail URL for media preview.
- * Supports YouTube directly + best-effort for other platforms using known CDN patterns.
+ * Only YouTube provides reliable direct thumbnail URLs.
+ * Other platforms require API keys or don't expose public thumbnail endpoints.
  *
  * @param url - Original media URL
  * @param platform - Detected platform type
@@ -242,19 +243,6 @@ export function getThumbnailUrl(url: string, platform: MediaPlatform): string | 
         return `https://pbs.twimg.com/media/${tweetInfo.id.substring(0, 15)}`;
       }
       return null;
-    }
-    case "FACEBOOK": {
-      // Facebook often exposes OG image or uses external preview services
-      // Fallback to a generic high-res preview when possible
-      try {
-        const u = new URL(url);
-        const pathId = u.pathname.split('/').filter(Boolean).pop();
-        if (pathId) {
-          return `https://www.facebook.com/photo.php?fbid=${pathId}`;
-        }
-      } catch {}
-      return null;
-    }
     default:
       return null;
   }

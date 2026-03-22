@@ -51,6 +51,8 @@ refactor: simplify vote counting logic
 - Keep the subject line under 72 characters
 - Reference issues when applicable: `fix: resolve XSS in comments (#42)`
 
+**Note:** Commit prefixes drive automatic versioning — `feat:` bumps minor, `fix:` bumps patch, `BREAKING` bumps major. See [README](README.md#️-versioning).
+
 ## Code Style
 
 - **TypeScript** — strict mode, no `any` where avoidable

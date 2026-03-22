@@ -48,7 +48,7 @@ export default async function AdminArticlesPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {articles.map((article) => (
+          {articles.map((article: typeof articles[0]) => (
             <Link
               key={article.id}
               href={`/admin/articles/${article.id}`}
@@ -87,7 +87,7 @@ export default async function AdminArticlesPage() {
                   </p>
                   {article.tags.length > 0 && (
                     <div className="flex items-center gap-1">
-                      {article.tags.map((tag) => (
+                      {article.tags.map((tag: typeof article.tags[0]) => (
                         <span
                           key={tag.id}
                           className="px-1.5 py-0.5 rounded bg-muted/50 text-[0.6rem] text-muted-foreground"

@@ -66,7 +66,7 @@ function TwitterEmbed({ url }: { url: string }) {
 
   return (
     <div className="flex justify-center [&_.react-tweet-theme]:!bg-transparent">
-      <Tweet id={tweetId} />
+      <Tweet id={tweetId} apiUrl={`/api/tweet/${tweetId}`} />
     </div>
   );
 }

@@ -72,7 +72,7 @@ export function TwitterEmbed({ tweetUrl }: TwitterEmbedProps) {
     );
   }
 
-  if (!tweet) {
+  if (!tweet || !tweet.author) {
     return (
       <div className="max-w-[550px] mx-auto rounded-xl border border-border/20 bg-muted/5 p-6">
         <div className="animate-pulse space-y-3">
@@ -89,6 +89,8 @@ export function TwitterEmbed({ tweetUrl }: TwitterEmbedProps) {
       </div>
     );
   }
+
+  const processedText = linkifyText(tweet.text);
 
   return (
     <div className="max-w-[550px] mx-auto rounded-xl border border-border/20 bg-[#16181c] overflow-hidden">
@@ -124,7 +126,8 @@ export function TwitterEmbed({ tweetUrl }: TwitterEmbedProps) {
       {/* Text */}
       <div className="px-4 pt-3">
         <p className="text-[15px] text-white leading-relaxed whitespace-pre-wrap"
-          dangerouslySetInnerHTML={{ __html: linkifyText(tweet.text) }} />
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: processedText }} />
       </div>
 
       {/* Media */}

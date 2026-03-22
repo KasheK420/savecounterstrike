@@ -15,19 +15,20 @@ export default function RevenuePage() {
     <div className="relative min-h-screen py-16 overflow-hidden">
       {/* Gaben background meme */}
       <div
-        className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.04] grayscale blur-[1px]"
+        className="pointer-events-none absolute -bottom-12 -right-16 opacity-[0.08] grayscale"
         style={{
-          maskImage: "radial-gradient(ellipse, black 30%, transparent 70%)",
+          maskImage:
+            "radial-gradient(ellipse at 70% 70%, black 20%, transparent 65%)",
           WebkitMaskImage:
-            "radial-gradient(ellipse, black 30%, transparent 70%)",
+            "radial-gradient(ellipse at 70% 70%, black 20%, transparent 65%)",
         }}
       >
         <Image
           src="/images/gaben.webp"
           alt=""
-          width={700}
-          height={700}
-          className="select-none"
+          width={550}
+          height={550}
+          className="select-none rotate-[-8deg]"
           aria-hidden="true"
           priority={false}
         />

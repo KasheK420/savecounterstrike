@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useSession } from "@/components/auth/SessionProvider";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -10,13 +9,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Shield, User } from "lucide-react";
+import { LogOut, Shield, ShieldCheck, User } from "lucide-react";
 
 export function UserAvatar() {
   const { user } = useSession();
   if (!user) return null;
 
   const isAdmin = user.role === "ADMIN";
+  const isMod = user.role === "MODERATOR";
+  const isStaff = isAdmin || isMod;
 
   return (
     <DropdownMenu>
@@ -31,6 +32,7 @@ export function UserAvatar() {
           {user.name}
         </span>
         {isAdmin && <Shield className="h-3 w-3 text-cs-orange" />}
+        {isMod && <ShieldCheck className="h-3 w-3 text-cs-blue" />}
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
@@ -40,15 +42,19 @@ export function UserAvatar() {
           <User className="h-4 w-4 mr-2" />
           {user.name}
         </DropdownMenuItem>
-        {isAdmin && (
+        {isStaff && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => (window.location.href = "/admin")}
               className="cursor-pointer"
             >
-              <Shield className="h-4 w-4 mr-2" />
-              Admin Panel
+              {isAdmin ? (
+                <Shield className="h-4 w-4 mr-2" />
+              ) : (
+                <ShieldCheck className="h-4 w-4 mr-2" />
+              )}
+              {isAdmin ? "Admin Panel" : "Mod Panel"}
             </DropdownMenuItem>
           </>
         )}

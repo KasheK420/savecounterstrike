@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { UserBadges } from "@/components/shared/UserBadges";
 import { VoteButtons } from "./VoteButtons";
 import { TagList } from "@/components/shared/TagBadge";
 import { MessageSquare, Calendar } from "lucide-react";
@@ -78,11 +77,6 @@ export function OpinionCard({ opinion }: OpinionCardProps) {
           >
             {opinion.author.displayName}
           </Link>
-          <UserBadges
-            cs2PlaytimeHours={opinion.author.cs2PlaytimeHours}
-            faceitLevel={opinion.author.faceitLevel}
-            compact
-          />
           <span className="text-xs text-muted-foreground flex items-center gap-1">
             <MessageSquare className="h-3 w-3" />
             {opinion._count.comments}

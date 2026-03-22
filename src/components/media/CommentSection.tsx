@@ -5,6 +5,7 @@ import { useSession } from "@/components/auth/SessionProvider";
 import { MessageSquare, Reply, Trash2 } from "lucide-react";
 import { VoteButtons } from "./VoteButtons";
 import { CommentForm } from "./CommentForm";
+import { UserBadges } from "@/components/shared/UserBadges";
 
 interface Author {
   id: string | null;
@@ -93,12 +94,11 @@ function CommentThread({
             <span className={`font-medium ${comment.isAnonymous ? "italic" : "text-foreground"}`}>
               {comment.author.displayName}
             </span>
-            {comment.author.cs2PlaytimeHours && comment.author.cs2PlaytimeHours > 0 && (
-              <span className="text-cs-blue">{comment.author.cs2PlaytimeHours}h</span>
-            )}
-            {comment.author.faceitLevel && (
-              <span className="text-cs-orange">LVL {comment.author.faceitLevel}</span>
-            )}
+            <UserBadges
+              cs2PlaytimeHours={comment.author.cs2PlaytimeHours}
+              faceitLevel={comment.author.faceitLevel}
+              compact
+            />
             <span>{timeAgo(comment.createdAt)}</span>
           </div>
           <p className="text-sm text-foreground mt-1 whitespace-pre-wrap break-words">

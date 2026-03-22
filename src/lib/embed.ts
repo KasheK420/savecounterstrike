@@ -235,15 +235,10 @@ export function getThumbnailUrl(url: string, platform: MediaPlatform): string | 
       }
       return null;
     }
-    case "TWITTER": {
-      // Twitter uses pbs.twimg.com for media. Best effort using status ID as seed.
-      // In practice many tweets have media at pbs.twimg.com/media/...
-      const tweetInfo = extractTwitterStatusId(url);
-      if (tweetInfo && tweetInfo.id.length > 8) {
-        return `https://pbs.twimg.com/media/${tweetInfo.id.substring(0, 15)}`;
-      }
+    case "TWITTER":
+      // Twitter thumbnails are fetched server-side via getTweet() in the media POST route
+      // No reliable public URL pattern exists for tweet media thumbnails
       return null;
-    }
     default:
       return null;
   }

@@ -27,6 +27,7 @@ interface OpinionDetailProps {
       cs2PlaytimeHours?: number | null;
       cs2Wins?: number | null;
       faceitLevel?: number | null;
+      faceitElo?: number | null;
       profileVisibility?: number | null;
     };
     _count: { comments: number };
@@ -89,6 +90,7 @@ export function OpinionDetail({ opinion }: OpinionDetailProps) {
             <UserBadges
               cs2PlaytimeHours={opinion.author.cs2PlaytimeHours}
               faceitLevel={opinion.author.faceitLevel}
+              faceitElo={opinion.author.faceitElo}
             />
             <span className="text-xs text-muted-foreground flex items-center gap-1">
               <Calendar className="h-3 w-3" />

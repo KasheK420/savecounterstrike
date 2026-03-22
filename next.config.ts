@@ -3,11 +3,11 @@ import { execFileSync } from "child_process";
 import { readFileSync } from "fs";
 
 const pkg = JSON.parse(readFileSync("./package.json", "utf-8"));
-const gitSha = (() => {
+const gitSha = process.env.GIT_SHA?.slice(0, 7) || (() => {
   try {
     return execFileSync("git", ["rev-parse", "--short", "HEAD"]).toString().trim();
   } catch {
-    return "unknown";
+    return "dev";
   }
 })();
 

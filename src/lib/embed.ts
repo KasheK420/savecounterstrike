@@ -229,16 +229,17 @@ export function getThumbnailUrl(url: string, platform: MediaPlatform): string | 
       // Instagram CDN pattern for posts/reels (high quality thumbnail)
       const id = extractInstagramId(url);
       if (id) {
-        return `https://instagram.com/p/${id}/media/?size=l`;
+        // More reliable Instagram thumbnail using direct media endpoint
+        return `https://www.instagram.com/p/${id}/media/?size=l`;
       }
       return null;
     }
     case "TWITTER": {
-      // Twitter uses pbs.twimg.com for media; best effort via known pattern or fallback
+      // Twitter uses pbs.twimg.com for media. Best effort using status ID as seed.
+      // In practice many tweets have media at pbs.twimg.com/media/...
       const tweetInfo = extractTwitterStatusId(url);
-      if (tweetInfo) {
-        // Common pattern for first media in tweet (often works)
-        return `https://pbs.twimg.com/media/${tweetInfo.id.slice(0, 10)}`;
+      if (tweetInfo && tweetInfo.id.length > 8) {
+        return `https://pbs.twimg.com/media/${tweetInfo.id.substring(0, 15)}`;
       }
       return null;
     }

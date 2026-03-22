@@ -78,11 +78,31 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Duplicate title check (unless force flag is set)
+  if (!body.force) {
+    const similar = await db.opinion.findMany({
+      where: {
+        title: { contains: parsed.data.title.slice(0, 50), mode: "insensitive" },
+        status: "APPROVED",
+      },
+      take: 5,
+      select: { id: true, title: true, score: true },
+    });
+
+    if (similar.length > 0) {
+      return NextResponse.json(
+        { possibleDuplicates: similar },
+        { status: 200 }
+      );
+    }
+  }
+
   const opinion = await db.opinion.create({
     data: {
       title: parsed.data.title,
       content: sanitizeContent(parsed.data.content),
       imageUrl: parsed.data.imageUrl || null,
+      tags: parsed.data.tags || [],
       authorId: userId,
     },
   });

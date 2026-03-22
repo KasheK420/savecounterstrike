@@ -9,6 +9,7 @@ interface MediaCardProps {
   score: number;
   commentCount: number;
   author: {
+    id: string;
     displayName: string;
     avatarUrl: string | null;
     faceitLevel?: number | null;
@@ -108,12 +109,16 @@ export function MediaCard({
           {title}
         </h3>
         <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1.5">
+          <Link
+            href={`/user/${author.id}`}
+            className="flex items-center gap-1.5 hover:text-cs-orange transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
             {author.avatarUrl && (
               <img src={author.avatarUrl} alt="" className="h-4 w-4 rounded-full" />
             )}
             <span>{author.displayName}</span>
-          </div>
+          </Link>
           {author.faceitLevel && (
             <span className="text-cs-orange">LVL {author.faceitLevel}</span>
           )}

@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Shield, ShieldCheck, User } from "lucide-react";
+import { LogOut, Shield, ShieldCheck, User, Edit3 } from "lucide-react";
 
 export function UserAvatar() {
   const { user } = useSession();
@@ -36,11 +36,23 @@ export function UserAvatar() {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="bg-card border-border min-w-[160px]"
+        className="bg-card border-border min-w-[170px]"
       >
-        <DropdownMenuItem className="text-muted-foreground" disabled>
+        <DropdownMenuItem
+          onClick={() => (window.location.href = `/user/${user.userId}`)}
+          className="cursor-pointer"
+        >
           <User className="h-4 w-4 mr-2" />
-          {user.name}
+          View Profile
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() =>
+            (window.location.href = `/user/${user.userId}/edit`)
+          }
+          className="cursor-pointer"
+        >
+          <Edit3 className="h-4 w-4 mr-2" />
+          Edit Profile
         </DropdownMenuItem>
         {isStaff && (
           <>

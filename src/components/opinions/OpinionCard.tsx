@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { UserBadges } from "@/components/shared/UserBadges";
 import { VoteButtons } from "./VoteButtons";
+import { TagList } from "@/components/shared/TagBadge";
 import { MessageSquare, Calendar } from "lucide-react";
 import { stripHtml } from "@/lib/sanitize";
 
@@ -23,6 +24,7 @@ interface OpinionCardProps {
       faceitLevel?: number | null;
       profileVisibility?: number | null;
     };
+    tags?: string[];
     _count: { comments: number };
   };
 }
@@ -52,6 +54,12 @@ export function OpinionCard({ opinion }: OpinionCardProps) {
         <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
           {preview}
         </p>
+
+        {opinion.tags && opinion.tags.length > 0 && (
+          <div className="mt-2">
+            <TagList tags={opinion.tags} />
+          </div>
+        )}
 
         {/* Author + meta */}
         <div className="flex items-center gap-2 mt-3 flex-wrap">

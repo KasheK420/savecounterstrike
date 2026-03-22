@@ -76,7 +76,7 @@ export function MediaCard({
       {thumbnailUrl && (
         <div className="shrink-0 w-32 h-20 rounded overflow-hidden bg-muted/20">
           <img
-            src={thumbnailUrl.includes("twimg.com") ? `/api/media-proxy?url=${encodeURIComponent(thumbnailUrl)}` : thumbnailUrl}
+            src={(() => { try { return new URL(thumbnailUrl).hostname.endsWith(".twimg.com") ? `/api/media-proxy?url=${encodeURIComponent(thumbnailUrl)}` : thumbnailUrl; } catch { return thumbnailUrl; } })()}
             alt=""
             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
           />

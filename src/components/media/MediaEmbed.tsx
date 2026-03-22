@@ -5,6 +5,27 @@ import { InstagramEmbed } from "react-social-media-embed";
 
 type MediaPlatform = "YOUTUBE" | "INSTAGRAM" | "TWITTER" | "TIKTOK" | "TWITCH" | "FACEBOOK" | "OTHER";
 
+const ALLOWED_EMBED_HOSTS = new Set([
+  "www.youtube.com",
+  "www.youtube-nocookie.com",
+  "player.twitch.tv",
+  "clips.twitch.tv",
+  "www.tiktok.com",
+  "www.facebook.com",
+]);
+
+/** Validate embed URL to prevent XSS via javascript: or data: URIs */
+function sanitizeEmbedUrl(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:") return null;
+    if (!ALLOWED_EMBED_HOSTS.has(parsed.hostname)) return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
 interface MediaEmbedProps {
   url: string;
   platform: MediaPlatform;
@@ -29,10 +50,12 @@ function YouTubeEmbed({ embedUrl }: { embedUrl: string }) {
 }
 
 function TwitchEmbed({ embedUrl }: { embedUrl: string }) {
+  const safeUrl = sanitizeEmbedUrl(embedUrl);
+  if (!safeUrl) return <FallbackEmbed url={embedUrl} />;
   return (
     <div className="relative w-full aspect-video rounded-lg overflow-hidden">
       <iframe
-        src={embedUrl}
+        src={safeUrl}
         className="absolute inset-0 w-full h-full"
         allowFullScreen
         title="Twitch video"
@@ -42,10 +65,12 @@ function TwitchEmbed({ embedUrl }: { embedUrl: string }) {
 }
 
 function TikTokEmbed({ embedUrl }: { embedUrl: string }) {
+  const safeUrl = sanitizeEmbedUrl(embedUrl);
+  if (!safeUrl) return <FallbackEmbed url={embedUrl} />;
   return (
     <div className="relative w-full max-w-[325px] mx-auto aspect-[9/16] rounded-lg overflow-hidden">
       <iframe
-        src={embedUrl}
+        src={safeUrl}
         className="absolute inset-0 w-full h-full"
         allowFullScreen
         title="TikTok video"
@@ -69,7 +94,8 @@ function InstagramEmbedComponent({ url }: { url: string }) {
 // ── Facebook iframe (still works for public content) ────────
 
 function FacebookEmbedComponent({ embedUrl }: { embedUrl: string | null }) {
-  if (!embedUrl) {
+  const safeUrl = embedUrl ? sanitizeEmbedUrl(embedUrl) : null;
+  if (!safeUrl) {
     return (
       <div className="p-4 text-center text-muted-foreground">
         <p>Unable to load Facebook embed</p>
@@ -80,7 +106,7 @@ function FacebookEmbedComponent({ embedUrl }: { embedUrl: string | null }) {
   return (
     <div className="relative w-full aspect-video rounded-lg overflow-hidden max-w-[560px] mx-auto">
       <iframe
-        src={embedUrl}
+        src={safeUrl}
         className="absolute inset-0 w-full h-full border-0"
         allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
         allowFullScreen

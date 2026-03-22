@@ -5,8 +5,13 @@ import { Heart, MessageCircle, ExternalLink } from "lucide-react";
 
 // Proxy twimg URLs through our API to bypass Edge Tracking Prevention
 function proxyUrl(url: string): string {
-  if (url.includes("twimg.com")) {
-    return `/api/media-proxy?url=${encodeURIComponent(url)}`;
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.endsWith(".twimg.com")) {
+      return `/api/media-proxy?url=${encodeURIComponent(url)}`;
+    }
+  } catch {
+    // Invalid URL, return as-is
   }
   return url;
 }

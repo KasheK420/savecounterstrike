@@ -29,8 +29,8 @@ export function detectPlatform(url: string): MediaPlatform {
     if (host === "youtube.com" || host === "youtu.be" || host === "m.youtube.com") return "YOUTUBE";
     if (host === "instagram.com") return "INSTAGRAM";
     if (host === "x.com" || host === "twitter.com") return "TWITTER";
-    if (host.includes("tiktok.com")) return "TIKTOK";
-    if (host === "twitch.tv" || host.includes("twitch.tv")) return "TWITCH";
+    if (host === "tiktok.com" || host.endsWith(".tiktok.com")) return "TIKTOK";
+    if (host === "twitch.tv" || host.endsWith(".twitch.tv")) return "TWITCH";
     if (host === "facebook.com" || host === "fb.watch" || host === "fb.com" || host === "m.facebook.com") return "FACEBOOK";
     return "OTHER";
   } catch {

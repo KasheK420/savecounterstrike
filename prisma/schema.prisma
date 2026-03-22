@@ -292,3 +292,25 @@ model SiteConfig {
   key   String @id
   value Json
 }
+
+// ── Visitor Analytics ──────────────────────────────────
+
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  ipHash    String
+  country   String?
+  city      String?
+  userAgent String?
+  device    String?
+  browser   String?
+  os        String?
+  referrer  String?
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([path])
+  @@index([country])
+  @@index([ipHash, createdAt])
+}

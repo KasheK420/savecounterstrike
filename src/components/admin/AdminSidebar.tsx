@@ -7,6 +7,7 @@ import {
   FileText,
   ScrollText,
   BarChart3,
+  Activity,
   Users,
   MessageSquare,
   Video,
@@ -28,6 +29,7 @@ const links = [
   { href: "/admin/ban-waves", label: "Ban Waves", icon: ShieldAlert },
   { href: "/admin/bot", label: "GC Bot", icon: Bot },
   { href: "/admin/stats", label: "Stats", icon: BarChart3 },
+  { href: "/admin/analytics", label: "Analytics", icon: Activity },
 ];
 
 export function AdminSidebar() {

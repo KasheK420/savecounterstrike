@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     db.media.count({ where }),
   ]);
 
-  const items = media.map((m) => ({
+  const items = media.map((m: typeof media[0]) => ({
     ...m,
     userVote: m.votes?.[0]?.value ?? 0,
     votes: undefined,

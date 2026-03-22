@@ -83,7 +83,7 @@ export default async function AdminPetitionsPage() {
           </h3>
         </div>
         <div className="divide-y divide-border/20">
-          {signatures.map((sig) => (
+          {signatures.map((sig: typeof signatures[0]) => (
             <div key={sig.id} className="flex items-start gap-3 p-4">
               <Avatar className="h-8 w-8 border border-border/50 shrink-0">
                 <AvatarImage

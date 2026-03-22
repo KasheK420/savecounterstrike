@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
 import { requireAdminApi } from "@/lib/admin";
 import { db } from "@/lib/db";
 
@@ -33,13 +32,13 @@ export async function GET(request: NextRequest) {
     recentViews,
   ] = await Promise.all([
     db.pageView.count({ where }),
-    db.pageView.groupBy({ by: ["ipHash"], where }).then((r) => r.length),
-    db.$queryRaw(Prisma.sql`
+    db.pageView.groupBy({ by: ["ipHash"], where }).then((r: { ipHash: string }[]) => r.length),
+    db.$queryRawUnsafe(`
       SELECT DATE("createdAt") as date,
              COUNT(*)::int as views,
              COUNT(DISTINCT "ipHash")::int as unique_visitors
       FROM "PageView"
-      WHERE "createdAt" >= ${since}
+      WHERE "createdAt" >= '${since.toISOString()}'
       GROUP BY DATE("createdAt")
       ORDER BY date ASC
     `),
@@ -95,12 +94,12 @@ export async function GET(request: NextRequest) {
     totalViews,
     uniqueVisitors,
     viewsByDay,
-    topPages: topPages.map((p) => ({ path: p.path, count: p._count.path })),
-    topCountries: topCountries.map((c) => ({ country: c.country, count: c._count.country })),
-    topReferrers: topReferrers.map((r) => ({ referrer: r.referrer, count: r._count.referrer })),
-    devices: Object.fromEntries(devices.map((d) => [d.device, d._count.device])),
-    browsers: browsers.map((b) => ({ browser: b.browser, count: b._count.browser })),
-    os: osList.map((o) => ({ os: o.os, count: o._count.os })),
+    topPages: topPages.map((p: typeof topPages[0]) => ({ path: p.path, count: p._count.path })),
+    topCountries: topCountries.map((c: typeof topCountries[0]) => ({ country: c.country, count: c._count.country })),
+    topReferrers: topReferrers.map((r: typeof topReferrers[0]) => ({ referrer: r.referrer, count: r._count.referrer })),
+    devices: Object.fromEntries(devices.map((d: typeof devices[0]) => [d.device, d._count.device])),
+    browsers: browsers.map((b: typeof browsers[0]) => ({ browser: b.browser, count: b._count.browser })),
+    os: osList.map((o: typeof osList[0]) => ({ os: o.os, count: o._count.os })),
     recentViews,
   });
 }

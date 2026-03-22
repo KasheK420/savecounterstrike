@@ -106,10 +106,21 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-border/30 text-center">
+        <div className="mt-8 pt-6 border-t border-border/30 text-center space-y-1">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} SaveCounterStrike.com — Created by
+            &copy; {new Date().getFullYear()} SaveCounterStrike.com — Created by{" "}
             <a href="https://majorluk.pl" target="_blank" rel="noopener noreferrer" className="hover:text-cs-orange transition-colors">Lukas Majoros</a>. Built by the community, for the community.
+          </p>
+          <p className="text-[10px] text-muted-foreground/40 tabular-nums">
+            v{process.env.NEXT_PUBLIC_APP_VERSION || "dev"} ·{" "}
+            <a
+              href={`https://github.com/KasheK420/savecounterstrike/commit/${process.env.NEXT_PUBLIC_GIT_SHA || ""}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-muted-foreground/60 transition-colors"
+            >
+              {process.env.NEXT_PUBLIC_GIT_SHA || "dev"}
+            </a>
           </p>
         </div>
       </div>

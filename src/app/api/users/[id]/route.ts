@@ -18,6 +18,9 @@ export async function GET(
       createdAt: true,
       bio: true,
       karma: true,
+      customName: true,
+      hidePlaytime: true,
+      hideFaceit: true,
       ownsCs2: true,
       cs2PlaytimeHours: true,
       cs2Wins: true,
@@ -73,12 +76,35 @@ export async function PATCH(
   }
 
   const body = await request.json();
-  const bio = typeof body.bio === "string" ? body.bio.trim().slice(0, 500) : undefined;
+
+  const data: Record<string, any> = {};
+
+  if (typeof body.bio === "string") {
+    const { filterProfanity } = await import("@/lib/profanity");
+    data.bio = filterProfanity(body.bio.trim().slice(0, 500)) || null;
+  }
+  if (typeof body.customName === "string") {
+    const { filterProfanity } = await import("@/lib/profanity");
+    const name = body.customName.trim().slice(0, 32);
+    data.customName = name ? filterProfanity(name) : null;
+  }
+  if (typeof body.hidePlaytime === "boolean") {
+    data.hidePlaytime = body.hidePlaytime;
+  }
+  if (typeof body.hideFaceit === "boolean") {
+    data.hideFaceit = body.hideFaceit;
+  }
 
   const updated = await db.user.update({
     where: { id },
-    data: { bio },
-    select: { id: true, bio: true },
+    data,
+    select: {
+      id: true,
+      bio: true,
+      customName: true,
+      hidePlaytime: true,
+      hideFaceit: true,
+    },
   });
 
   return NextResponse.json(updated);

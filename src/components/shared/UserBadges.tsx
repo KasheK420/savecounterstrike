@@ -8,6 +8,8 @@ interface UserBadgesProps {
   faceitLevel?: number | null;
   profileVisibility?: number | null;
   karma?: number | null;
+  hidePlaytime?: boolean | null;
+  hideFaceit?: boolean | null;
   compact?: boolean;
 }
 
@@ -26,11 +28,13 @@ export function UserBadges({
   faceitLevel,
   profileVisibility,
   karma,
+  hidePlaytime,
+  hideFaceit,
   compact = false,
 }: UserBadgesProps) {
   const badges: React.ReactNode[] = [];
 
-  if (cs2PlaytimeHours != null && cs2PlaytimeHours > 0) {
+  if (!hidePlaytime && cs2PlaytimeHours != null && cs2PlaytimeHours > 0) {
     badges.push(
       <span
         key="playtime"
@@ -58,7 +62,7 @@ export function UserBadges({
     );
   }
 
-  if (faceitLevel != null && faceitLevel > 0) {
+  if (!hideFaceit && faceitLevel != null && faceitLevel > 0) {
     badges.push(
       <span
         key="faceit"

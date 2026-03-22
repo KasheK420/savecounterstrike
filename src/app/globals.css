@@ -343,3 +343,112 @@ a.supporter-item {
 .supporter-item:hover img {
   filter: grayscale(0%);
 }
+
+/* ── Rendered Content (published opinions, articles) ── */
+
+.rendered-content {
+  color: hsl(0 0% 90%);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.rendered-content > * + * {
+  margin-top: 0.75em;
+}
+
+.rendered-content h2 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: hsl(0 0% 95%);
+  margin-top: 1.5em;
+}
+
+.rendered-content h3 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(0 0% 92%);
+  margin-top: 1.25em;
+}
+
+.rendered-content a {
+  color: #de9b35;
+  text-decoration: none;
+}
+
+.rendered-content a:hover {
+  text-decoration: underline;
+}
+
+.rendered-content ul,
+.rendered-content ol {
+  padding-left: 1.5rem;
+}
+
+.rendered-content ul {
+  list-style: disc;
+}
+
+.rendered-content ol {
+  list-style: decimal;
+}
+
+.rendered-content li {
+  margin-top: 0.25em;
+}
+
+.rendered-content blockquote {
+  border-left: 3px solid #de9b35;
+  padding-left: 1rem;
+  color: hsl(0 0% 70%);
+  font-style: italic;
+}
+
+.rendered-content code {
+  background: hsl(0 0% 12%);
+  color: #de9b35;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+.rendered-content pre {
+  background: hsl(0 0% 6%);
+  border: 1px solid hsl(0 0% 16.5%);
+  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+}
+
+.rendered-content pre code {
+  background: transparent;
+  color: hsl(0 0% 80%);
+  padding: 0;
+}
+
+.rendered-content hr {
+  border: none;
+  border-top: 1px solid hsl(0 0% 20%);
+  margin: 1.5rem 0;
+}
+
+.rendered-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+.rendered-content strong {
+  color: hsl(0 0% 95%);
+  font-weight: 700;
+}
+
+.rendered-content em {
+  font-style: italic;
+}
+
+.rendered-content p:empty {
+  display: none;
+}

@@ -120,7 +120,7 @@ export function OpinionDetail({ opinion }: OpinionDetailProps) {
       {/* Content */}
       <SafeHtml
         html={opinion.content}
-        className="prose prose-invert prose-orange max-w-none text-muted-foreground prose-headings:text-foreground prose-headings:font-heading prose-strong:text-foreground prose-a:text-cs-orange prose-a:no-underline hover:prose-a:underline"
+        className="max-w-none"
       />
 
       {/* Comments */}

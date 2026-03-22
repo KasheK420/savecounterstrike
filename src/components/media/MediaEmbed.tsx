@@ -62,7 +62,7 @@ function TikTokEmbed({ embedUrl }: { embedUrl: string }) {
 
 function InstagramEmbedComponent({ url }: { url: string }) {
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center max-w-[400px] mx-auto">
       <IGEmbed url={url} width={400} />
     </div>
   );
@@ -70,8 +70,8 @@ function InstagramEmbedComponent({ url }: { url: string }) {
 
 function FacebookEmbedComponent({ url }: { url: string }) {
   return (
-    <div className="flex justify-center">
-      <FBEmbed url={url} width={560} />
+    <div className="flex justify-center max-w-[500px] mx-auto">
+      <FBEmbed url={url} width={500} />
     </div>
   );
 }

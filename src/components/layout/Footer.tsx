@@ -53,10 +53,10 @@ export function Footer() {
                 Community Opinions
               </Link>
               <Link
-                href="/stats"
+                href="/revenue"
                 className="text-sm text-muted-foreground hover:text-cs-orange transition-colors"
               >
-                Statistics
+                Revenue Tracker
               </Link>
             </div>
           </div>

@@ -43,7 +43,7 @@ const features = [
     title: "Track the Money",
     description:
       "See exactly how much Valve earns from CS2 while ignoring the community.",
-    href: "/stats",
+    href: "/revenue",
     color: "text-cs-green",
   },
 ];

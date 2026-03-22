@@ -112,7 +112,6 @@ export function MediaCard({
           <Link
             href={`/user/${author.id}`}
             className="flex items-center gap-1.5 hover:text-cs-orange transition-colors"
-            onClick={(e) => e.stopPropagation()}
           >
             {author.avatarUrl && (
               <img src={author.avatarUrl} alt="" className="h-4 w-4 rounded-full" />

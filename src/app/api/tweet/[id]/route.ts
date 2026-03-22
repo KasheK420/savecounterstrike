@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTweet } from "react-tweet/api";
 
 export async function GET(
   _request: NextRequest,
@@ -8,21 +7,25 @@ export async function GET(
   const { id } = await params;
 
   try {
-    const tweet = await getTweet(id);
+    const tweetUrl = `https://x.com/i/status/${id}`;
+    const oembedUrl = `https://publish.twitter.com/oembed?url=${encodeURIComponent(tweetUrl)}&omit_script=true&theme=dark&dnt=true`;
 
-    if (!tweet) {
-      return NextResponse.json({ data: null }, { status: 404 });
+    const res = await fetch(oembedUrl);
+    if (!res.ok) {
+      return NextResponse.json({ html: null }, { status: 404 });
     }
 
+    const data = await res.json();
+
     return NextResponse.json(
-      { data: tweet },
+      { html: data.html, author_name: data.author_name },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=900, stale-while-revalidate=3600",
+          "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
         },
       }
     );
   } catch {
-    return NextResponse.json({ data: null }, { status: 500 });
+    return NextResponse.json({ html: null }, { status: 500 });
   }
 }

@@ -4,9 +4,8 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ArrowLeft, ExternalLink, Clock, Shield } from "lucide-react";
-import { getTweet } from "react-tweet/api";
-import { EmbeddedTweet, TweetNotFound } from "react-tweet";
 import { MediaEmbed } from "@/components/media/MediaEmbed";
+import { TwitterEmbed } from "@/components/media/TwitterEmbed";
 import { VoteButtons } from "@/components/media/VoteButtons";
 import { CommentSection } from "@/components/media/CommentSection";
 import { AdminMediaControls } from "./AdminMediaControls";
@@ -93,15 +92,6 @@ export default async function MediaDetailPage({ params }: Props) {
   if (!media) notFound();
   if (!isAdmin && media.status !== "APPROVED") notFound();
 
-  // Fetch tweet data server-side for Twitter posts (NO Suspense, NO client fetch)
-  let tweetData: Awaited<ReturnType<typeof getTweet>> | undefined;
-  if (media.platform === "TWITTER") {
-    const tweetId = media.url.match(/status\/(\d+)/)?.[1];
-    if (tweetId) {
-      tweetData = await getTweet(tweetId).catch(() => undefined);
-    }
-  }
-
   const userVote = (media as Record<string, unknown>).votes
     ? ((media as Record<string, unknown>).votes as { value: number }[])?.[0]?.value ?? 0
     : 0;
@@ -154,13 +144,7 @@ export default async function MediaDetailPage({ params }: Props) {
 
             {/* Embed */}
             {media.platform === "TWITTER" ? (
-              <div className="flex justify-center">
-                {tweetData ? (
-                  <EmbeddedTweet tweet={tweetData} />
-                ) : (
-                  <TweetNotFound />
-                )}
-              </div>
+              <TwitterEmbed tweetUrl={media.url} />
             ) : (
               <MediaEmbed
                 url={media.url}

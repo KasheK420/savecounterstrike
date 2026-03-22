@@ -52,3 +52,6 @@ next-env.d.ts
 # Uploaded files
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# Outreach (private emails, contacts, research)
+/outreach/

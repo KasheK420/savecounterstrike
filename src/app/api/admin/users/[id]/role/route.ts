@@ -22,7 +22,7 @@ export async function PATCH(
     );
   }
 
-  const adminUserId = (result.session.user as any).userId;
+  const adminUserId = result.session.user?.userId;
 
   // Can't change your own role (prevents lockout)
   if (id === adminUserId) {

@@ -7,6 +7,7 @@ export default async function AdminSupportersPage() {
     where: { key: "supporters" },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const items = (config?.value as any)?.items || [];
 
   return (

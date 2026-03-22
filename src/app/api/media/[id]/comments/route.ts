@@ -20,8 +20,8 @@ export async function GET(
 ) {
   const { id } = await params;
   const session = await auth();
-  const userId = (session?.user as any)?.userId;
-  const isAdmin = (session?.user as any)?.role === "ADMIN";
+  const userId = session?.user?.userId;
+  const isAdmin = session?.user?.role === "ADMIN";
 
   const comments = await db.comment.findMany({
     where: { mediaId: id, parentId: null },
@@ -47,6 +47,7 @@ export async function GET(
   });
 
   // Mask anonymous authors (unless admin)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function maskComment(c: any) {
     const userVote = c.votes?.[0]?.value ?? 0;
     const masked = {
@@ -69,7 +70,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
-  const userId = (session?.user as any)?.userId;
+  const userId = session?.user?.userId;
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

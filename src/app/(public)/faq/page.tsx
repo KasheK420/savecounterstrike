@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import type { Metadata } from "next";
 import Link from "next/link";
 import { HelpCircle, ChevronDown, Shield, FileText, BarChart3, Users } from "lucide-react";
 

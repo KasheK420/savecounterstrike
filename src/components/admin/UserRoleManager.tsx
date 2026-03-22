@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Ban, ShieldCheck, Loader2, Undo2 } from "lucide-react";
+import { Ban, Loader2, Undo2 } from "lucide-react";
 
 interface UserRoleManagerProps {
   userId: string;
@@ -17,10 +17,8 @@ interface UserRoleManagerProps {
 
 export function UserRoleManager({
   userId,
-  userName,
   currentRole,
   isBanned,
-  bannedReason,
   isCurrentUser,
 }: UserRoleManagerProps) {
   const router = useRouter();

@@ -14,7 +14,7 @@ export async function POST(
   const body = await request.json().catch(() => ({}));
   const reason = (body.reason as string)?.trim()?.slice(0, 500) || null;
 
-  const adminUserId = (result.session.user as any).userId;
+  const adminUserId = result.session.user?.userId;
 
   // Can't ban yourself
   if (id === adminUserId) {

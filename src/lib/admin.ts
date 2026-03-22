@@ -17,7 +17,7 @@ import type { Session } from "next-auth";
  */
 export async function requireAdmin(): Promise<Session | null> {
   const session = await auth();
-  const role = (session?.user as any)?.role;
+  const role = session?.user?.role;
   if (!session?.user || role !== "ADMIN") return null;
   return session;
 }
@@ -29,7 +29,7 @@ export async function requireAdmin(): Promise<Session | null> {
  */
 export async function requireModerator(): Promise<Session | null> {
   const session = await auth();
-  const role = (session?.user as any)?.role;
+  const role = session?.user?.role;
   if (!session?.user || (role !== "ADMIN" && role !== "MODERATOR")) return null;
   return session;
 }
@@ -41,7 +41,7 @@ export async function requireModerator(): Promise<Session | null> {
  * @returns Role string (USER, MODERATOR, ADMIN) or "USER" as default
  */
 export function getRole(session: Session | null): string {
-  return (session?.user as any)?.role || "USER";
+  return session?.user?.role || "USER";
 }
 
 /**

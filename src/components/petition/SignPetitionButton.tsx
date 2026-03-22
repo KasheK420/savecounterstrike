@@ -68,8 +68,8 @@ export function SignPetitionButton({ alreadySigned }: SignPetitionButtonProps) {
         throw new Error(data.error || "Failed to sign petition");
       }
       setSigned(true);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to sign petition");
     } finally {
       setLoading(false);
     }

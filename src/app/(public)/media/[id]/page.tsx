@@ -55,8 +55,8 @@ const platformLabels: Record<string, string> = {
 export default async function MediaDetailPage({ params }: Props) {
   const { id } = await params;
   const session = await auth();
-  const userId = (session?.user as any)?.userId;
-  const isAdmin = (session?.user as any)?.role === "ADMIN";
+  const userId = session?.user?.userId;
+  const isAdmin = session?.user?.role === "ADMIN";
 
   const media = await db.media.findUnique({
     where: { id },
@@ -101,12 +101,10 @@ export default async function MediaDetailPage({ params }: Props) {
     ? await getTweet(tweetId).catch(() => null)
     : null;
 
-  const userVote = (media as any).votes?.[0]?.value ?? 0;
+  const userVote = (media as Record<string, unknown>).votes
+    ? ((media as Record<string, unknown>).votes as { value: number }[])?.[0]?.value ?? 0
+    : 0;
   const author = media.author;
-  const kd =
-    author.cs2Kills && author.cs2Deaths && author.cs2Deaths > 0
-      ? (author.cs2Kills / author.cs2Deaths).toFixed(2)
-      : null;
 
   return (
     <div className="min-h-screen py-16">

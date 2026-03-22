@@ -13,7 +13,7 @@ export async function GET() {
     where: { key: "supporters" },
   });
 
-  const items = (config?.value as any)?.items || [];
+  const items = (config?.value as unknown as { items?: SupporterItem[] })?.items || [];
   return NextResponse.json(items);
 }
 
@@ -23,12 +23,14 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json();
   const items: SupporterItem[] = (body.items || []).filter(
-    (i: any) => i.name && i.logoUrl
+    (i: SupporterItem) => i.name && i.logoUrl
   );
 
   await db.siteConfig.upsert({
     where: { key: "supporters" },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     update: { value: { items } as any },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     create: { key: "supporters", value: { items } as any },
   });
 

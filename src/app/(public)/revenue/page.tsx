@@ -15,12 +15,12 @@ export default function RevenuePage() {
     <div className="relative min-h-screen py-16 overflow-hidden">
       {/* Gaben background meme */}
       <div
-        className="pointer-events-none absolute -bottom-12 right-[10%] opacity-[0.08] grayscale"
+        className="pointer-events-none absolute top-[12rem] right-[10%] opacity-[0.08] grayscale"
         style={{
           maskImage:
-            "radial-gradient(ellipse at 70% 70%, black 20%, transparent 65%)",
+            "radial-gradient(ellipse, black 15%, transparent 60%)",
           WebkitMaskImage:
-            "radial-gradient(ellipse at 70% 70%, black 20%, transparent 65%)",
+            "radial-gradient(ellipse, black 15%, transparent 60%)",
         }}
       >
         <Image

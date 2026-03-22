@@ -134,7 +134,24 @@ export async function POST(request: NextRequest) {
   // Extract platform info and generate embed/thumbnail URLs
   const platform = detectPlatform(parsed.data.url);
   const embedUrl = getEmbedUrl(parsed.data.url, platform);
-  const thumbnailUrl = getThumbnailUrl(parsed.data.url, platform);
+  let thumbnailUrl = getThumbnailUrl(parsed.data.url, platform);
+
+  // For Twitter, fetch actual thumbnail from tweet data
+  if (platform === "TWITTER" && !thumbnailUrl) {
+    try {
+      const { getTweet } = await import("react-tweet/api");
+      const tweetId = parsed.data.url.match(/status\/(\d+)/)?.[1];
+      if (tweetId) {
+        const tweet = await getTweet(tweetId);
+        thumbnailUrl = tweet?.video?.poster
+          || tweet?.mediaDetails?.[0]?.media_url_https
+          || tweet?.user?.profile_image_url_https?.replace("_normal", "_bigger")
+          || null;
+      }
+    } catch {
+      // Non-fatal — proceed without thumbnail
+    }
+  }
 
   const media = await db.media.create({
     data: {

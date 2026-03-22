@@ -69,7 +69,7 @@ export default async function AdminUsersPage() {
             <div
               key={user.id}
               className={`flex items-center gap-3 p-4 ${
-                user.isBanned ? "opacity-50 bg-cs-red/5" : ""
+                user.isBanned ? "opacity-70 bg-cs-red/5" : ""
               }`}
             >
               <Avatar className="h-9 w-9 border border-border/50 shrink-0">
@@ -89,6 +89,7 @@ export default async function AdminUsersPage() {
                   <UserBadges
                     cs2PlaytimeHours={user.cs2PlaytimeHours}
                     faceitLevel={user.faceitLevel}
+                    faceitElo={user.faceitElo}
                     compact
                   />
                   {user.isBanned && (
@@ -96,7 +97,7 @@ export default async function AdminUsersPage() {
                       variant="outline"
                       className="border-cs-red/30 text-cs-red text-[10px]"
                     >
-                      BANNED
+                      BANNED{user.bannedAt ? ` ${new Date(user.bannedAt).toLocaleDateString()}` : ""}
                     </Badge>
                   )}
                 </div>

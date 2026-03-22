@@ -72,11 +72,11 @@ export function MediaCard({
         <span className="text-[10px] text-muted-foreground">votes</span>
       </div>
 
-      {/* Thumbnail */}
+      {/* Thumbnail — proxy twimg.com URLs for Edge tracking prevention */}
       {thumbnailUrl && (
         <div className="shrink-0 w-32 h-20 rounded overflow-hidden bg-muted/20">
           <img
-            src={thumbnailUrl}
+            src={thumbnailUrl.includes("twimg.com") ? `/api/media-proxy?url=${encodeURIComponent(thumbnailUrl)}` : thumbnailUrl}
             alt=""
             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
           />
@@ -118,9 +118,6 @@ export function MediaCard({
             )}
             <span>{author.displayName}</span>
           </Link>
-          {author.faceitLevel && (
-            <span className="text-cs-orange">LVL {author.faceitLevel}</span>
-          )}
           <div className="flex items-center gap-1">
             <MessageSquare className="h-3 w-3" />
             {commentCount}

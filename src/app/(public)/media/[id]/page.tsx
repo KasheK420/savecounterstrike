@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { ArrowLeft, ExternalLink, Clock, Shield } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
+import { UserBadges } from "@/components/shared/UserBadges";
 import { MediaEmbed } from "@/components/media/MediaEmbed";
 import { TwitterEmbed } from "@/components/media/TwitterEmbed";
 import { VoteButtons } from "@/components/media/VoteButtons";
@@ -74,6 +75,7 @@ export default async function MediaDetailPage({ params }: Props) {
           cs2HeadshotPct: true,
           faceitLevel: true,
           faceitElo: true,
+          karma: true,
           profileVisibility: true,
         },
       },
@@ -178,20 +180,12 @@ export default async function MediaDetailPage({ params }: Props) {
                 <p className="text-sm font-medium text-foreground">
                   {author.displayName}
                 </p>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-                  {author.cs2PlaytimeHours && (
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {author.cs2PlaytimeHours.toLocaleString()}h
-                    </span>
-                  )}
-                  {author.faceitLevel && (
-                    <span className="text-cs-orange flex items-center gap-1">
-                      <Shield className="h-3 w-3" />
-                      FACEIT {author.faceitLevel}
-                    </span>
-                  )}
-                </div>
+                <UserBadges
+                  cs2PlaytimeHours={media.author.cs2PlaytimeHours}
+                  faceitLevel={media.author.faceitLevel}
+                  faceitElo={media.author.faceitElo}
+                  karma={media.author.karma}
+                />
               </div>
               <span className="ml-auto text-xs text-muted-foreground">
                 {formatDate(media.createdAt)}

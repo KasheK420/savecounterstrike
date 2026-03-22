@@ -6,6 +6,7 @@ interface UserBadgesProps {
   cs2Wins?: number | null;
   cs2Kills?: number | null;
   faceitLevel?: number | null;
+  faceitElo?: number | null;
   profileVisibility?: number | null;
   karma?: number | null;
   hidePlaytime?: boolean | null;
@@ -24,6 +25,7 @@ function getFaceitColor(level: number): string {
 export function UserBadges({
   cs2PlaytimeHours,
   faceitLevel,
+  faceitElo,
   karma,
   hidePlaytime,
   hideFaceit,
@@ -66,7 +68,7 @@ export function UserBadges({
         className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${getFaceitColor(faceitLevel)}`}
         title={`FACEIT Level ${faceitLevel}`}
       >
-        FACEIT {faceitLevel}
+        {!compact && faceitElo ? `FACEIT ${faceitLevel} \u00b7 ${faceitElo}` : `FACEIT ${faceitLevel}`}
       </span>
     );
   }

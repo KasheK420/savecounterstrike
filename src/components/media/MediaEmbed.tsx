@@ -63,7 +63,11 @@ function TikTokEmbed({ embedUrl }: { embedUrl: string }) {
 function InstagramEmbedComponent({ url }: { url: string }) {
   return (
     <div className="flex justify-center max-w-[400px] mx-auto">
-      <IGEmbed url={url} width={400} />
+      <IGEmbed 
+        url={url} 
+        width={400}
+        onError={() => console.error("Instagram embed failed to load")}
+      />
     </div>
   );
 }
@@ -71,7 +75,11 @@ function InstagramEmbedComponent({ url }: { url: string }) {
 function FacebookEmbedComponent({ url }: { url: string }) {
   return (
     <div className="flex justify-center max-w-[500px] mx-auto">
-      <FBEmbed url={url} width={500} />
+      <FBEmbed 
+        url={url} 
+        width={500}
+        onError={() => console.error("Facebook embed failed to load")}
+      />
     </div>
   );
 }

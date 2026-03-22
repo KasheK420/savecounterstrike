@@ -14,6 +14,7 @@ import {
   ShieldAlert,
   Handshake,
   Bot,
+  Mail,
   ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,7 @@ const links: NavLink[] = [
   { href: "/admin/ban-waves", label: "Ban Waves", icon: ShieldAlert, adminOnly: true },
   { href: "/admin/bot", label: "GC Bot", icon: Bot, adminOnly: true },
   { href: "/admin/stats", label: "Stats", icon: BarChart3, adminOnly: true },
+  { href: "/admin/outreach", label: "Outreach", icon: Mail, adminOnly: true },
   { href: "/admin/analytics", label: "Analytics", icon: Activity, adminOnly: true },
 ];
 

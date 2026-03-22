@@ -29,8 +29,50 @@ function getFaceitColor(level: number): string {
   return "bg-[#FF0000]/15 text-[#FF0000]"; // Level 10
 }
 
+function SignerCard({ signer }: { signer: Signer }) {
+  const u = signer.user;
+  return (
+    <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 shrink-0">
+      <Avatar className="h-8 w-8 border border-border/50 shrink-0">
+        <AvatarImage src={u.avatarUrl || undefined} alt={u.displayName} />
+        <AvatarFallback className="bg-cs-navy text-cs-orange text-xs">
+          {u.displayName?.charAt(0)?.toUpperCase() || "?"}
+        </AvatarFallback>
+      </Avatar>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-sm font-medium text-foreground truncate">
+            {u.displayName}
+          </span>
+          {u.cs2PlaytimeHours != null && u.cs2PlaytimeHours > 0 && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-cs-orange/15 text-cs-orange shrink-0">
+              {u.cs2PlaytimeHours.toLocaleString()}h
+            </span>
+          )}
+          {u.faceitLevel != null && u.faceitLevel > 0 && (
+            <span
+              className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 ${getFaceitColor(u.faceitLevel)}`}
+            >
+              FACEIT {u.faceitLevel}
+            </span>
+          )}
+          <span className="text-xs text-muted-foreground shrink-0 ml-auto">
+            {new Date(signer.createdAt).toLocaleDateString()}
+          </span>
+        </div>
+        {signer.message && (
+          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+            &ldquo;{filterProfanity(signer.message)}&rdquo;
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function RecentSigners() {
   const [signers, setSigners] = useState<Signer[]>([]);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     async function fetchSigners() {
@@ -53,59 +95,53 @@ export function RecentSigners() {
     );
   }
 
+  // For very few signers, just show them statically
+  if (signers.length <= 5) {
+    return (
+      <div className="space-y-3">
+        <h3 className="font-heading text-sm uppercase tracking-widest text-muted-foreground text-center">
+          Recent Signatures
+        </h3>
+        <div className="space-y-2">
+          {signers.map((s) => (
+            <SignerCard key={s.id} signer={s} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const duration = signers.length * 3; // ~3s per signer
+
   return (
     <div className="space-y-3">
       <h3 className="font-heading text-sm uppercase tracking-widest text-muted-foreground text-center">
         Recent Signatures
       </h3>
-      <div className="space-y-2 max-h-80 overflow-y-auto">
-        {signers.map((signer) => {
-          const u = signer.user;
+      <div
+        className="relative overflow-hidden max-h-[420px]"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        {/* Top/bottom fade */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-6 z-10 bg-gradient-to-b from-card to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 z-10 bg-gradient-to-t from-card to-transparent" />
 
-          return (
-            <div
-              key={signer.id || u.id}
-              className="flex items-start gap-3 p-3 rounded-lg bg-muted/30"
-            >
-              <Avatar className="h-8 w-8 border border-border/50 shrink-0">
-                <AvatarImage
-                  src={u.avatarUrl || undefined}
-                  alt={u.displayName}
-                />
-                <AvatarFallback className="bg-cs-navy text-cs-orange text-xs">
-                  {u.displayName?.charAt(0)?.toUpperCase() || "?"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-sm font-medium text-foreground truncate">
-                    {u.displayName}
-                  </span>
-                  {u.cs2PlaytimeHours != null && u.cs2PlaytimeHours > 0 && (
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-cs-orange/15 text-cs-orange shrink-0">
-                      {u.cs2PlaytimeHours.toLocaleString()}h
-                    </span>
-                  )}
-                  {u.faceitLevel != null && u.faceitLevel > 0 && (
-                    <span
-                      className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 ${getFaceitColor(u.faceitLevel)}`}
-                    >
-                      FACEIT {u.faceitLevel}
-                    </span>
-                  )}
-                  <span className="text-xs text-muted-foreground shrink-0 ml-auto">
-                    {new Date(signer.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-                {signer.message && (
-                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                    &ldquo;{filterProfanity(signer.message)}&rdquo;
-                  </p>
-                )}
-              </div>
-            </div>
-          );
-        })}
+        <div
+          className="flex flex-col gap-2"
+          style={{
+            animation: `signers-scroll-up ${duration}s linear infinite`,
+            animationPlayState: isPaused ? "paused" : "running",
+          }}
+        >
+          {/* Render twice for seamless loop */}
+          {signers.map((s) => (
+            <SignerCard key={`a-${s.id}`} signer={s} />
+          ))}
+          {signers.map((s) => (
+            <SignerCard key={`b-${s.id}`} signer={s} />
+          ))}
+        </div>
       </div>
     </div>
   );

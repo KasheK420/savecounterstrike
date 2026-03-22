@@ -170,9 +170,9 @@ export function getEmbedUrl(url: string, platform: MediaPlatform): string | null
       return id ? `https://www.youtube.com/embed/${id}` : null;
     }
     case "INSTAGRAM": {
-      // Instagram requires client-side embed.js or oembed for proper rendering
-      // Return original URL; MediaEmbed component handles it
-      return extractInstagramId(url) ? url : null;
+      // Official Instagram iframe embed URL
+      const shortcode = extractInstagramId(url);
+      return shortcode ? `https://www.instagram.com/p/${shortcode}/embed/` : null;
     }
     case "TWITTER": {
       // Twitter/X requires client-side widgets.js or react-tweet
@@ -212,7 +212,8 @@ export function getEmbedUrl(url: string, platform: MediaPlatform): string | null
 
 /**
  * Generate thumbnail URL for media preview.
- * Supports YouTube directly + best-effort for other platforms using known CDN patterns.
+ * Only YouTube provides reliable direct thumbnail URLs.
+ * Other platforms require API keys or don't expose public thumbnail endpoints.
  *
  * @param url - Original media URL
  * @param platform - Detected platform type
@@ -225,35 +226,13 @@ export function getThumbnailUrl(url: string, platform: MediaPlatform): string | 
       // hqdefault.jpg is 480x360, available for most videos
       return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
     }
-    case "INSTAGRAM": {
-      // Instagram CDN pattern for posts/reels (high quality thumbnail)
-      const id = extractInstagramId(url);
-      if (id) {
-        return `https://instagram.com/p/${id}/media/?size=l`;
-      }
+    case "INSTAGRAM":
+    case "TWITTER":
+    case "FACEBOOK":
+      // These platforms don't have reliable public thumbnail endpoints
+      // without API authentication. Returning null is better than broken images.
+      // The embed itself will show the content on the detail page.
       return null;
-    }
-    case "TWITTER": {
-      // Twitter uses pbs.twimg.com for media; best effort via known pattern or fallback
-      const tweetInfo = extractTwitterStatusId(url);
-      if (tweetInfo) {
-        // Common pattern for first media in tweet (often works)
-        return `https://pbs.twimg.com/media/${tweetInfo.id.slice(0, 10)}`;
-      }
-      return null;
-    }
-    case "FACEBOOK": {
-      // Facebook often exposes OG image or uses external preview services
-      // Fallback to a generic high-res preview when possible
-      try {
-        const u = new URL(url);
-        const pathId = u.pathname.split('/').filter(Boolean).pop();
-        if (pathId) {
-          return `https://www.facebook.com/photo.php?fbid=${pathId}`;
-        }
-      } catch {}
-      return null;
-    }
     default:
       return null;
   }

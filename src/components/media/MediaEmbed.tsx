@@ -1,10 +1,6 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
-import {
-  InstagramEmbed as IGEmbed,
-  FacebookEmbed as FBEmbed,
-} from "react-social-media-embed";
 
 type MediaPlatform = "YOUTUBE" | "INSTAGRAM" | "TWITTER" | "TIKTOK" | "TWITCH" | "FACEBOOK" | "OTHER";
 
@@ -57,21 +53,51 @@ function TikTokEmbed({ embedUrl }: { embedUrl: string }) {
   );
 }
 
-// ── Library-based embeds (Instagram, Facebook) ──────────────
-// Note: Twitter is rendered server-side in media/[id]/page.tsx
+// ── Official iframe embeds (Instagram, Facebook) ──────────────
+// Using official iframe URLs instead of react-social-media-embed for reliability
 
-function InstagramEmbedComponent({ url }: { url: string }) {
+function InstagramEmbedComponent({ embedUrl }: { embedUrl: string | null }) {
+  if (!embedUrl) {
+    return (
+      <div className="p-4 text-center text-muted-foreground">
+        <p>Unable to load Instagram embed</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex justify-center max-w-[400px] mx-auto">
-      <IGEmbed url={url} width={400} />
+    <div className="flex justify-center w-full max-w-[400px] mx-auto">
+      <iframe
+        src={embedUrl}
+        className="w-full h-[500px] border-0 rounded-lg"
+        scrolling="no"
+        allowTransparency
+        allow="encrypted-media"
+        title="Instagram post"
+      />
     </div>
   );
 }
 
-function FacebookEmbedComponent({ url }: { url: string }) {
+function FacebookEmbedComponent({ embedUrl }: { embedUrl: string | null }) {
+  if (!embedUrl) {
+    return (
+      <div className="p-4 text-center text-muted-foreground">
+        <p>Unable to load Facebook embed</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex justify-center max-w-[500px] mx-auto">
-      <FBEmbed url={url} width={500} />
+    <div className="flex justify-center w-full max-w-[500px] mx-auto">
+      <iframe
+        src={embedUrl}
+        className="w-full h-[500px] border-0 rounded-lg"
+        scrolling="no"
+        allowTransparency
+        allow="encrypted-media"
+        title="Facebook post"
+      />
     </div>
   );
 }
@@ -108,9 +134,9 @@ export function MediaEmbed({ url, platform, embedUrl, title }: MediaEmbedProps) 
     case "TIKTOK":
       return embedUrl ? <TikTokEmbed embedUrl={embedUrl} /> : <FallbackEmbed url={url} title={title} />;
     case "INSTAGRAM":
-      return <InstagramEmbedComponent url={url} />;
+      return <InstagramEmbedComponent embedUrl={embedUrl} />;
     case "FACEBOOK":
-      return <FacebookEmbedComponent url={url} />;
+      return <FacebookEmbedComponent embedUrl={embedUrl} />;
     default:
       return <FallbackEmbed url={url} title={title} />;
   }

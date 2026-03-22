@@ -42,7 +42,7 @@ export default async function AdminUsersPage() {
         <StatCard
           title="Staff"
           value={
-            users.filter((u) => u.role === "ADMIN" || u.role === "MODERATOR")
+            users.filter((u: typeof users[0]) => u.role === "ADMIN" || u.role === "MODERATOR")
               .length
           }
           subtitle="Admins + Moderators"
@@ -65,7 +65,7 @@ export default async function AdminUsersPage() {
           </h3>
         </div>
         <div className="divide-y divide-border/20">
-          {users.map((user) => (
+          {users.map((user: typeof users[0]) => (
             <div
               key={user.id}
               className={`flex items-center gap-3 p-4 ${

@@ -1,8 +1,16 @@
 /**
- * Multilingual profanity word list.
- * All entries are lowercase. The filter uses word-boundary regex matching.
- * Organized by language/category.
+ * @fileoverview Multilingual profanity word list.
+ *
+ * Comprehensive list of profane words across 15+ languages.
+ * All entries are lowercase; the filter uses word-boundary regex matching.
+ * Organized by language/category for maintainability.
+ *
+ * Warning: This file contains offensive language for filtering purposes.
+ *
+ * @module profanity-words
  */
+
+/** Complete profanity word list used by the filterProfanity function */
 export const PROFANITY_WORDS: string[] = [
   // ── English ──────────────────────────────────────────
   "fuck", "fucker", "fucking", "fucked", "fucks", "motherfucker", "motherfucking",

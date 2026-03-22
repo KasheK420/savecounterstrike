@@ -1,8 +1,18 @@
+/**
+ * @fileoverview Home page component.
+ *
+ * Landing page featuring hero section, open letter preview,
+ * feature cards for main site sections, and informational content.
+ *
+ * @module app/page
+ */
+
 import { HeroSection } from "@/components/hero/HeroSection";
 import { OpenLetter } from "@/components/letter/OpenLetter";
 import { Shield, Video, MessageSquare, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
+/** Feature cards displayed on the homepage */
 const features = [
   {
     icon: Shield,
@@ -17,7 +27,7 @@ const features = [
     title: "Share Evidence",
     description:
       "Upload clips of cheaters ruining matches. Build an undeniable case for change.",
-    href: "/videos",
+    href: "/media",
     color: "text-cs-blue",
   },
   {
@@ -38,6 +48,9 @@ const features = [
   },
 ];
 
+/**
+ * Home page component — main landing page for the site.
+ */
 export default function HomePage() {
   return (
     <>

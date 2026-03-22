@@ -1,7 +1,21 @@
+/**
+ * @fileoverview User profile API.
+ *
+ * Retrieve public profile data or update own profile settings.
+ *
+ * @route GET   /api/users/{id} - Get user profile
+ * @route PATCH /api/users/{id} - Update own profile
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
+/**
+ * GET /api/users/{id}
+ * Retrieve public profile information for a user.
+ * Includes stats, petition status, recent opinions, and content counts.
+ */
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -55,6 +69,11 @@ export async function GET(
   return NextResponse.json(user);
 }
 
+/**
+ * PATCH /api/users/{id}
+ * Update own profile. Users can only modify their own profile.
+ * Supports: bio, customName, hidePlaytime, hideFaceit.
+ */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -67,6 +86,7 @@ export async function PATCH(
 
   const { id } = await params;
 
+  // Verify ownership
   if (id !== userId) {
     return NextResponse.json(
       { error: "You can only edit your own profile" },
@@ -75,18 +95,22 @@ export async function PATCH(
   }
 
   const body = await request.json();
-
   const data: Record<string, any> = {};
 
+  // Update bio (max 500 chars, profanity filtered)
   if (typeof body.bio === "string") {
     const { filterProfanity } = await import("@/lib/profanity");
     data.bio = filterProfanity(body.bio.trim().slice(0, 500)) || null;
   }
+
+  // Update custom name (max 32 chars, profanity filtered)
   if (typeof body.customName === "string") {
     const { filterProfanity } = await import("@/lib/profanity");
     const name = body.customName.trim().slice(0, 32);
     data.customName = name ? filterProfanity(name) : null;
   }
+
+  // Update privacy settings
   if (typeof body.hidePlaytime === "boolean") {
     data.hidePlaytime = body.hidePlaytime;
   }

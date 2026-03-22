@@ -1,3 +1,14 @@
+/**
+ * @fileoverview Petition signing API.
+ *
+ * Handles retrieving petition statistics, signing the petition,
+ * and admin deletion of signatures.
+ *
+ * @route GET    /api/petition       - Get signature count and recent signers
+ * @route POST   /api/petition       - Sign the petition (authenticated)
+ * @route DELETE /api/petition?id=   - Delete signature (admin only)
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -5,6 +16,9 @@ import { petitionSignSchema } from "@/lib/validations";
 import { filterProfanity } from "@/lib/profanity";
 import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 
+// ── Database Select Configurations ──────────────────────────
+
+/** Full user data with CS2/FACEIT stats */
 const USER_SELECT_WITH_STATS = {
   id: true,
   displayName: true,
@@ -16,12 +30,17 @@ const USER_SELECT_WITH_STATS = {
   profileVisibility: true,
 } as const;
 
+/** Basic user data (fallback for compatibility) */
 const USER_SELECT_BASE = {
   id: true,
   displayName: true,
   avatarUrl: true,
 } as const;
 
+/**
+ * GET /api/petition
+ * Returns total signature count and 100 most recent signers with user data.
+ */
 export async function GET() {
   // Try with stats fields first, fall back to base if migration not applied yet
   try {
@@ -52,6 +71,11 @@ export async function GET() {
   }
 }
 
+/**
+ * POST /api/petition
+ * Signs the petition for the authenticated user.
+ * Rate limit: 3 attempts per 10 minutes per IP.
+ */
 export async function POST(request: NextRequest) {
   // Rate limit: 3 petition attempts per 10 minutes per IP
   const rl = rateLimitByIp(request, "petition:sign", 3, 600_000);
@@ -71,6 +95,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Check for existing signature (one per user)
   const existing = await db.petitionSignature.findUnique({
     where: { userId: session.user.userId },
   });
@@ -82,6 +107,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Filter profanity from optional message
   const cleanMessage = parsed.data.message
     ? filterProfanity(parsed.data.message)
     : undefined;
@@ -96,6 +122,10 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(signature, { status: 201 });
 }
 
+/**
+ * DELETE /api/petition?id={signatureId}
+ * Removes a signature (admin only).
+ */
 export async function DELETE(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.role || session.user.role !== "ADMIN") {

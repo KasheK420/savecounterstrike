@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { RevenueTickerHero } from "@/components/hero/RevenueTickerHero";
 import { RevenueBreakdown } from "@/components/revenue/RevenueBreakdown";
 import { DollarSign } from "lucide-react";
@@ -11,8 +12,28 @@ export const metadata: Metadata = {
 
 export default function RevenuePage() {
   return (
-    <div className="min-h-screen py-16">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <div className="relative min-h-screen py-16 overflow-hidden">
+      {/* Gaben background meme */}
+      <div
+        className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.04] grayscale blur-[1px]"
+        style={{
+          maskImage: "radial-gradient(ellipse, black 30%, transparent 70%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse, black 30%, transparent 70%)",
+        }}
+      >
+        <Image
+          src="/images/gaben.webp"
+          alt=""
+          width={700}
+          height={700}
+          className="select-none"
+          aria-hidden="true"
+          priority={false}
+        />
+      </div>
+
+      <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <DollarSign className="h-16 w-16 text-cs-green mx-auto mb-6 opacity-50" />
           <h1 className="font-heading text-4xl font-bold mb-4">

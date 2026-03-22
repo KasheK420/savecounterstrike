@@ -25,5 +25,5 @@ export function SafeHtml({ html, className }: SafeHtmlProps) {
     () => DOMPurify.sanitize(html, { ALLOWED_TAGS, ALLOWED_ATTR, ADD_ATTR }),
     [html]
   );
-  return <div className={className} dangerouslySetInnerHTML={{ __html: clean }} />;
+  return <div className={`rendered-content ${className || ""}`} dangerouslySetInnerHTML={{ __html: clean }} />;
 }

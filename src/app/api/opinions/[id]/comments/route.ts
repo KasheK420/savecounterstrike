@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { commentSchema } from "@/lib/validations";
 import { sanitizeContent } from "@/lib/sanitize";
+import { filterProfanity } from "@/lib/profanity";
 
 export async function GET(
   _request: NextRequest,
@@ -82,7 +83,7 @@ export async function POST(
 
   const comment = await db.comment.create({
     data: {
-      content: sanitizeContent(parsed.data.content),
+      content: filterProfanity(sanitizeContent(parsed.data.content)),
       authorId: userId,
       opinionId: id,
       parentId: parsed.data.parentId || null,

@@ -83,8 +83,7 @@ export function OpinionForm() {
         );
       }
 
-      const opinion = await res.json();
-      router.push(`/opinions/${opinion.id}`);
+      router.push(`/opinions/${data.id}`);
       router.refresh();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to submit opinion");

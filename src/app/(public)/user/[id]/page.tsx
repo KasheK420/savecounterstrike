@@ -196,7 +196,7 @@ export default async function UserProfilePage({
               </h2>
             </div>
             <div className="space-y-2">
-              {user.opinions.map((op) => (
+              {user.opinions.map((op: typeof user.opinions[0]) => (
                 <Link
                   key={op.id}
                   href={`/opinions/${op.id}`}

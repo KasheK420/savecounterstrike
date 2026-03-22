@@ -54,7 +54,7 @@ export default async function AdminOpinionsPage() {
 
       <div className="cs-card rounded-lg overflow-hidden">
         <div className="divide-y divide-border/20">
-          {opinions.map((op) => (
+          {opinions.map((op: typeof opinions[0]) => (
             <Link
               key={op.id}
               href={`/opinions/${op.id}`}

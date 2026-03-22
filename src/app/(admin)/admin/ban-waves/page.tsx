@@ -194,7 +194,7 @@ export default function AdminBanWavesPage() {
           </h3>
         </div>
         <div className="divide-y divide-border/20">
-          {banWaves.map((wave) => (
+          {banWaves.map((wave: typeof banWaves[0]) => (
             <div key={wave.id} className="flex items-start gap-3 p-4">
               <Radio className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
               <div className="min-w-0 flex-1">

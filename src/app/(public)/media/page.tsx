@@ -116,7 +116,7 @@ export default async function MediaPage({ searchParams }: Props) {
           </div>
         ) : (
           <div className="space-y-2">
-            {media.map((m) => (
+            {media.map((m: typeof media[0]) => (
               <MediaCard
                 key={m.id}
                 id={m.id}

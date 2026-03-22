@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Rate limit: 30 votes per minute per IP
+  const rl = rateLimitByIp(request, "vote:opinion", 30, 60_000);
+  if (rl.limited) return rateLimitResponse(rl);
+
   const session = await auth();
   const userId = (session?.user as any)?.userId;
   if (!userId) {

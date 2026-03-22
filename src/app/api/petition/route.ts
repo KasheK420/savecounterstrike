@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { petitionSignSchema } from "@/lib/validations";
 import { filterProfanity } from "@/lib/profanity";
+import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 
 const USER_SELECT_WITH_STATS = {
   id: true,
@@ -52,6 +53,10 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 3 petition attempts per 10 minutes per IP
+  const rl = rateLimitByIp(request, "petition:sign", 3, 600_000);
+  if (rl.limited) return rateLimitResponse(rl);
+
   const session = await auth();
   if (!session?.user?.userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

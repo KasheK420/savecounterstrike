@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAdminApi } from "@/lib/admin";
+import { requireAdmin, requireAdminApi } from "@/lib/admin";
 import { articleSchema } from "@/lib/validations";
 
 function slugifyTag(name: string): string {
@@ -10,8 +10,10 @@ function slugifyTag(name: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-export async function GET(request: NextRequest) {
-  const isAdmin = request.headers.get("x-admin") === "true";
+export async function GET() {
+  // Check admin via server-side session, not client header
+  const adminSession = await requireAdmin();
+  const isAdmin = !!adminSession;
 
   const articles = await db.article.findMany({
     where: isAdmin ? {} : { published: true },

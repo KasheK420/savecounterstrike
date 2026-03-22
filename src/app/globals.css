@@ -274,6 +274,15 @@
 
 /* ── Supporter Logo Slider ────────────────────── */
 
+@keyframes signers-scroll-up {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
 @keyframes supporter-scroll {
   0% {
     transform: translateX(0);

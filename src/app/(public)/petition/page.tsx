@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     "Add your voice to thousands of CS2 players demanding Valve fix their anti-cheat.",
 };
 
-const GOAL = 10000;
+const GOAL = 200000;
 
 export default async function PetitionPage() {
   const session = await auth();
@@ -74,6 +74,12 @@ export default async function PetitionPage() {
           {/* Right — Recent signers */}
           <div className="cs-card rounded-xl p-6">
             <RecentSigners />
+            <Link
+              href="/signatures"
+              className="block mt-4 text-center text-xs text-cs-orange hover:text-cs-orange-light transition-colors"
+            >
+              View all signatures &rarr;
+            </Link>
           </div>
         </div>
 

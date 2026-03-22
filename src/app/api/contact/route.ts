@@ -38,14 +38,13 @@ export async function POST(request: NextRequest) {
     const { name, email, subject, message } = parsed.data;
 
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "mail.majorluk.pl",
+      host: process.env.SMTP_HOST || "smtp.protonmail.ch",
       port: Number(process.env.SMTP_PORT || 587),
       secure: false,
       auth: {
         user: process.env.SMTP_USER || "contact@savecounterstrike.com",
         pass: process.env.SMTP_PASS,
       },
-      tls: { rejectUnauthorized: false },
     });
 
     await transporter.sendMail({

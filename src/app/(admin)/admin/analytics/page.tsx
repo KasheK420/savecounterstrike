@@ -17,6 +17,20 @@ import {
   Legend,
 } from "recharts";
 
+function countryFlag(code: string | null): string {
+  if (!code || code.length !== 2) return code || "--";
+  return code
+    .toUpperCase()
+    .split("")
+    .map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
+    .join("");
+}
+
+function countryLabel(code: string | null): string {
+  if (!code) return "--";
+  return `${countryFlag(code)} ${code.toUpperCase()}`;
+}
+
 interface AnalyticsData {
   totalViews: number;
   uniqueVisitors: number;
@@ -73,7 +87,7 @@ export default function AdminAnalyticsPage() {
 
   const topCountry =
     data?.topCountries && data.topCountries.length > 0
-      ? data.topCountries[0].country
+      ? countryLabel(data.topCountries[0].country)
       : "--";
 
   const topPage =
@@ -264,7 +278,13 @@ export default function AdminAnalyticsPage() {
               </h2>
               {data.topCountries.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={data.topCountries} layout="vertical">
+                  <BarChart
+                    data={data.topCountries.map((c) => ({
+                      ...c,
+                      label: countryLabel(c.country),
+                    }))}
+                    layout="vertical"
+                  >
                     <CartesianGrid
                       strokeDasharray="3 3"
                       stroke="var(--border)"
@@ -276,10 +296,10 @@ export default function AdminAnalyticsPage() {
                     />
                     <YAxis
                       type="category"
-                      dataKey="country"
+                      dataKey="label"
                       stroke="var(--muted-foreground)"
-                      tick={{ fontSize: 12 }}
-                      width={40}
+                      tick={{ fontSize: 13 }}
+                      width={70}
                     />
                     <Tooltip
                       contentStyle={{
@@ -495,7 +515,7 @@ export default function AdminAnalyticsPage() {
                           {view.path}
                         </td>
                         <td className="py-2 text-muted-foreground">
-                          {view.country}
+                          {countryLabel(view.country)}
                         </td>
                         <td className="py-2 text-muted-foreground capitalize">
                           {view.device}

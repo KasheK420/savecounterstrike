@@ -8,7 +8,7 @@ import { MediaEmbed } from "@/components/media/MediaEmbed";
 import { VoteButtons } from "@/components/media/VoteButtons";
 import { CommentSection } from "@/components/media/CommentSection";
 import { AdminMediaControls } from "./AdminMediaControls";
-import { TwitterEmbed } from "@/components/media/TwitterEmbed";
+import Script from "next/script";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -146,8 +146,31 @@ export default async function MediaDetailPage({ params }: Props) {
             </div>
 
             {/* Embed */}
-            {isTwitter ? (
-              <TwitterEmbed tweetUrl={media.url} />
+            {media.platform === "TWITTER" ? (
+              <div className="flex justify-center">
+                {tweetData ? (
+                  <EmbeddedTweet tweet={tweetData} />
+                ) : tweetError || !tweetId ? (
+                  <div className="w-full max-w-[550px]">
+                    {/* Fallback to official X embed */}
+                    <blockquote className="twitter-tweet" data-theme="dark">
+                      <a href={media.url}>Loading X post...</a>
+                    </blockquote>
+                    <Script
+                      src="https://platform.twitter.com/widgets.js"
+                      strategy="afterInteractive"
+                      async
+                    />
+                    {isAdmin && (
+                      <div className="mt-2 text-[10px] text-amber-400 font-mono">
+                        DEBUG: react-tweet failed, using official widget fallback
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <TweetNotFound />
+                )}
+              </div>
             ) : (
               <MediaEmbed
                 url={media.url}

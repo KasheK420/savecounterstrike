@@ -30,6 +30,56 @@ interface KofiPayload {
   shipping: unknown | null;
 }
 
+/**
+ * Send a notification to Discord admin channel via webhook.
+ */
+async function notifyDiscord(payload: KofiPayload): Promise<void> {
+  const webhookUrl = process.env.DISCORD_ADMIN_WEBHOOK_URL;
+  if (!webhookUrl) return;
+
+  try {
+    const isFirst = payload.is_first_subscription_payment;
+    const isSub = payload.is_subscription_payment;
+    const name = payload.is_public ? payload.from_name : "Anonymous";
+
+    const color = isSub ? 0x2ecc71 : 0xe67e22; // green for subs, orange for tips
+    const title = isFirst
+      ? `New Subscriber: ${name}`
+      : isSub
+        ? `Recurring Payment: ${name}`
+        : `New Tip: ${name}`;
+
+    const fields = [
+      { name: "Amount", value: `${payload.amount} ${payload.currency}`, inline: true },
+      { name: "Type", value: payload.type, inline: true },
+    ];
+
+    if (payload.tier_name) {
+      fields.push({ name: "Tier", value: payload.tier_name, inline: true });
+    }
+
+    if (payload.message && payload.is_public) {
+      fields.push({ name: "Message", value: payload.message, inline: false });
+    }
+
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        embeds: [{
+          title,
+          color,
+          fields,
+          footer: { text: "Ko-fi Webhook" },
+          timestamp: payload.timestamp,
+        }],
+      }),
+    });
+  } catch (error) {
+    console.error("[Ko-fi] Discord notification error:", error);
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Ko-fi sends application/x-www-form-urlencoded with a `data` field
@@ -85,6 +135,9 @@ export async function POST(request: NextRequest) {
       `[Ko-fi] ${payload.type} from ${payload.from_name}: ${payload.amount} ${payload.currency}` +
         (payload.tier_name ? ` (tier: ${payload.tier_name})` : "")
     );
+
+    // Notify admin Discord channel via webhook
+    await notifyDiscord(payload);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

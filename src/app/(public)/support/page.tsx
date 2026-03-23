@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Heart, Coffee, Server, Clock } from "lucide-react";
+import { Heart, Coffee, Server, Clock, Users } from "lucide-react";
 import { CryptoAddress } from "@/components/support/CryptoAddress";
 import { SupporterList } from "@/components/support/SupporterList";
 
@@ -60,7 +60,7 @@ export default function SupportPage() {
         </div>
 
         {/* What it covers */}
-        <div className="grid sm:grid-cols-3 gap-4 mb-12">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
           <div className="cs-card rounded-lg p-5 text-center">
             <Server className="h-6 w-6 text-cs-blue mx-auto mb-2" />
             <h3 className="font-heading text-sm font-semibold text-foreground">
@@ -80,6 +80,15 @@ export default function SupportPage() {
             </p>
           </div>
           <div className="cs-card rounded-lg p-5 text-center">
+            <Users className="h-6 w-6 text-cs-green mx-auto mb-2" />
+            <h3 className="font-heading text-sm font-semibold text-foreground">
+              Community Growth
+            </h3>
+            <p className="text-xs text-muted-foreground mt-1">
+              Events, tools, resources
+            </p>
+          </div>
+          <div className="cs-card rounded-lg p-5 text-center">
             <Coffee className="h-6 w-6 text-cs-orange mx-auto mb-2" />
             <h3 className="font-heading text-sm font-semibold text-foreground">
               Coffee Fuel
@@ -88,6 +97,17 @@ export default function SupportPage() {
               Keeping the team going
             </p>
           </div>
+        </div>
+
+        {/* Community reinvestment note */}
+        <div className="cs-card rounded-lg p-6 mb-8 border-cs-green/20">
+          <p className="text-sm text-muted-foreground text-center leading-relaxed">
+            <strong className="text-foreground">Where does the money go?</strong>{" "}
+            After covering server and development costs, any surplus gets reinvested
+            directly into the community — better tools, community events, educational
+            content, and resources that help CS2 players organize and make their voices
+            heard. Full transparency for top-tier supporters.
+          </p>
         </div>
 
         {/* Ko-fi + Discord */}
@@ -184,10 +204,11 @@ export default function SupportPage() {
         {/* Disclaimer */}
         <div className="mt-12 text-center">
           <p className="text-xs text-muted-foreground/60 max-w-lg mx-auto leading-relaxed">
-            All tips go directly toward server costs and development of
-            SaveCounterStrike.com. This is a community project — we don&apos;t
-            profit from it. Tips are voluntary and non-refundable. Thank
-            you for your support.
+            All tips go toward server costs, development, and community
+            growth. This is a community project — surplus funds are
+            reinvested into tools, events, and resources for the CS2
+            community. Tips are voluntary and non-refundable. Thank you
+            for your support.
           </p>
         </div>
       </div>

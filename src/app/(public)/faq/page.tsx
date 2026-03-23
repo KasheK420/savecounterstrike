@@ -66,7 +66,7 @@ const FAQ_DATA: FaqCategory[] = [
     items: [
       {
         q: "How do I sign the petition?",
-        a: "Click 'Sign the Petition' and log in with your Steam account. Steam is the only way to sign — this ensures every signature is from a real player and prevents duplicate signatures. You can optionally add a personal message with your signature.",
+        a: "There are two ways: 1) Sign in with your Steam account for a fully verified signature, or 2) Enter your Steam profile URL or Steam64 ID without logging in. Both methods verify your Steam profile exists via the Steam API. Signing via Steam login is preferred as it gives full verification, but we want everyone to be able to participate.",
       },
       {
         q: "Who can see my signature?",

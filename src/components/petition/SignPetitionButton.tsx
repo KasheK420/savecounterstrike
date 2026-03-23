@@ -83,13 +83,15 @@ export function SignPetitionButton({ alreadySigned }: SignPetitionButtonProps) {
             <ExternalLink className="h-4 w-4" />
             Facebook
           </a>
-          <button
-            onClick={handleCopy}
-            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-muted hover:bg-muted/80 text-foreground border border-border/50 transition-colors"
+          <a
+            href="https://discord.gg/zwBzCN6CE5"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-[#5865F2] hover:bg-[#4752C4] text-white transition-colors"
           >
-            {copied ? <Check className="h-4 w-4 text-cs-green" /> : <Copy className="h-4 w-4" />}
-            {copied ? "Copied!" : "Copy Link"}
-          </button>
+            <ExternalLink className="h-4 w-4" />
+            Join Discord
+          </a>
         </div>
       </div>
     );

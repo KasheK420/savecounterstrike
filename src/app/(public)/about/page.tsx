@@ -152,6 +152,21 @@ export default function AboutPage() {
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
+                    <Users className="h-4 w-4 text-[#5865F2] mt-1 shrink-0" />
+                    <span>
+                      <strong className="text-foreground">Join the Discord</strong> —
+                      connect with the community, get updates, unlock supporter perks on{" "}
+                      <a
+                        href="https://discord.gg/zwBzCN6CE5"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-cs-orange hover:text-cs-orange-light transition-colors"
+                      >
+                        our server
+                      </a>
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
                     <Heart className="h-4 w-4 text-cs-red mt-1 shrink-0" />
                     <span>
                       <strong className="text-foreground">Support us</strong> —
@@ -160,7 +175,7 @@ export default function AboutPage() {
                         href="/support"
                         className="text-cs-orange hover:text-cs-orange-light transition-colors"
                       >
-                        small donation
+                        tip on Ko-fi
                       </Link>
                     </span>
                   </li>

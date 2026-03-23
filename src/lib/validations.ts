@@ -66,6 +66,28 @@ export const contactSchema = z.object({
   message: z.string().min(10, "Message must be at least 10 characters").max(5000),
 });
 
+// ── Ko-fi Supporters (Bot API) ────────────────────────────
+
+/** Schema for bot → web supporter registration */
+export const supporterRegisterSchema = z.object({
+  discordId: z.string().min(1, "Discord ID is required"),
+  steamId: z.string().regex(/^\d{17}$/, "Must be a valid 17-digit Steam ID"),
+  displayName: z.string().min(1).max(64),
+  avatarUrl: z.string().url().optional(),
+  tier: z.string().min(1),
+  tierLevel: z.coerce.number().int().min(1).max(10),
+  customMessage: z
+    .string()
+    .max(200)
+    .optional()
+    .transform((v) => v?.trim() || undefined),
+});
+
+/** Schema for bot → web supporter deactivation */
+export const supporterDeactivateSchema = z.object({
+  discordId: z.string().min(1, "Discord ID is required"),
+});
+
 // ── Articles (Admin) ───────────────────────────────────────
 
 /** Schema for blog article creation/editing (admin only) */

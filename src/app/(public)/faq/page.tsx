@@ -108,7 +108,11 @@ const FAQ_DATA: FaqCategory[] = [
       },
       {
         q: "How can I support the project?",
-        a: "There are several ways: sign the petition, submit and vote on opinions, share the site with other CS2 players, contribute to the codebase on GitHub, or help cover server costs with a small donation on our Support page (PayPal or crypto).",
+        a: "There are several ways: sign the petition, submit and vote on opinions, share the site with other CS2 players, contribute to the codebase on GitHub, join our Discord community, or help cover server costs with a tip on our Support page (Ko-fi, PayPal, or crypto).",
+      },
+      {
+        q: "How do I join the Discord?",
+        a: "Join our Discord server at discord.gg/zwBzCN6CE5 — it's the central hub for the SaveCounterStrike community. Chat with other players, get early access to new features, and if you're a Ko-fi supporter, unlock exclusive channels and perks based on your membership tier.",
       },
     ],
   },

@@ -70,6 +70,38 @@ export async function requireAdminApi() {
  *
  * @returns Object with error flag, response (if error), and session (if success)
  */
+/**
+ * API route helper for bot-to-web service calls.
+ * Validates the shared secret in Authorization header.
+ *
+ * @returns Object with error flag and response (if error)
+ */
+export function requireBotApi(request: Request) {
+  const secret = process.env.BOT_API_SECRET;
+  if (!secret) {
+    return {
+      error: true as const,
+      response: new Response(
+        JSON.stringify({ error: "Server misconfigured — BOT_API_SECRET not set" }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      ),
+    };
+  }
+
+  const auth = request.headers.get("authorization");
+  if (auth !== `Bearer ${secret}`) {
+    return {
+      error: true as const,
+      response: new Response(
+        JSON.stringify({ error: "Unauthorized — invalid bot API secret" }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+      ),
+    };
+  }
+
+  return { error: false as const };
+}
+
 export async function requireModeratorApi() {
   const session = await requireModerator();
   if (!session) {

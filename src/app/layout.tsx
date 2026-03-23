@@ -135,7 +135,7 @@ export default async function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
         </SessionProvider>
-        <KofiWidget />
+        {/* <KofiWidget /> */}
       </body>
     </html>
   );

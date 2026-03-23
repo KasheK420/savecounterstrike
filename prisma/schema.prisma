@@ -130,15 +130,17 @@ model Opinion {
 }
 
 model OpinionVote {
-  id        String @id @default(cuid())
+  id        String  @id @default(cuid())
   opinionId String
-  userId    String
+  userId    String?
+  ipHash    String?
   value     Int
 
   opinion Opinion @relation(fields: [opinionId], references: [id], onDelete: Cascade)
-  user    User    @relation("UserOpinionVotes", fields: [userId], references: [id], onDelete: Cascade)
+  user    User?   @relation("UserOpinionVotes", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([opinionId, userId])
+  @@unique([opinionId, ipHash])
 }
 
 model Comment {
@@ -166,15 +168,17 @@ model Comment {
 }
 
 model CommentVote {
-  id        String @id @default(cuid())
+  id        String  @id @default(cuid())
   commentId String
-  userId    String
+  userId    String?
+  ipHash    String?
   value     Int
 
   comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  user    User    @relation("UserCommentVotes", fields: [userId], references: [id], onDelete: Cascade)
+  user    User?   @relation("UserCommentVotes", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([commentId, userId])
+  @@unique([commentId, ipHash])
 }
 
 enum ContentStatus {
@@ -210,15 +214,17 @@ model Media {
 }
 
 model MediaVote {
-  id      String @id @default(cuid())
+  id      String  @id @default(cuid())
   mediaId String
-  userId  String
+  userId  String?
+  ipHash  String?
   value   Int
 
   media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)
-  user  User  @relation("UserMediaVotes", fields: [userId], references: [id], onDelete: Cascade)
+  user  User?  @relation("UserMediaVotes", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([mediaId, userId])
+  @@unique([mediaId, ipHash])
 }
 
 enum MediaPlatform {

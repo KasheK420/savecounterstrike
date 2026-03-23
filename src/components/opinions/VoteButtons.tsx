@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { useSession } from "@/components/auth/SessionProvider";
 
 interface VoteButtonsProps {
   targetId: string;
@@ -17,17 +16,17 @@ export function VoteButtons({
   initialScore,
   vertical = true,
 }: VoteButtonsProps) {
-  const { user } = useSession();
   const [score, setScore] = useState(initialScore);
   const [myVote, setMyVote] = useState<number>(0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleVote(value: number) {
-    if (!user) return;
     if (loading) return;
 
     const newValue = myVote === value ? 0 : value;
     setLoading(true);
+    setError(null);
 
     try {
       const url =
@@ -41,9 +40,15 @@ export function VoteButtons({
         body: JSON.stringify({ value: newValue }),
       });
 
-      const data = await res.json();
-      setScore(data.score);
-      setMyVote(newValue);
+      if (res.ok) {
+        const data = await res.json();
+        setScore(data.score);
+        setMyVote(newValue);
+      } else if (res.status === 429) {
+        setError("Too many votes, slow down");
+      } else {
+        setError("Vote failed");
+      }
     } catch {
       // Silent
     } finally {
@@ -59,13 +64,13 @@ export function VoteButtons({
     <div className={containerClass}>
       <button
         onClick={() => handleVote(1)}
-        disabled={!user}
+        disabled={loading}
         className={`p-0.5 rounded transition-colors ${
           myVote === 1
             ? "text-cs-orange"
             : "text-muted-foreground/50 hover:text-cs-orange"
-        } ${!user ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
-        title={user ? "Upvote" : "Sign in to vote"}
+        } ${loading ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
+        title="Upvote"
       >
         <ChevronUp className={vertical ? "h-5 w-5" : "h-4 w-4"} />
       </button>
@@ -80,16 +85,19 @@ export function VoteButtons({
 
       <button
         onClick={() => handleVote(-1)}
-        disabled={!user}
+        disabled={loading}
         className={`p-0.5 rounded transition-colors ${
           myVote === -1
             ? "text-cs-red"
             : "text-muted-foreground/50 hover:text-cs-red"
-        } ${!user ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
-        title={user ? "Downvote" : "Sign in to vote"}
+        } ${loading ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
+        title="Downvote"
       >
         <ChevronDown className={vertical ? "h-5 w-5" : "h-4 w-4"} />
       </button>
+      {error && (
+        <span className="text-xs text-cs-red/70 mt-0.5">{error}</span>
+      )}
     </div>
   );
 }

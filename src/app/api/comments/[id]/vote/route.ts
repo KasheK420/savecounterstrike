@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { getVoteIpHash } from "@/lib/vote-hash";
 import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function POST(
@@ -11,9 +12,11 @@ export async function POST(
   if (rl.limited) return rateLimitResponse(rl);
 
   const session = await auth();
-  const userId = session?.user?.userId;
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const userId = session?.user?.userId || null;
+  const ipHash = !userId ? getVoteIpHash(request) : null;
+
+  if (!userId && !ipHash) {
+    return NextResponse.json({ error: "Cannot identify voter" }, { status: 400 });
   }
 
   const { id } = await params;
@@ -27,10 +30,19 @@ export async function POST(
     });
     if (!comment) throw new Error("NOT_FOUND");
 
-    const isOwnContent = comment.authorId === userId;
-    const existing = await tx.commentVote.findUnique({
-      where: { commentId_userId: { commentId: id, userId } },
-    });
+    const isOwnContent = userId ? comment.authorId === userId : false;
+
+    // Find existing vote — by userId (authenticated) or ipHash (anonymous)
+    let existing;
+    if (userId) {
+      existing = await tx.commentVote.findUnique({
+        where: { commentId_userId: { commentId: id, userId } },
+      });
+    } else {
+      existing = await tx.commentVote.findFirst({
+        where: { commentId: id, ipHash },
+      });
+    }
 
     let karmaChange = 0;
 
@@ -55,7 +67,12 @@ export async function POST(
       }
     } else if (value !== 0) {
       await tx.commentVote.create({
-        data: { commentId: id, userId, value },
+        data: {
+          commentId: id,
+          userId,
+          ipHash,
+          value,
+        },
       });
       await tx.comment.update({
         where: { id },
@@ -64,7 +81,8 @@ export async function POST(
       karmaChange = value;
     }
 
-    if (karmaChange !== 0 && !isOwnContent) {
+    // Karma only applies when voter is authenticated and content isn't their own
+    if (karmaChange !== 0 && userId && !isOwnContent) {
       await tx.user.update({
         where: { id: comment.authorId },
         data: { karma: { increment: karmaChange } },

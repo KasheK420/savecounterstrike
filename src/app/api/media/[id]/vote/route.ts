@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { getVoteIpHash } from "@/lib/vote-hash";
 import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 import { checkAutoModeration } from "@/lib/moderation";
 
@@ -12,9 +13,11 @@ export async function POST(
   if (rl.limited) return rateLimitResponse(rl);
 
   const session = await auth();
-  const userId = session?.user?.userId;
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const userId = session?.user?.userId || null;
+  const ipHash = !userId ? getVoteIpHash(request) : null;
+
+  if (!userId && !ipHash) {
+    return NextResponse.json({ error: "Cannot identify voter" }, { status: 400 });
   }
 
   const { id } = await params;
@@ -25,9 +28,17 @@ export async function POST(
     const media = await tx.media.findUnique({ where: { id } });
     if (!media) throw new Error("NOT_FOUND");
 
-    const existing = await tx.mediaVote.findUnique({
-      where: { mediaId_userId: { mediaId: id, userId } },
-    });
+    // Find existing vote — by userId (authenticated) or ipHash (anonymous)
+    let existing;
+    if (userId) {
+      existing = await tx.mediaVote.findUnique({
+        where: { mediaId_userId: { mediaId: id, userId } },
+      });
+    } else {
+      existing = await tx.mediaVote.findFirst({
+        where: { mediaId: id, ipHash },
+      });
+    }
 
     if (existing) {
       if (existing.value === value || value === 0) {
@@ -40,7 +51,12 @@ export async function POST(
       }
     } else if (value !== 0) {
       await tx.mediaVote.create({
-        data: { mediaId: id, userId, value },
+        data: {
+          mediaId: id,
+          userId,
+          ipHash,
+          value,
+        },
       });
     }
 

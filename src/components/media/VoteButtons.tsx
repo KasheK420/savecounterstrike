@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { useSession } from "@/components/auth/SessionProvider";
 
 interface VoteButtonsProps {
   entityType: "media" | "comment";
@@ -19,14 +18,13 @@ export function VoteButtons({
   initialUserVote,
   size = "md",
 }: VoteButtonsProps) {
-  const { user } = useSession();
   const [score, setScore] = useState(initialScore);
   const [userVote, setUserVote] = useState(initialUserVote);
   const [loading, setLoading] = useState(false);
 
   const vote = useCallback(
     async (value: 1 | -1) => {
-      if (!user || loading) return;
+      if (loading) return;
 
       const newValue = userVote === value ? 0 : value;
       const prevScore = score;
@@ -64,7 +62,7 @@ export function VoteButtons({
         setLoading(false);
       }
     },
-    [user, loading, userVote, score, entityType, entityId]
+    [loading, userVote, score, entityType, entityId]
   );
 
   const iconSize = size === "sm" ? "h-4 w-4" : "h-5 w-5";
@@ -74,7 +72,7 @@ export function VoteButtons({
     <div className="flex flex-col items-center gap-0.5">
       <button
         onClick={() => vote(1)}
-        disabled={!user || loading}
+        disabled={loading}
         className={`p-1 rounded transition-colors ${
           userVote === 1
             ? "text-cs-orange bg-cs-orange/10"
@@ -97,7 +95,7 @@ export function VoteButtons({
       </span>
       <button
         onClick={() => vote(-1)}
-        disabled={!user || loading}
+        disabled={loading}
         className={`p-1 rounded transition-colors ${
           userVote === -1
             ? "text-cs-blue bg-cs-blue/10"

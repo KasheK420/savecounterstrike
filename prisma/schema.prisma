@@ -328,6 +328,46 @@ model OutreachContact {
   @@index([engaged])
 }
 
+// ── Ko-fi Supporters ──────────────────────────────────
+
+model Supporter {
+  id            String   @id @default(cuid())
+  discordId     String   @unique
+  steamId       String
+  displayName   String
+  avatarUrl     String?
+  tier          String
+  tierLevel     Int
+  customMessage String?  @db.VarChar(200)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([isActive, tierLevel])
+}
+
+// ── Ko-fi Transactions ────────────────────────────────
+
+model KofiTransaction {
+  id                String   @id @default(cuid())
+  messageId         String   @unique
+  type              String
+  amount            Float
+  currency          String
+  fromName          String
+  email             String?
+  tierName          String?
+  isFirstPayment    Boolean  @default(false)
+  isSubscription    Boolean  @default(false)
+  isPublic          Boolean  @default(true)
+  message           String?
+  kofiTransactionId String?
+  createdAt         DateTime @default(now())
+
+  @@index([type])
+  @@index([createdAt])
+}
+
 // ── Site Configuration ──────────────────────────────────
 
 model SiteConfig {

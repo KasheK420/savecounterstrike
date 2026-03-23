@@ -5,7 +5,7 @@ import { useSession } from "@/components/auth/SessionProvider";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { Textarea } from "@/components/ui/textarea";
-import { Shield, CheckCircle, Loader2, ExternalLink, Copy, Check } from "lucide-react";
+import { Shield, CheckCircle, Loader2, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -20,8 +20,6 @@ export function SignPetitionButton({ alreadySigned }: SignPetitionButtonProps) {
   const [loading, setLoading] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
-
   if (!user) {
     return (
       <div className="text-center space-y-4">
@@ -44,12 +42,6 @@ export function SignPetitionButton({ alreadySigned }: SignPetitionButtonProps) {
 
   const shareUrl = "https://savecounterstrike.com";
   const shareText = "I just signed the petition to save Counter-Strike from cheaters. Join us and demand better anti-cheat from Valve!";
-
-  function handleCopy() {
-    navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
 
   if (signed) {
     return (
@@ -83,13 +75,15 @@ export function SignPetitionButton({ alreadySigned }: SignPetitionButtonProps) {
             <ExternalLink className="h-4 w-4" />
             Facebook
           </a>
-          <button
-            onClick={handleCopy}
-            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-muted hover:bg-muted/80 text-foreground border border-border/50 transition-colors"
+          <a
+            href="https://discord.gg/zwBzCN6CE5"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-[#5865F2] hover:bg-[#4752C4] text-white transition-colors"
           >
-            {copied ? <Check className="h-4 w-4 text-cs-green" /> : <Copy className="h-4 w-4" />}
-            {copied ? "Copied!" : "Copy Link"}
-          </button>
+            <ExternalLink className="h-4 w-4" />
+            Join Discord
+          </a>
         </div>
       </div>
     );

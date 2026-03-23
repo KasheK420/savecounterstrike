@@ -9,7 +9,7 @@
 
 import { HeroSection } from "@/components/hero/HeroSection";
 import { OpenLetter } from "@/components/letter/OpenLetter";
-import { Shield, Video, MessageSquare, BarChart3 } from "lucide-react";
+import { Shield, Video, MessageSquare, BarChart3, Users } from "lucide-react";
 import Link from "next/link";
 
 /** Feature cards displayed on the homepage */
@@ -90,6 +90,38 @@ export default function HomePage() {
                 </p>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Community CTA */}
+      <section className="py-12 bg-cs-darker">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <div className="cs-card rounded-xl p-8 text-center space-y-4 border-cs-orange/20">
+            <Users className="h-10 w-10 text-[#5865F2] mx-auto" />
+            <h2 className="font-heading text-2xl font-bold text-foreground">
+              JOIN THE <span className="text-cs-orange">MOVEMENT</span>
+            </h2>
+            <p className="text-muted-foreground max-w-lg mx-auto">
+              Connect with thousands of CS2 players fighting for change. Get updates,
+              discuss strategy, and unlock exclusive supporter perks.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <a
+                href="https://discord.gg/zwBzCN6CE5"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cs-btn cs-btn-lg font-bold"
+              >
+                Join Discord
+              </a>
+              <Link
+                href="/support"
+                className="cs-btn cs-btn-lg font-bold bg-transparent border border-border hover:border-cs-orange/50"
+              >
+                Support Us
+              </Link>
+            </div>
           </div>
         </div>
       </section>

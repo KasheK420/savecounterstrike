@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Heart, Coffee, Server, Clock } from "lucide-react";
 import { CryptoAddress } from "@/components/support/CryptoAddress";
+import { SupporterList } from "@/components/support/SupporterList";
 
 export const metadata: Metadata = {
   title: "Support Us",
@@ -89,23 +90,41 @@ export default function SupportPage() {
           </div>
         </div>
 
-        {/* Ko-fi */}
-        <div className="cs-card rounded-xl p-8 text-center space-y-4 mb-8">
-          <h2 className="font-heading text-xl font-bold text-foreground">
-            Buy us a Coffee
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            The easiest way to support us — one-time or monthly.
-          </p>
-          <a
-            href="https://ko-fi.com/savecounterstrike"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 cs-btn cs-btn-lg font-bold"
-          >
-            <Coffee className="h-5 w-5" />
-            Support on Ko-fi
-          </a>
+        {/* Ko-fi + Discord */}
+        <div className="grid sm:grid-cols-2 gap-4 mb-8">
+          <div className="cs-card rounded-xl p-8 text-center space-y-4">
+            <h2 className="font-heading text-xl font-bold text-foreground">
+              Buy us a Coffee
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              The easiest way to support us — one-time or monthly membership with exclusive perks.
+            </p>
+            <a
+              href="https://ko-fi.com/savecounterstrike"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 cs-btn cs-btn-lg font-bold"
+            >
+              <Coffee className="h-5 w-5" />
+              Support on Ko-fi
+            </a>
+          </div>
+          <div className="cs-card rounded-xl p-8 text-center space-y-4">
+            <h2 className="font-heading text-xl font-bold text-foreground">
+              Join the Community
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Connect with other players, unlock supporter perks, and shape the movement.
+            </p>
+            <a
+              href="https://discord.gg/zwBzCN6CE5"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 cs-btn cs-btn-lg font-bold"
+            >
+              Discord Server
+            </a>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -157,12 +176,17 @@ export default function SupportPage() {
           </div>
         </div>
 
+        {/* Supporters */}
+        <div className="mt-8">
+          <SupporterList />
+        </div>
+
         {/* Disclaimer */}
         <div className="mt-12 text-center">
           <p className="text-xs text-muted-foreground/60 max-w-lg mx-auto leading-relaxed">
-            All donations go directly toward server costs and development of
+            All tips go directly toward server costs and development of
             SaveCounterStrike.com. This is a community project — we don&apos;t
-            profit from it. Donations are voluntary and non-refundable. Thank
+            profit from it. Tips are voluntary and non-refundable. Thank
             you for your support.
           </p>
         </div>

@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { Shield } from "lucide-react";
+import { DISCORD_INVITE, KOFI_URL, GITHUB_URL } from "@/lib/constants";
 
 export function Footer() {
   return (
     <footer className="border-t border-border/50 bg-cs-darker py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
             <Link
@@ -91,8 +92,42 @@ export function Footer() {
               >
                 Contact Us
               </Link>
+              <Link
+                href="/credits"
+                className="text-sm text-muted-foreground hover:text-cs-orange transition-colors"
+              >
+                Credits
+              </Link>
+            </div>
+            <p className="text-xs text-muted-foreground/60 mt-3">
+              Not affiliated with Valve Corporation.
+            </p>
+          </div>
+
+          {/* Community */}
+          <div>
+            <h3 className="font-heading font-semibold text-sm text-foreground mb-3 uppercase tracking-wider">
+              Community
+            </h3>
+            <div className="flex flex-col gap-2">
               <a
-                href="https://github.com/KasheK420/savecounterstrike"
+                href={DISCORD_INVITE}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-cs-orange transition-colors"
+              >
+                Discord
+              </a>
+              <a
+                href={KOFI_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-cs-orange transition-colors"
+              >
+                Ko-fi
+              </a>
+              <a
+                href={GITHUB_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-muted-foreground hover:text-cs-orange transition-colors"
@@ -100,9 +135,6 @@ export function Footer() {
                 GitHub
               </a>
             </div>
-            <p className="text-xs text-muted-foreground/60 mt-3">
-              Not affiliated with Valve Corporation.
-            </p>
           </div>
         </div>
 

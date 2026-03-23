@@ -62,12 +62,12 @@ function linkifyText(text: string): string {
 }
 
 export function TwitterEmbed({ tweetUrl }: TwitterEmbedProps) {
-  const [tweet, setTweet] = useState<TweetData | null>(null);
-  const [error, setError] = useState(false);
   const tweetId = tweetUrl.match(/status\/(\d+)/)?.[1];
+  const [tweet, setTweet] = useState<TweetData | null>(null);
+  const [error, setError] = useState(!tweetId);
 
   useEffect(() => {
-    if (!tweetId) { setError(true); return; }
+    if (!tweetId) return;
 
     fetch(`/api/tweet/${tweetId}`)
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })

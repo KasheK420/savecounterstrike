@@ -5,7 +5,7 @@ import { useSession } from "@/components/auth/SessionProvider";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { Textarea } from "@/components/ui/textarea";
-import { Shield, CheckCircle, Loader2, ExternalLink, Copy, Check } from "lucide-react";
+import { Shield, CheckCircle, Loader2, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -20,8 +20,6 @@ export function SignPetitionButton({ alreadySigned }: SignPetitionButtonProps) {
   const [loading, setLoading] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
-
   if (!user) {
     return (
       <div className="text-center space-y-4">
@@ -44,12 +42,6 @@ export function SignPetitionButton({ alreadySigned }: SignPetitionButtonProps) {
 
   const shareUrl = "https://savecounterstrike.com";
   const shareText = "I just signed the petition to save Counter-Strike from cheaters. Join us and demand better anti-cheat from Valve!";
-
-  function handleCopy() {
-    navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
 
   if (signed) {
     return (

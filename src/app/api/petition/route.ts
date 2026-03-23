@@ -40,6 +40,7 @@ const USER_SELECT_BASE = {
 /**
  * GET /api/petition
  * Returns total signature count and 100 most recent signers with user data.
+ * Handles both authenticated (user-linked) and manual (unverified) signatures.
  */
 export async function GET() {
   // Try with stats fields first, fall back to base if migration not applied yet
@@ -49,12 +50,39 @@ export async function GET() {
       db.petitionSignature.findMany({
         take: 100,
         orderBy: { createdAt: "desc" },
-        include: {
+        select: {
+          id: true,
+          message: true,
+          verified: true,
+          displayName: true,
+          avatarUrl: true,
+          createdAt: true,
           user: { select: USER_SELECT_WITH_STATS },
         },
       }),
     ]);
-    return NextResponse.json({ count, recentSigners });
+
+    // Normalize: manual signatures embed profile data directly, authenticated ones use the user relation
+    const normalized = recentSigners.map((sig) => ({
+      id: sig.id,
+      createdAt: sig.createdAt,
+      message: sig.message,
+      verified: sig.verified,
+      user: sig.user
+        ? sig.user
+        : {
+            id: sig.id,
+            displayName: sig.displayName || "Anonymous",
+            avatarUrl: sig.avatarUrl || null,
+            ownsCs2: null,
+            cs2PlaytimeHours: null,
+            faceitLevel: null,
+            faceitElo: null,
+            profileVisibility: null,
+          },
+    }));
+
+    return NextResponse.json({ count, recentSigners: normalized });
   } catch {
     // Stats columns likely don't exist yet — query without them
     const [count, recentSigners] = await Promise.all([
@@ -62,12 +90,33 @@ export async function GET() {
       db.petitionSignature.findMany({
         take: 100,
         orderBy: { createdAt: "desc" },
-        include: {
+        select: {
+          id: true,
+          message: true,
+          verified: true,
+          displayName: true,
+          avatarUrl: true,
+          createdAt: true,
           user: { select: USER_SELECT_BASE },
         },
       }),
     ]);
-    return NextResponse.json({ count, recentSigners });
+
+    const normalized = recentSigners.map((sig) => ({
+      id: sig.id,
+      createdAt: sig.createdAt,
+      message: sig.message,
+      verified: sig.verified,
+      user: sig.user
+        ? sig.user
+        : {
+            id: sig.id,
+            displayName: sig.displayName || "Anonymous",
+            avatarUrl: sig.avatarUrl || null,
+          },
+    }));
+
+    return NextResponse.json({ count, recentSigners: normalized });
   }
 }
 
@@ -96,7 +145,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Check for existing signature (one per user)
-  const existing = await db.petitionSignature.findUnique({
+  const existing = await db.petitionSignature.findFirst({
     where: { userId: session.user.userId },
   });
 
@@ -115,6 +164,7 @@ export async function POST(request: NextRequest) {
   const signature = await db.petitionSignature.create({
     data: {
       userId: session.user.userId,
+      verified: true,
       message: cleanMessage,
     },
   });

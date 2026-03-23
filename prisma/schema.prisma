@@ -65,12 +65,17 @@ enum Role {
 // ── Petition ────────────────────────────────────────────
 
 model PetitionSignature {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  message   String?
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  userId      String?  @unique
+  message     String?
+  verified    Boolean  @default(true)
+  steamId     String?
+  displayName String?
+  avatarUrl   String?
+  createdAt   DateTime @default(now())
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([steamId])
   @@index([createdAt])
 }
 

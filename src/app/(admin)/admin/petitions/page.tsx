@@ -87,20 +87,23 @@ export default async function AdminPetitionsPage() {
             <div key={sig.id} className="flex items-start gap-3 p-4">
               <Avatar className="h-8 w-8 border border-border/50 shrink-0">
                 <AvatarImage
-                  src={sig.user.avatarUrl || undefined}
-                  alt={sig.user.displayName}
+                  src={sig.user?.avatarUrl || sig.avatarUrl || undefined}
+                  alt={sig.user?.displayName || sig.displayName || "?"}
                 />
                 <AvatarFallback className="bg-cs-navy text-cs-orange text-xs">
-                  {sig.user.displayName?.charAt(0)?.toUpperCase()}
+                  {(sig.user?.displayName || sig.displayName)?.charAt(0)?.toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm font-medium text-foreground">
-                    {sig.user.displayName}
+                    {sig.user?.displayName || sig.displayName || "Unknown"}
                   </span>
+                  {!sig.verified && (
+                    <span className="text-[10px] text-cs-orange">(manual)</span>
+                  )}
                   <span className="text-xs text-muted-foreground font-mono">
-                    {sig.user.steamId}
+                    {sig.user?.steamId || sig.steamId || "—"}
                   </span>
                   <span className="text-xs text-muted-foreground ml-auto shrink-0">
                     {new Date(sig.createdAt).toLocaleString()}
@@ -114,7 +117,7 @@ export default async function AdminPetitionsPage() {
               </div>
               <DeleteSignatureButton
                 signatureId={sig.id}
-                userName={sig.user.displayName}
+                userName={sig.user?.displayName || sig.displayName || "Unknown"}
               />
             </div>
           ))}

@@ -22,20 +22,41 @@ export function SignPetitionButton({ alreadySigned }: SignPetitionButtonProps) {
   const [error, setError] = useState("");
   if (!user) {
     return (
-      <div className="text-center space-y-4">
-        <p className="text-muted-foreground">
-          Sign in with your Steam account to sign the petition.
+      <div className="space-y-6">
+        {/* Primary: Steam login */}
+        <div className="text-center space-y-4">
+          <p className="text-muted-foreground">
+            Sign in with your Steam account to sign the petition.
+          </p>
+          <a
+            href="/api/auth/steam/login"
+            className={cn(
+              buttonVariants({ size: "lg" }),
+              "bg-cs-orange hover:bg-cs-orange-light text-background font-heading font-bold text-lg px-8 cs-pulse-glow"
+            )}
+          >
+            <Shield className="h-5 w-5 mr-2" />
+            Sign in via Steam
+          </a>
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs text-muted-foreground">or sign without login</span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+
+        {/* Secondary: Manual Steam URL/ID */}
+        <ManualSignForm />
+
+        {/* ToS consent */}
+        <p className="text-[10px] text-muted-foreground/50 text-center">
+          By signing, you agree to our{" "}
+          <Link href="/terms" className="underline hover:text-muted-foreground">Terms of Service</Link>
+          {" "}and{" "}
+          <Link href="/privacy" className="underline hover:text-muted-foreground">Privacy Policy</Link>.
         </p>
-        <a
-          href="/api/auth/steam/login"
-          className={cn(
-            buttonVariants({ size: "lg" }),
-            "bg-cs-orange hover:bg-cs-orange-light text-background font-heading font-bold text-lg px-8 cs-pulse-glow"
-          )}
-        >
-          <Shield className="h-5 w-5 mr-2" />
-          Sign in via Steam
-        </a>
       </div>
     );
   }
@@ -169,6 +190,77 @@ export function SignPetitionButton({ alreadySigned }: SignPetitionButtonProps) {
         <Link href="/terms" className="underline hover:text-muted-foreground">Terms of Service</Link>
         {" "}and{" "}
         <Link href="/privacy" className="underline hover:text-muted-foreground">Privacy Policy</Link>.
+      </p>
+    </div>
+  );
+}
+
+// ── Manual Sign Form (no Steam login required) ──────────────
+
+function ManualSignForm() {
+  const [steamInput, setSteamInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  async function handleManualSign() {
+    if (!steamInput.trim()) return;
+    setLoading(true);
+    setError("");
+    setSuccess("");
+    try {
+      const res = await fetch("/api/petition/manual", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ steamInput }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to sign");
+      setSuccess(`Signed as ${data.displayName}!`);
+      setSteamInput("");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to sign");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (success) {
+    return (
+      <div className="text-center space-y-2">
+        <div className="inline-flex items-center gap-2 text-cs-green font-heading">
+          <CheckCircle className="h-5 w-5" />
+          {success}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Unverified signature — sign in with Steam for full verification
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3 max-w-sm mx-auto">
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={steamInput}
+          onChange={(e) => setSteamInput(e.target.value)}
+          placeholder="Steam profile URL or Steam64 ID"
+          className="flex-1 px-3 py-2 text-sm bg-muted/50 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-cs-orange"
+        />
+        <Button
+          onClick={handleManualSign}
+          disabled={loading || !steamInput.trim()}
+          size="sm"
+          className="bg-muted hover:bg-muted/80 text-foreground border border-border"
+        >
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign"}
+        </Button>
+      </div>
+      {error && <p className="text-cs-red text-xs text-center">{error}</p>}
+      <p className="text-[10px] text-muted-foreground/60 text-center">
+        We verify your Steam profile exists via Steam API. No login required.
       </p>
     </div>
   );

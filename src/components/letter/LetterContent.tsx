@@ -79,7 +79,7 @@ export function LetterContent({ signatureCount }: LetterContentProps) {
             The community demands:
           </p>
           <ul className="space-y-2 text-base">
-            <li>&#x2022; A modern, kernel-level anti-cheat system</li>
+            <li>&#x2022; A modern anti-cheat system on par with industry standards</li>
             <li>&#x2022; Hardware bans for repeat offenders</li>
             <li>&#x2022; Faster detection — days, not months</li>
             <li>&#x2022; Transparent communication about anti-cheat efforts</li>

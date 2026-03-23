@@ -23,7 +23,7 @@ export async function GET() {
     return NextResponse.json({ signed: false, authenticated: false });
   }
 
-  const existing = await db.petitionSignature.findUnique({
+  const existing = await db.petitionSignature.findFirst({
     where: { userId: session.user.userId },
   });
 

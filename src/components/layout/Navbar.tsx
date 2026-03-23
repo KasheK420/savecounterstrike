@@ -60,15 +60,8 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Auth + Support */}
+          {/* Auth */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/support"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-heading tracking-wide text-cs-red/70 hover:text-cs-red border border-cs-red/20 hover:border-cs-red/40 hover:bg-cs-red/5 rounded-full transition-all"
-            >
-              <Heart className="h-3 w-3" />
-              Support
-            </Link>
             {user ? <UserAvatar /> : <SteamLoginButton />}
 
             {/* Mobile menu */}

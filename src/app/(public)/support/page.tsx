@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Heart, Coffee, Server, Clock, Users } from "lucide-react";
+import { Heart, Coffee, Server, Clock, Users, Code, Globe, HandHeart } from "lucide-react";
 import { CryptoAddress } from "@/components/support/CryptoAddress";
 import { SupporterList } from "@/components/support/SupporterList";
 
 export const metadata: Metadata = {
-  title: "Support Us",
+  title: "Help Cover Costs",
   description:
-    "Help keep SaveCounterStrike.com running. Every contribution covers server costs and development time.",
+    "SaveCounterStrike.com is a not-for-profit community project. Contributions cover server costs, domain, and community events — no one profits personally.",
 };
 
 const CRYPTO_WALLETS = [
@@ -51,15 +51,80 @@ export default function SupportPage() {
         <div className="text-center mb-12">
           <Heart className="h-12 w-12 text-cs-red mx-auto mb-4" />
           <h1 className="font-heading text-4xl sm:text-5xl font-bold">
-            SUPPORT <span className="text-cs-orange cs-glow">US</span>
+            HELP COVER{" "}
+            <span className="text-cs-orange cs-glow">COSTS</span>
           </h1>
           <p className="text-muted-foreground text-lg mt-4 max-w-2xl mx-auto leading-relaxed">
-            SaveCounterStrike.com is free, ad-free, and community-funded. If
-            you find this project valuable, consider buying us a coffee.
+            SaveCounterStrike.com is free, ad-free, and community-funded. Every
+            contribution keeps the lights on — nothing more, nothing less.
           </p>
         </div>
 
-        {/* What it covers */}
+        {/* Community-first statement */}
+        <div className="cs-card rounded-xl p-8 mb-12 border border-cs-orange/20 bg-cs-orange/[0.03]">
+          <div className="flex items-start gap-5">
+            <div className="shrink-0 mt-1">
+              <Users className="h-10 w-10 text-cs-orange" />
+            </div>
+            <div className="space-y-4">
+              <h2 className="font-heading text-2xl font-bold text-foreground">
+                This Is a Community Project, Not a Business
+              </h2>
+              <p className="text-muted-foreground leading-relaxed">
+                We built SaveCounterStrike because we love Counter-Strike and
+                we&apos;re tired of watching cheaters destroy it. That&apos;s
+                it. No company behind this, no investors, no monetization
+                scheme. Just players who want the game fixed.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-3 pt-1">
+                <div className="flex items-start gap-3">
+                  <Server className="h-5 w-5 text-cs-blue shrink-0 mt-0.5" />
+                  <p className="text-sm text-muted-foreground">
+                    <strong className="text-foreground">Running costs</strong>{" "}
+                    — server hosting, domain, database, CDN
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Globe className="h-5 w-5 text-cs-green shrink-0 mt-0.5" />
+                  <p className="text-sm text-muted-foreground">
+                    <strong className="text-foreground">Community events</strong>{" "}
+                    — tournaments, giveaways, meetups
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Code className="h-5 w-5 text-cs-gold shrink-0 mt-0.5" />
+                  <p className="text-sm text-muted-foreground">
+                    <strong className="text-foreground">Development tools</strong>{" "}
+                    — services and resources to build and improve the site
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <HandHeart className="h-5 w-5 text-cs-red shrink-0 mt-0.5" />
+                  <p className="text-sm text-muted-foreground">
+                    <strong className="text-foreground">Any surplus</strong>{" "}
+                    — reinvested into prizes, events, and community tools
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-4 pt-2 text-sm text-muted-foreground border-t border-border/50 mt-2">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-cs-green" />
+                  Open source code — anyone can verify
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-cs-green" />
+                  Public roadmap
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-cs-green" />
+                  No one profits personally
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* What contributions cover */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
           <div className="cs-card rounded-lg p-5 text-center">
             <Server className="h-6 w-6 text-cs-blue mx-auto mb-2" />
@@ -82,10 +147,10 @@ export default function SupportPage() {
           <div className="cs-card rounded-lg p-5 text-center">
             <Users className="h-6 w-6 text-cs-green mx-auto mb-2" />
             <h3 className="font-heading text-sm font-semibold text-foreground">
-              Community Growth
+              Community Events
             </h3>
             <p className="text-xs text-muted-foreground mt-1">
-              Events, tools, resources
+              Tournaments, giveaways, prizes
             </p>
           </div>
           <div className="cs-card rounded-lg p-5 text-center">
@@ -99,25 +164,15 @@ export default function SupportPage() {
           </div>
         </div>
 
-        {/* Community reinvestment note */}
-        <div className="cs-card rounded-lg p-6 mb-8 border-cs-green/20">
-          <p className="text-sm text-muted-foreground text-center leading-relaxed">
-            <strong className="text-foreground">Where does the money go?</strong>{" "}
-            After covering server and development costs, any surplus gets reinvested
-            directly into the community — better tools, community events, educational
-            content, and resources that help CS2 players organize and make their voices
-            heard. Full transparency for top-tier supporters.
-          </p>
-        </div>
-
         {/* Ko-fi + Discord */}
         <div className="grid sm:grid-cols-2 gap-4 mb-8">
           <div className="cs-card rounded-xl p-8 text-center space-y-4">
             <h2 className="font-heading text-xl font-bold text-foreground">
-              Buy us a Coffee
+              Buy Us a Coffee
             </h2>
             <p className="text-sm text-muted-foreground">
-              The easiest way to support us — one-time or monthly membership with exclusive perks.
+              The easiest way to help cover costs — one-time or monthly, with
+              community perks as a thank-you.
             </p>
             <a
               href="https://ko-fi.com/savecounterstrike"
@@ -126,7 +181,7 @@ export default function SupportPage() {
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold bg-cs-orange hover:bg-cs-orange-light text-background transition-colors"
             >
               <Coffee className="h-5 w-5" />
-              Support on Ko-fi
+              Help Out on Ko-fi
             </a>
           </div>
           <div className="cs-card rounded-xl p-8 text-center space-y-4">
@@ -204,11 +259,11 @@ export default function SupportPage() {
         {/* Disclaimer */}
         <div className="mt-12 text-center">
           <p className="text-xs text-muted-foreground/60 max-w-lg mx-auto leading-relaxed">
-            All tips go toward server costs, development, and community
-            growth. This is a community project — surplus funds are
-            reinvested into tools, events, and resources for the CS2
-            community. Tips are voluntary and non-refundable. Thank you
-            for your support.
+            SaveCounterStrike is a not-for-profit community project. All
+            contributions go toward server costs, development, and community
+            events. Surplus funds are reinvested into tools, prizes, and
+            resources for the CS2 community — no one profits personally.
+            Contributions are voluntary and non-refundable.
           </p>
         </div>
       </div>

@@ -109,6 +109,60 @@ export async function fetchSteamProfile(
   };
 }
 
+// ── Steam Vanity URL Resolution ─────────────────────────────
+
+/**
+ * Resolve a Steam vanity URL name to a Steam64 ID.
+ *
+ * @param vanityName - Custom URL name (e.g., "kashek" from steamcommunity.com/id/kashek)
+ * @returns Steam64 ID or null if not found
+ */
+export async function resolveVanityURL(vanityName: string): Promise<string | null> {
+  const apiKey = process.env.STEAM_API_KEY;
+  if (!apiKey) return null;
+  try {
+    const res = await fetch(
+      `${STEAM_API_BASE}/ISteamUser/ResolveVanityURL/v1/?key=${apiKey}&vanityurl=${encodeURIComponent(vanityName)}`
+    );
+    const data = await res.json();
+    if (data?.response?.success === 1) return data.response.steamid;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Parse various Steam input formats into a type + value pair.
+ * Supports: Steam64 IDs, profile URLs, vanity URLs, and plain vanity names.
+ *
+ * @param input - User-provided Steam identifier
+ * @returns Parsed result with type ("id" or "vanity") and value, or null if invalid
+ */
+export function parseSteamInput(input: string): { type: "id" | "vanity"; value: string } | null {
+  const trimmed = input.trim();
+
+  // Raw Steam64 ID (17 digits starting with 7656)
+  if (/^7656\d{13}$/.test(trimmed)) {
+    return { type: "id", value: trimmed };
+  }
+
+  // Steam profile URL with ID
+  const profileMatch = trimmed.match(/steamcommunity\.com\/profiles\/(\d+)/);
+  if (profileMatch) return { type: "id", value: profileMatch[1] };
+
+  // Steam vanity URL
+  const vanityMatch = trimmed.match(/steamcommunity\.com\/id\/([^\/\s]+)/);
+  if (vanityMatch) return { type: "vanity", value: vanityMatch[1] };
+
+  // Just a vanity name (no URL)
+  if (/^[a-zA-Z0-9_-]{2,32}$/.test(trimmed)) {
+    return { type: "vanity", value: trimmed };
+  }
+
+  return null;
+}
+
 // ── Steam ID Format Conversions ────────────────────────────
 
 /**

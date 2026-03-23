@@ -8,6 +8,7 @@ interface Signer {
   id: string;
   createdAt: string;
   message: string | null;
+  verified: boolean;
   user: {
     id: string;
     displayName: string;
@@ -44,6 +45,9 @@ function SignerCard({ signer }: { signer: Signer }) {
           <span className="text-sm font-medium text-foreground truncate">
             {u.displayName}
           </span>
+          {!signer.verified && (
+            <span className="text-[10px] text-muted-foreground/60">(manual)</span>
+          )}
           {u.cs2PlaytimeHours != null && u.cs2PlaytimeHours > 0 && (
             <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-cs-orange/15 text-cs-orange shrink-0">
               {u.cs2PlaytimeHours.toLocaleString()}h

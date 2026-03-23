@@ -9,6 +9,7 @@ interface MaskedSignature {
   maskedSteamId: string;
   signedAt: string;
   message: string | null;
+  verified: boolean;
 }
 
 interface PageData {
@@ -87,6 +88,9 @@ export function SignaturesTable() {
               </span>
               <span className="text-foreground font-medium font-mono text-xs">
                 {sig.maskedName}
+                {!sig.verified && (
+                  <span className="text-muted-foreground/60 font-normal ml-1">(manual)</span>
+                )}
               </span>
               <span className="text-muted-foreground font-mono text-xs">
                 {sig.maskedSteamId}

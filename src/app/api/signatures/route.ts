@@ -28,7 +28,13 @@ export async function GET(request: NextRequest) {
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
       orderBy: { createdAt: "desc" },
-      include: {
+      select: {
+        id: true,
+        message: true,
+        verified: true,
+        displayName: true,
+        steamId: true,
+        createdAt: true,
         user: {
           select: {
             displayName: true,
@@ -41,13 +47,19 @@ export async function GET(request: NextRequest) {
   ]);
 
   // Mask all sensitive data server-side before sending to client
-  const masked = signatures.map((sig: typeof signatures[0]) => ({
-    id: sig.id,
-    maskedName: maskDisplayName(sig.user.displayName),
-    maskedSteamId: maskSteamId(sig.user.steamId),
-    signedAt: sig.createdAt,
-    message: sig.message,
-  }));
+  // Handle both authenticated (user-linked) and manual signatures
+  const masked = signatures.map((sig: typeof signatures[0]) => {
+    const name = sig.user?.displayName || sig.displayName || "Anonymous";
+    const steam = sig.user?.steamId || sig.steamId || "";
+    return {
+      id: sig.id,
+      maskedName: maskDisplayName(name),
+      maskedSteamId: steam ? maskSteamId(steam) : "****",
+      signedAt: sig.createdAt,
+      message: sig.message,
+      verified: sig.verified,
+    };
+  });
 
   return NextResponse.json({
     signatures: masked,

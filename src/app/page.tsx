@@ -186,7 +186,7 @@ export default function HomePage() {
               </h3>
               <ul className="list-disc list-inside space-y-2">
                 <li>
-                  A modern, kernel-level anti-cheat comparable to competitors
+                  A modern, effective anti-cheat comparable to competitors
                 </li>
                 <li>
                   Hardware bans and faster detection — days, not months

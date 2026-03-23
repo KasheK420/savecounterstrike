@@ -31,19 +31,25 @@ interface SupporterRow {
 }
 
 export async function SupporterList() {
-  const supporters = await db.supporter.findMany({
-    where: { isActive: true },
-    orderBy: [{ tierLevel: "desc" }, { createdAt: "asc" }],
-    select: {
-      displayName: true,
-      avatarUrl: true,
-      tier: true,
-      tierLevel: true,
-      customMessage: true,
-      steamId: true,
-      createdAt: true,
-    },
-  });
+  let supporters: SupporterRow[] = [];
+  try {
+    supporters = await db.supporter.findMany({
+      where: { isActive: true },
+      orderBy: [{ tierLevel: "desc" }, { createdAt: "asc" }],
+      select: {
+        displayName: true,
+        avatarUrl: true,
+        tier: true,
+        tierLevel: true,
+        customMessage: true,
+        steamId: true,
+        createdAt: true,
+      },
+    });
+  } catch {
+    // Table may not exist yet (migration pending)
+    return null;
+  }
 
   if (supporters.length === 0) {
     return null;

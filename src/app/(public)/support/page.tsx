@@ -103,7 +103,7 @@ export default function SupportPage() {
               href="https://ko-fi.com/savecounterstrike"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 cs-btn cs-btn-lg font-bold"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold bg-cs-orange hover:bg-cs-orange-light text-background transition-colors"
             >
               <Coffee className="h-5 w-5" />
               Support on Ko-fi
@@ -120,7 +120,7 @@ export default function SupportPage() {
               href="https://discord.gg/zwBzCN6CE5"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 cs-btn cs-btn-lg font-bold"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold bg-[#5865F2] hover:bg-[#4752C4] text-white transition-colors"
             >
               Discord Server
             </a>

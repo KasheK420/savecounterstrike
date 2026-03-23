@@ -22,19 +22,33 @@ const TIER_COLORS: Record<number, { label: string; color: string }> = {
 
 export default async function CreditsPage() {
   // LEM+ (tierLevel >= 6) — permanent, regardless of isActive
-  const supporters = await db.supporter.findMany({
-    where: { tierLevel: { gte: 6 } },
-    orderBy: [{ tierLevel: "desc" }, { createdAt: "asc" }],
-    select: {
-      displayName: true,
-      avatarUrl: true,
-      tier: true,
-      tierLevel: true,
-      customMessage: true,
-      steamId: true,
-      isActive: true,
-    },
-  });
+  let supporters: Array<{
+    displayName: string;
+    avatarUrl: string | null;
+    tier: string;
+    tierLevel: number;
+    customMessage: string | null;
+    steamId: string;
+    isActive: boolean;
+  }> = [];
+
+  try {
+    supporters = await db.supporter.findMany({
+      where: { tierLevel: { gte: 6 } },
+      orderBy: [{ tierLevel: "desc" }, { createdAt: "asc" }],
+      select: {
+        displayName: true,
+        avatarUrl: true,
+        tier: true,
+        tierLevel: true,
+        customMessage: true,
+        steamId: true,
+        isActive: true,
+      },
+    });
+  } catch {
+    // Table may not exist yet (migration pending)
+  }
 
   return (
     <div className="min-h-screen py-16">
@@ -59,7 +73,7 @@ export default async function CreditsPage() {
               href="https://ko-fi.com/savecounterstrike"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-4 cs-btn font-bold"
+              className="inline-block mt-4 px-6 py-2.5 rounded-lg text-sm font-bold bg-cs-orange hover:bg-cs-orange-light text-background transition-colors"
             >
               Become a Supporter
             </a>

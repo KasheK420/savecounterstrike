@@ -106,18 +106,18 @@ export default function HomePage() {
               Connect with thousands of CS2 players fighting for change. Get updates,
               discuss strategy, and unlock exclusive supporter perks.
             </p>
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="flex flex-wrap justify-center gap-3 pt-2">
               <a
                 href="https://discord.gg/zwBzCN6CE5"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="cs-btn cs-btn-lg font-bold"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold bg-[#5865F2] hover:bg-[#4752C4] text-white transition-colors"
               >
                 Join Discord
               </a>
               <Link
                 href="/support"
-                className="cs-btn cs-btn-lg font-bold bg-transparent border border-border hover:border-cs-orange/50"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold bg-cs-orange hover:bg-cs-orange-light text-background transition-colors"
               >
                 Support Us
               </Link>

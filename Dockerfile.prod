@@ -18,6 +18,11 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
+# ── Prisma CLI (isolated full install) ─────────
+FROM base AS prisma-cli
+WORKDIR /tmp/prisma
+RUN npm init -y && npm install prisma@6 --save-exact
+
 # ── Production ─────────────────────────────────
 FROM base AS runner
 WORKDIR /app
@@ -33,15 +38,13 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Prisma client
+# Prisma client (generated at build time)
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
 
-# Prisma CLI dependencies (for migrate deploy)
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.bin ./node_modules/.bin
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/effect ./node_modules/effect
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/fast-check ./node_modules/fast-check
+# Prisma CLI with all transitive deps (for migrate deploy at startup)
+# Copy entire node_modules from isolated install — overwrites prisma/ and @prisma/ with matching versions
+COPY --from=prisma-cli --chown=nextjs:nodejs /tmp/prisma/node_modules ./node_modules
 
 # Entrypoint
 COPY --chown=nextjs:nodejs docker-entrypoint.sh /usr/local/bin/

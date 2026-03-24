@@ -20,6 +20,9 @@ import { getClientIp } from "./rate-limit";
  */
 export function getVoteIpHash(request: Request): string {
   const ip = getClientIp(request);
-  const salt = process.env.VOTE_SALT || "default-vote-salt-change-me";
+  const salt = process.env.VOTE_SALT;
+  if (!salt) {
+    throw new Error("VOTE_SALT environment variable is required");
+  }
   return crypto.createHash("sha256").update(`${ip}:${salt}`).digest("hex");
 }

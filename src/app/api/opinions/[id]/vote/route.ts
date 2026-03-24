@@ -26,9 +26,9 @@ export async function POST(
   const score = await db.$transaction(async (tx) => {
     const opinion = await tx.opinion.findUnique({
       where: { id },
-      select: { authorId: true },
+      select: { authorId: true, status: true },
     });
-    if (!opinion) throw new Error("NOT_FOUND");
+    if (!opinion || opinion.status !== "APPROVED") throw new Error("NOT_FOUND");
 
     const isOwnContent = userId ? opinion.authorId === userId : false;
 

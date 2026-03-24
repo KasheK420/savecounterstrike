@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { isAdminUser, requireAdminApi } from "@/lib/admin";
 
 export async function GET(
   _request: NextRequest,
@@ -9,7 +10,7 @@ export async function GET(
   const { id } = await params;
   const session = await auth();
   const userId = session?.user?.userId;
-  const isAdmin = session?.user?.role === "ADMIN";
+  const isAdmin = await isAdminUser();
 
   const media = await db.media.findUnique({
     where: { id },
@@ -19,7 +20,6 @@ export async function GET(
           id: true,
           displayName: true,
           avatarUrl: true,
-          steamId: true,
           ownsCs2: true,
           cs2PlaytimeHours: true,
           cs2Kills: true,
@@ -63,10 +63,9 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (session?.user?.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const { requireAdminApi } = await import("@/lib/admin");
+  const adminResult = await requireAdminApi();
+  if (adminResult.error) return adminResult.response;
 
   const { id } = await params;
   const body = await request.json();
@@ -90,7 +89,6 @@ export async function DELETE(
 ) {
   const session = await auth();
   const userId = session?.user?.userId;
-  const isAdmin = session?.user?.role === "ADMIN";
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -103,8 +101,12 @@ export async function DELETE(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  if (!isAdmin && media.authorId !== userId) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  // Author can delete own; admin can delete any (DB-validated)
+  if (media.authorId !== userId) {
+    const adminResult = await requireAdminApi();
+    if (adminResult.error) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
   }
 
   await db.media.delete({ where: { id } });

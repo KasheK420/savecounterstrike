@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/admin";
 import { db } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
   const adminCheck = await requireAdminApi();
@@ -33,12 +34,12 @@ export async function GET(request: NextRequest) {
   ] = await Promise.all([
     db.pageView.count({ where }),
     db.pageView.groupBy({ by: ["ipHash"], where }).then((r: { ipHash: string }[]) => r.length),
-    db.$queryRawUnsafe(`
+    db.$queryRaw(Prisma.sql`
       SELECT DATE("createdAt") as date,
              COUNT(*)::int as views,
              COUNT(DISTINCT "ipHash")::int as unique_visitors
       FROM "PageView"
-      WHERE "createdAt" >= '${since.toISOString()}'
+      WHERE "createdAt" >= ${since}
       GROUP BY DATE("createdAt")
       ORDER BY date ASC
     `),

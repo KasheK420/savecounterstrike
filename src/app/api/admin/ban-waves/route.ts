@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { requireAdminApi } from "@/lib/admin";
 import { z } from "zod";
 
 const banWaveSchema = z.object({
@@ -12,10 +12,8 @@ const banWaveSchema = z.object({
 });
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.role || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const result = await requireAdminApi();
+  if (result.error) return result.response;
 
   const banWaves = await db.banWave.findMany({
     orderBy: { date: "desc" },
@@ -25,10 +23,8 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.role || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const result = await requireAdminApi();
+  if (result.error) return result.response;
 
   const body = await request.json();
   const parsed = banWaveSchema.safeParse(body);
@@ -47,10 +43,8 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.role || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const result = await requireAdminApi();
+  if (result.error) return result.response;
 
   const { searchParams } = request.nextUrl;
   const id = searchParams.get("id");

@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { contactSchema } from "@/lib/validations";
+import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 
 /**
  * Escape HTML special characters for safe email HTML rendering.
@@ -24,43 +25,15 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#039;");
 }
 
-// ── Rate Limiting ───────────────────────────────────────────
-
-/** In-memory rate limit store: IP -> { count, resetTime } */
-const rateLimit = new Map<string, { count: number; reset: number }>();
-
-/**
- * Check if IP is within rate limit (5 per hour).
- * @param ip - Client IP address
- * @returns true if allowed, false if rate limited
- */
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimit.get(ip);
-  if (!entry || now > entry.reset) {
-    // New window: allow and set expiry to 1 hour
-    rateLimit.set(ip, { count: 1, reset: now + 3600000 });
-    return true;
-  }
-  if (entry.count >= 5) return false; // Limit exceeded
-  entry.count++;
-  return true;
-}
-
 /**
  * POST /api/contact
  * Send contact form email. Rate limited to 5 per hour per IP.
  */
 export async function POST(request: NextRequest) {
   try {
-    // Check rate limit
-    const ip = request.headers.get("x-forwarded-for") || "unknown";
-    if (!checkRateLimit(ip)) {
-      return NextResponse.json(
-        { error: "Too many messages. Please try again later." },
-        { status: 429 }
-      );
-    }
+    // Rate limit: 5 contact submissions per hour per IP (uses trusted IP extraction)
+    const rl = rateLimitByIp(request, "contact:send", 5, 3600_000);
+    if (rl.limited) return rateLimitResponse(rl);
 
     // Validate input
     const body = await request.json();

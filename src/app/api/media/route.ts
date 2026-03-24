@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { isAdminUser } from "@/lib/admin";
 import { mediaSubmitSchema } from "@/lib/validations";
 import { filterProfanity } from "@/lib/profanity";
 import { detectPlatform, getEmbedUrl, getThumbnailUrl } from "@/lib/embed";
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
 
   const session = await auth();
   const userId = session?.user?.userId;
-  const isAdmin = session?.user?.role === "ADMIN";
+  const isAdmin = await isAdminUser();
 
   const where = isAdmin
     ? {}
@@ -163,7 +164,7 @@ export async function POST(request: NextRequest) {
       platform,
       embedUrl,
       thumbnailUrl,
-      tags: body.tags || [],
+      tags: parsed.data.tags,
       authorId: userId,
     },
     include: {

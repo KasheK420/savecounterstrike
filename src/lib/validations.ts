@@ -28,6 +28,7 @@ export const mediaSubmitSchema = z.object({
   url: z.string().url("Must be a valid URL"),
   title: z.string().min(3, "Title must be at least 3 characters").max(200),
   description: z.string().max(1000).optional().transform((v) => v?.trim() || undefined),
+  tags: z.array(z.string().max(50)).max(10).default([]),
 });
 
 /** Schema for opinion/blog post creation */

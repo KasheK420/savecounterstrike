@@ -55,6 +55,8 @@ export default async function UserProfilePage({
       cs2HeadshotPct: true,
       faceitLevel: true,
       faceitElo: true,
+      hidePlaytime: true,
+      hideFaceit: true,
       profileVisibility: true,
       petitionSignature: {
         select: { createdAt: true, message: true },
@@ -78,6 +80,19 @@ export default async function UserProfilePage({
   });
 
   if (!user) notFound();
+
+  // Enforce privacy flags server-side for non-owner viewers
+  if (!isOwner) {
+    if (user.hidePlaytime) {
+      user.cs2PlaytimeHours = null;
+      user.cs2Wins = null;
+      user.cs2HeadshotPct = null;
+    }
+    if (user.hideFaceit) {
+      user.faceitLevel = null;
+      user.faceitElo = null;
+    }
+  }
 
   return (
     <div className="min-h-screen py-16">
@@ -126,6 +141,8 @@ export default async function UserProfilePage({
                   cs2PlaytimeHours={user.cs2PlaytimeHours}
                   cs2Wins={user.cs2Wins}
                   faceitLevel={user.faceitLevel}
+                  hidePlaytime={user.hidePlaytime}
+                  hideFaceit={user.hideFaceit}
                   profileVisibility={user.profileVisibility}
                 />
               </div>

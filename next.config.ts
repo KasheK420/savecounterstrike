@@ -19,10 +19,20 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
+      { protocol: "https", hostname: "avatars.steamstatic.com" },
+      { protocol: "https", hostname: "avatars.akamai.steamstatic.com" },
+      { protocol: "https", hostname: "steamcdn-a.akamaihd.net" },
+      { protocol: "https", hostname: "cdn.akamai.steamstatic.com" },
+      { protocol: "https", hostname: "cdn.faceit.com" },
+      { protocol: "https", hostname: "distribution.faceit-cdn.net" },
+      { protocol: "https", hostname: "pbs.twimg.com" },
+      { protocol: "https", hostname: "abs.twimg.com" },
+      { protocol: "https", hostname: "img.youtube.com" },
+      { protocol: "https", hostname: "i.ytimg.com" },
+      { protocol: "https", hostname: "*.instagram.com" },
+      { protocol: "https", hostname: "*.fbcdn.net" },
+      { protocol: "https", hostname: "storage.ko-fi.com" },
+      { protocol: "https", hostname: "cdn.ko-fi.com" },
     ],
   },
   async headers() {
@@ -34,7 +44,7 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://platform.twitter.com https://platform.x.com https://connect.facebook.net https://www.instagram.com https://storage.ko-fi.com",
+              "script-src 'self' 'unsafe-inline' https://platform.twitter.com https://platform.x.com https://connect.facebook.net https://www.instagram.com https://storage.ko-fi.com",
               "style-src 'self' 'unsafe-inline' https:",
               "img-src 'self' data: https: https://pbs.twimg.com https://abs.twimg.com https://*.instagram.com https://*.fbcdn.net https://scontent.cdninstagram.com",
               "media-src 'self' https:",

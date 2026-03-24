@@ -21,7 +21,17 @@ export async function GET(
   const { id } = await params;
   const session = await auth();
   const userId = session?.user?.userId;
-  const isAdmin = session?.user?.role === "ADMIN";
+
+  // Verify parent media is approved (or requester is admin)
+  const { isAdminUser } = await import("@/lib/admin");
+  const isAdmin = await isAdminUser();
+  const media = await db.media.findUnique({
+    where: { id },
+    select: { status: true },
+  });
+  if (!media || (!isAdmin && media.status !== "APPROVED")) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
 
   const comments = await db.comment.findMany({
     where: { mediaId: id, parentId: null },
@@ -93,9 +103,12 @@ export async function POST(
     );
   }
 
-  // Verify media exists
-  const media = await db.media.findUnique({ where: { id } });
-  if (!media) {
+  // Verify media exists and is approved
+  const media = await db.media.findUnique({
+    where: { id },
+    select: { id: true, status: true },
+  });
+  if (!media || media.status !== "APPROVED") {
     return NextResponse.json({ error: "Media not found" }, { status: 404 });
   }
 

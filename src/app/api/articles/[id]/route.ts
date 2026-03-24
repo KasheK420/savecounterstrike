@@ -24,6 +24,14 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  // Unpublished articles only visible to admins
+  if (!article.published) {
+    const result = await requireAdminApi();
+    if (result.error) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+  }
+
   return NextResponse.json(article);
 }
 

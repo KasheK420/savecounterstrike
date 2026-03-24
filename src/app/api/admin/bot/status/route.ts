@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { requireAdminApi } from "@/lib/admin";
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.role || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const result = await requireAdminApi();
+  if (result.error) return result.response;
 
   const [heartbeatConfig, trackedCount, bannedCount, recentCommands] =
     await Promise.all([

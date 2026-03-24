@@ -10,6 +10,7 @@
 
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { maskSteamId } from "@/lib/mask";
 
 // ── Steam API Configuration ─────────────────────────────────
 
@@ -128,6 +129,9 @@ export async function GET() {
     tracked: trackedStats,
     banWaves,
     banHistory,
-    leaderboard,
+    leaderboard: leaderboard.map((p: typeof leaderboard[0]) => ({
+      ...p,
+      steamId: maskSteamId(p.steamId),
+    })),
   });
 }

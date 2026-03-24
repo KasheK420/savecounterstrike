@@ -66,6 +66,21 @@ export async function GET(
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
+  // Enforce privacy flags for non-owner viewers
+  const session = await auth();
+  const isOwner = session?.user?.userId === id;
+  if (!isOwner) {
+    if (user.hidePlaytime) {
+      user.cs2PlaytimeHours = null;
+      user.cs2Wins = null;
+      user.cs2HeadshotPct = null;
+    }
+    if (user.hideFaceit) {
+      user.faceitLevel = null;
+      user.faceitElo = null;
+    }
+  }
+
   return NextResponse.json(user);
 }
 

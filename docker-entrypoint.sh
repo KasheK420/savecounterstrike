@@ -1,8 +1,11 @@
 #!/bin/sh
-set -e
 
 echo "==> Running Prisma migrations..."
-npx prisma migrate deploy 2>/dev/null || echo "==> Migrations skipped (no pending migrations or DB not ready)"
+if ! npx prisma migrate deploy; then
+  echo "==> ERROR: Prisma migration failed! Aborting startup."
+  exit 1
+fi
+echo "==> Migrations completed successfully."
 
 echo "==> Starting application..."
 exec "$@"

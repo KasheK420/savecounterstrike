@@ -10,6 +10,9 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+  const userId = session?.user?.userId;
+
   const { id } = await params;
   const opinion = await db.opinion.findUnique({
     where: { id },
@@ -32,6 +35,18 @@ export async function GET(
 
   if (!opinion) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  // Non-approved opinions only visible to author, moderators, and admins (DB-validated)
+  if (opinion.status !== "APPROVED") {
+    const isAuthor = userId === opinion.authorId;
+    if (!isAuthor) {
+      const { isModeratorUser } = await import("@/lib/admin");
+      const isPrivileged = await isModeratorUser();
+      if (!isPrivileged) {
+        return NextResponse.json({ error: "Not found" }, { status: 404 });
+      }
+    }
   }
 
   return NextResponse.json(opinion);

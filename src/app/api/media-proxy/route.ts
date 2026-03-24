@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 
 const ALLOWED_HOSTS = new Set([
   "pbs.twimg.com",
@@ -9,6 +10,10 @@ const ALLOWED_HOSTS = new Set([
 ]);
 
 export async function GET(request: NextRequest) {
+  // Rate limit: 60 proxy requests per minute per IP
+  const rl = rateLimitByIp(request, "media-proxy", 60, 60_000);
+  if (rl.limited) return rateLimitResponse(rl);
+
   const url = request.nextUrl.searchParams.get("url");
   if (!url) {
     return NextResponse.json({ error: "Missing url parameter" }, { status: 400 });

@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTweet } from "react-tweet/api";
+import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Rate limit: 30 tweet fetches per minute per IP
+  const rl = rateLimitByIp(request, "tweet:fetch", 30, 60_000);
+  if (rl.limited) return rateLimitResponse(rl);
+
   const { id } = await params;
 
   try {

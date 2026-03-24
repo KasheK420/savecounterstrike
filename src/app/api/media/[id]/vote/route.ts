@@ -25,8 +25,11 @@ export async function POST(
   const value = body.value === 1 ? 1 : body.value === -1 ? -1 : 0;
 
   const score = await db.$transaction(async (tx) => {
-    const media = await tx.media.findUnique({ where: { id } });
-    if (!media) throw new Error("NOT_FOUND");
+    const media = await tx.media.findUnique({
+      where: { id },
+      select: { id: true, status: true },
+    });
+    if (!media || media.status !== "APPROVED") throw new Error("NOT_FOUND");
 
     // Find existing vote — by userId (authenticated) or ipHash (anonymous)
     let existing;

@@ -8,6 +8,7 @@
  */
 
 import { auth } from "./auth";
+import { db } from "./db";
 import type { Session } from "next-auth";
 
 /**
@@ -17,8 +18,16 @@ import type { Session } from "next-auth";
  */
 export async function requireAdmin(): Promise<Session | null> {
   const session = await auth();
-  const role = session?.user?.role;
-  if (!session?.user || role !== "ADMIN") return null;
+  const userId = session?.user?.userId;
+  if (!session?.user || !userId) return null;
+
+  // Re-validate against DB to catch stale JWT claims (role changes, bans)
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { role: true, isBanned: true },
+  });
+  if (!user || user.isBanned || user.role !== "ADMIN") return null;
+
   return session;
 }
 
@@ -29,9 +38,35 @@ export async function requireAdmin(): Promise<Session | null> {
  */
 export async function requireModerator(): Promise<Session | null> {
   const session = await auth();
-  const role = session?.user?.role;
-  if (!session?.user || (role !== "ADMIN" && role !== "MODERATOR")) return null;
+  const userId = session?.user?.userId;
+  if (!session?.user || !userId) return null;
+
+  // Re-validate against DB to catch stale JWT claims (role changes, bans)
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { role: true, isBanned: true },
+  });
+  if (!user || user.isBanned || (user.role !== "ADMIN" && user.role !== "MODERATOR")) return null;
+
   return session;
+}
+
+/**
+ * Lightweight DB-backed admin check for read paths.
+ * Returns true if the current session user is a verified admin (not banned).
+ */
+export async function isAdminUser(): Promise<boolean> {
+  const session = await requireAdmin();
+  return session !== null;
+}
+
+/**
+ * Lightweight DB-backed moderator+ check for read paths.
+ * Returns true if the current session user is a verified moderator or admin.
+ */
+export async function isModeratorUser(): Promise<boolean> {
+  const session = await requireModerator();
+  return session !== null;
 }
 
 /**

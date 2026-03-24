@@ -25,7 +25,6 @@ export async function GET() {
       tier: true,
       tierLevel: true,
       customMessage: true,
-      steamId: true,
       createdAt: true,
     },
   });

@@ -26,9 +26,24 @@ export async function POST(
   const score = await db.$transaction(async (tx) => {
     const comment = await tx.comment.findUnique({
       where: { id },
-      select: { authorId: true },
+      select: { authorId: true, opinionId: true, mediaId: true },
     });
     if (!comment) throw new Error("NOT_FOUND");
+
+    // Verify parent content is approved before allowing votes
+    if (comment.opinionId) {
+      const opinion = await tx.opinion.findUnique({
+        where: { id: comment.opinionId },
+        select: { status: true },
+      });
+      if (!opinion || opinion.status !== "APPROVED") throw new Error("NOT_FOUND");
+    } else if (comment.mediaId) {
+      const media = await tx.media.findUnique({
+        where: { id: comment.mediaId },
+        select: { status: true },
+      });
+      if (!media || media.status !== "APPROVED") throw new Error("NOT_FOUND");
+    }
 
     const isOwnContent = userId ? comment.authorId === userId : false;
 

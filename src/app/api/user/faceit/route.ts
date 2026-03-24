@@ -1,9 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { fetchFaceitStats } from "@/lib/faceit";
+import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  // Rate limit: 3 FACEIT syncs per 10 minutes per IP
+  const rl = rateLimitByIp(request, "faceit:sync", 3, 600_000);
+  if (rl.limited) return rateLimitResponse(rl);
+
   const session = await auth();
   const steamId = session?.user?.steamId;
   if (!steamId) {

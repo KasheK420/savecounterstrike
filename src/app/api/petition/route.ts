@@ -12,6 +12,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { requireAdminApi } from "@/lib/admin";
 import { petitionSignSchema } from "@/lib/validations";
 import { filterProfanity } from "@/lib/profanity";
 import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
@@ -28,6 +29,8 @@ const USER_SELECT_WITH_STATS = {
   faceitLevel: true,
   faceitElo: true,
   profileVisibility: true,
+  hidePlaytime: true,
+  hideFaceit: true,
 } as const;
 
 /** Basic user data (fallback for compatibility) */
@@ -63,14 +66,18 @@ export async function GET() {
     ]);
 
     // Normalize: manual signatures embed profile data directly, authenticated ones use the user relation
-    const normalized = recentSigners.map((sig) => ({
-      id: sig.id,
-      createdAt: sig.createdAt,
-      message: sig.message,
-      verified: sig.verified,
-      user: sig.user
-        ? sig.user
-        : {
+    // Respect privacy flags — strip stats when user opts out
+    const normalized = recentSigners.map((sig) => {
+      const base = {
+        id: sig.id,
+        createdAt: sig.createdAt,
+        message: sig.message,
+        verified: sig.verified,
+      };
+      if (!sig.user) {
+        return {
+          ...base,
+          user: {
             id: sig.id,
             displayName: sig.displayName || "Anonymous",
             avatarUrl: sig.avatarUrl || null,
@@ -80,7 +87,19 @@ export async function GET() {
             faceitElo: null,
             profileVisibility: null,
           },
-    }));
+        };
+      }
+      const { hidePlaytime, hideFaceit, ...userData } = sig.user;
+      return {
+        ...base,
+        user: {
+          ...userData,
+          cs2PlaytimeHours: hidePlaytime ? null : userData.cs2PlaytimeHours,
+          faceitLevel: hideFaceit ? null : userData.faceitLevel,
+          faceitElo: hideFaceit ? null : userData.faceitElo,
+        },
+      };
+    });
 
     return NextResponse.json({ count, recentSigners: normalized });
   } catch {
@@ -177,10 +196,8 @@ export async function POST(request: NextRequest) {
  * Removes a signature (admin only).
  */
 export async function DELETE(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.role || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const result = await requireAdminApi();
+  if (result.error) return result.response;
 
   const { searchParams } = request.nextUrl;
   const signatureId = searchParams.get("id");

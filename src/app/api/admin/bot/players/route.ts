@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { requireAdminApi } from "@/lib/admin";
 
 export async function GET(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.role || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const result = await requireAdminApi();
+  if (result.error) return result.response;
 
   const { searchParams } = request.nextUrl;
   const filter = searchParams.get("filter"); // banned, flagged, all

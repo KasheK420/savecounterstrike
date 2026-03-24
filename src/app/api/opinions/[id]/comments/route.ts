@@ -11,6 +11,25 @@ export async function GET(
 ) {
   const { id } = await params;
 
+  // Verify parent opinion is publicly visible
+  const opinion = await db.opinion.findUnique({
+    where: { id },
+    select: { status: true, authorId: true },
+  });
+  if (!opinion || opinion.status !== "APPROVED") {
+    const session = await auth();
+    const userId = session?.user?.userId;
+    const isAuthor = userId === opinion?.authorId;
+    if (!opinion || !isAuthor) {
+      // DB-validated mod/admin check for non-approved content
+      const { isModeratorUser } = await import("@/lib/admin");
+      const isPrivileged = await isModeratorUser();
+      if (!isPrivileged) {
+        return NextResponse.json({ error: "Not found" }, { status: 404 });
+      }
+    }
+  }
+
   const comments = await db.comment.findMany({
     where: { opinionId: id, parentId: null },
     orderBy: { score: "desc" },
@@ -58,7 +77,19 @@ export async function GET(
     },
   });
 
-  return NextResponse.json(comments);
+  // Mask anonymous authors (mirror media comments pattern)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function maskAnonymous(c: any): any {
+    return {
+      ...c,
+      author: c.isAnonymous
+        ? { id: null, displayName: "Anonymous CS2 Player", avatarUrl: null }
+        : c.author,
+      replies: c.replies?.map(maskAnonymous) ?? [],
+    };
+  }
+
+  return NextResponse.json(comments.map(maskAnonymous));
 }
 
 export async function POST(
@@ -76,6 +107,15 @@ export async function POST(
   if (rl.limited) return rateLimitResponse(rl);
 
   const { id } = await params;
+
+  // Only allow comments on approved opinions
+  const opinion = await db.opinion.findUnique({
+    where: { id },
+    select: { status: true },
+  });
+  if (!opinion || opinion.status !== "APPROVED") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   const body = await request.json();
   const parsed = commentSchema.safeParse({ ...body, opinionId: id });
   if (!parsed.success) {
@@ -105,5 +145,13 @@ export async function POST(
     },
   });
 
-  return NextResponse.json(comment, { status: 201 });
+  return NextResponse.json(
+    {
+      ...comment,
+      author: comment.isAnonymous
+        ? { id: null, displayName: "Anonymous CS2 Player", avatarUrl: null }
+        : comment.author,
+    },
+    { status: 201 }
+  );
 }

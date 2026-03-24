@@ -23,9 +23,25 @@ export const petitionSignSchema = z.object({
 
 // ── Media & Opinions ────────────────────────────────────────
 
+/** Allowed media domains for user submissions */
+const ALLOWED_MEDIA_HOSTS = new Set([
+  "youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be",
+  "x.com", "twitter.com", "www.x.com", "www.twitter.com",
+  "instagram.com", "www.instagram.com",
+  "tiktok.com", "www.tiktok.com", "vm.tiktok.com",
+  "twitch.tv", "www.twitch.tv", "clips.twitch.tv",
+  "facebook.com", "www.facebook.com", "m.facebook.com", "fb.watch", "fb.com",
+]);
+
 /** Schema for media submission (video clips, screenshots) */
 export const mediaSubmitSchema = z.object({
-  url: z.string().url("Must be a valid URL"),
+  url: z.string().url("Must be a valid URL").refine((url) => {
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol !== "https:") return false;
+      return ALLOWED_MEDIA_HOSTS.has(parsed.hostname);
+    } catch { return false; }
+  }, "URL must be from a supported platform (YouTube, X/Twitter, Instagram, TikTok, Twitch, Facebook)"),
   title: z.string().min(3, "Title must be at least 3 characters").max(200),
   description: z.string().max(1000).optional().transform((v) => v?.trim() || undefined),
   tags: z.array(z.string().max(50)).max(10).default([]),
@@ -35,7 +51,10 @@ export const mediaSubmitSchema = z.object({
 export const opinionSchema = z.object({
   title: z.string().min(5).max(200),
   content: z.string().min(10).max(50000),
-  imageUrl: z.string().max(2000).optional().transform((v) => v?.trim() || undefined),
+  imageUrl: z.string().url().max(2000).optional().transform((v) => v?.trim() || undefined).refine(
+    (v) => !v || v.startsWith("https://") || v.startsWith("/uploads/"),
+    "Image URL must be HTTPS or a local upload"
+  ),
   tags: z.array(z.string().max(50)).max(5).default([]),
 });
 

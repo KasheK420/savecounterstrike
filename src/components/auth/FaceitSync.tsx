@@ -4,8 +4,7 @@ import { useEffect, useRef } from "react";
 import { useSession } from "./SessionProvider";
 
 const FACEIT_API = "https://open.faceit.com/data/v4";
-// Client-side key — safe to expose, designed for browser use
-const FACEIT_CLIENT_KEY = "***REMOVED***";
+const FACEIT_CLIENT_KEY = process.env.NEXT_PUBLIC_FACEIT_CLIENT_KEY;
 
 /**
  * Client-side component that fetches FACEIT stats from the user's browser

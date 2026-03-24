@@ -14,6 +14,7 @@ import { opinionSchema } from "@/lib/validations";
 import { sanitizeContent } from "@/lib/sanitize";
 import { filterProfanity } from "@/lib/profanity";
 import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
+import { applyAuthorPrivacy } from "@/lib/mask";
 
 /**
  * GET /api/opinions
@@ -62,6 +63,8 @@ export async function GET(request: NextRequest) {
             cs2PlaytimeHours: true,
             cs2Wins: true,
             faceitLevel: true,
+            hidePlaytime: true,
+            hideFaceit: true,
             profileVisibility: true,
           },
         },
@@ -71,8 +74,14 @@ export async function GET(request: NextRequest) {
     db.opinion.count({ where }),
   ]);
 
+  // Apply privacy flags to author data
+  const masked = opinions.map((o: typeof opinions[0]) => ({
+    ...o,
+    author: o.author ? applyAuthorPrivacy(o.author) : o.author,
+  }));
+
   return NextResponse.json({
-    opinions,
+    opinions: masked,
     total,
     page,
     pages: Math.ceil(total / limit),
@@ -92,11 +101,10 @@ export async function POST(request: NextRequest) {
   const rl = rateLimitByIp(request, "opinions:post", 5, 600_000);
   if (rl.limited) return rateLimitResponse(rl);
 
-  const session = await auth();
-  const userId = session?.user?.userId;
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { requireActiveUserApi } = await import("@/lib/admin");
+  const userCheck = await requireActiveUserApi();
+  if (userCheck.error) return userCheck.response;
+  const userId = userCheck.session.user?.userId!;
 
   const body = await request.json();
   const parsed = opinionSchema.safeParse(body);

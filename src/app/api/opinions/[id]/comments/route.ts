@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { commentSchema } from "@/lib/validations";
 import { sanitizeContent } from "@/lib/sanitize";
 import { filterProfanity } from "@/lib/profanity";
+import { applyAuthorPrivacy } from "@/lib/mask";
 
 export async function GET(
   _request: NextRequest,
@@ -42,6 +43,8 @@ export async function GET(
           ownsCs2: true,
           cs2PlaytimeHours: true,
           faceitLevel: true,
+          hidePlaytime: true,
+          hideFaceit: true,
           profileVisibility: true,
         },
       },
@@ -68,6 +71,7 @@ export async function GET(
                   displayName: true,
                   avatarUrl: true,
                   cs2PlaytimeHours: true,
+                  hidePlaytime: true,
                 },
               },
             },
@@ -77,30 +81,29 @@ export async function GET(
     },
   });
 
-  // Mask anonymous authors (mirror media comments pattern)
+  // Mask anonymous authors and apply privacy flags
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function maskAnonymous(c: any): any {
+  function maskComment(c: any): any {
     return {
       ...c,
       author: c.isAnonymous
         ? { id: null, displayName: "Anonymous CS2 Player", avatarUrl: null }
-        : c.author,
-      replies: c.replies?.map(maskAnonymous) ?? [],
+        : c.author ? applyAuthorPrivacy(c.author) : c.author,
+      replies: c.replies?.map(maskComment) ?? [],
     };
   }
 
-  return NextResponse.json(comments.map(maskAnonymous));
+  return NextResponse.json(comments.map(maskComment));
 }
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  const userId = session?.user?.userId;
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { requireActiveUserApi } = await import("@/lib/admin");
+  const userCheck = await requireActiveUserApi();
+  if (userCheck.error) return userCheck.response;
+  const userId = userCheck.session.user?.userId!;
 
   const { rateLimitByIp, rateLimitResponse } = await import("@/lib/rate-limit");
   const rl = rateLimitByIp(request, "comment:create", 20, 300_000);

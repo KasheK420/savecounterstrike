@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { isModeratorUser } from "@/lib/admin";
 import { StatsContent } from "@/components/stats/StatsContent";
 
 export const metadata: Metadata = {
@@ -10,9 +10,8 @@ export const metadata: Metadata = {
 };
 
 export default async function StatsPage() {
-  const session = await auth();
-  const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "MODERATOR") {
+  const isMod = await isModeratorUser();
+  if (!isMod) {
     redirect("/");
   }
 

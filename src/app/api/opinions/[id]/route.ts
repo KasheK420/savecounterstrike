@@ -5,6 +5,7 @@ import { requireAdminApi, requireModeratorApi } from "@/lib/admin";
 import { opinionSchema } from "@/lib/validations";
 import { sanitizeContent } from "@/lib/sanitize";
 import { filterProfanity } from "@/lib/profanity";
+import { applyAuthorPrivacy } from "@/lib/mask";
 
 export async function GET(
   _request: NextRequest,
@@ -26,6 +27,8 @@ export async function GET(
           cs2PlaytimeHours: true,
           cs2Wins: true,
           faceitLevel: true,
+          hidePlaytime: true,
+          hideFaceit: true,
           profileVisibility: true,
         },
       },
@@ -49,7 +52,10 @@ export async function GET(
     }
   }
 
-  return NextResponse.json(opinion);
+  return NextResponse.json({
+    ...opinion,
+    author: opinion.author ? applyAuthorPrivacy(opinion.author) : opinion.author,
+  });
 }
 
 // PUT — User edits their own opinion
@@ -57,11 +63,10 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  const userId = session?.user?.userId;
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { requireActiveUserApi } = await import("@/lib/admin");
+  const userCheck = await requireActiveUserApi();
+  if (userCheck.error) return userCheck.response;
+  const userId = userCheck.session.user?.userId!;
 
   const { id } = await params;
   const opinion = await db.opinion.findUnique({ where: { id } });

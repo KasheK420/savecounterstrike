@@ -60,7 +60,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Only media content allowed" }, { status: 403 });
     }
 
+    // Reject responses larger than 25MB to prevent memory abuse
+    const contentLength = res.headers.get("content-length");
+    const MAX_SIZE = 25 * 1024 * 1024;
+    if (contentLength && parseInt(contentLength, 10) > MAX_SIZE) {
+      return NextResponse.json({ error: "Response too large" }, { status: 413 });
+    }
+
     const body = await res.arrayBuffer();
+    if (body.byteLength > MAX_SIZE) {
+      return new Response(null, { status: 413 });
+    }
 
     return new Response(body, {
       headers: {

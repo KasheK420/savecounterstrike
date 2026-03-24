@@ -23,7 +23,8 @@ export default async function MediaPage({ searchParams }: Props) {
   const skip = (page - 1) * limit;
 
   const session = await auth();
-  const isAdmin = session?.user?.role === "ADMIN";
+  const { isAdminUser } = await import("@/lib/admin");
+  const isAdmin = await isAdminUser();
 
   const where = isAdmin ? {} : { status: { in: ["APPROVED" as const] } };
 

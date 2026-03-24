@@ -56,7 +56,8 @@ export default async function MediaDetailPage({ params }: Props) {
   const { id } = await params;
   const session = await auth();
   const userId = session?.user?.userId;
-  const isAdmin = session?.user?.role === "ADMIN";
+  const { isAdminUser } = await import("@/lib/admin");
+  const isAdmin = await isAdminUser();
 
   const media = await db.media.findUnique({
     where: { id },

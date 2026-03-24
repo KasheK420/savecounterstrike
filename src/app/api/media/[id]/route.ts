@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { isAdminUser, requireAdminApi } from "@/lib/admin";
+import { applyAuthorPrivacy } from "@/lib/mask";
 
 export async function GET(
   _request: NextRequest,
@@ -28,6 +29,8 @@ export async function GET(
           cs2HeadshotPct: true,
           faceitLevel: true,
           faceitElo: true,
+          hidePlaytime: true,
+          hideFaceit: true,
           profileVisibility: true,
         },
       },
@@ -54,6 +57,7 @@ export async function GET(
 
   return NextResponse.json({
     ...media,
+    author: media.author ? applyAuthorPrivacy(media.author) : media.author,
     userVote: media.votes?.[0]?.value ?? 0,
     votes: undefined,
   });

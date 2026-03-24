@@ -70,6 +70,42 @@ export async function isModeratorUser(): Promise<boolean> {
 }
 
 /**
+ * Check that authenticated user is not banned. For use on mutation routes.
+ * Returns session if active, null if banned or unauthenticated.
+ */
+export async function requireActiveUser(): Promise<Session | null> {
+  const session = await auth();
+  const userId = session?.user?.userId;
+  if (!session?.user || !userId) return null;
+
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { isBanned: true },
+  });
+  if (!user || user.isBanned) return null;
+
+  return session;
+}
+
+/**
+ * API route helper for authenticated + non-banned users.
+ * Returns standardized error response if not active.
+ */
+export async function requireActiveUserApi() {
+  const session = await requireActiveUser();
+  if (!session) {
+    return {
+      error: true as const,
+      response: new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+      ),
+    };
+  }
+  return { error: false as const, session };
+}
+
+/**
  * Extract role from session. Safe to call with null session.
  *
  * @param session - NextAuth session or null

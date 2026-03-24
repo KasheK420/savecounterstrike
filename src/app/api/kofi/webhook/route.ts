@@ -142,7 +142,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("[Ko-fi] Webhook error:", error);
-    // Return 200 anyway to prevent Ko-fi from retrying on our errors
-    return NextResponse.json({ ok: false, error: "Internal error" });
+    return NextResponse.json(
+      { ok: false, error: "Internal error" },
+      { status: 500 }
+    );
   }
 }

@@ -93,11 +93,10 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  const userId = session?.user?.userId;
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { requireActiveUserApi } = await import("@/lib/admin");
+  const userCheck = await requireActiveUserApi();
+  if (userCheck.error) return userCheck.response;
+  const userId = userCheck.session.user?.userId!;
 
   const { id } = await params;
 

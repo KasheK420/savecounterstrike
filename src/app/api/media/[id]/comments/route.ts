@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { sanitizeContent } from "@/lib/sanitize";
 import { filterProfanity } from "@/lib/profanity";
+import { applyAuthorPrivacy } from "@/lib/mask";
 
 const AUTHOR_SELECT = {
   id: true,
@@ -11,6 +12,8 @@ const AUTHOR_SELECT = {
   ownsCs2: true,
   cs2PlaytimeHours: true,
   faceitLevel: true,
+  hidePlaytime: true,
+  hideFaceit: true,
   profileVisibility: true,
 } as const;
 
@@ -66,7 +69,7 @@ export async function GET(
       votes: undefined,
       author: c.isAnonymous && !isAdmin
         ? { id: null, displayName: "Anonymous CS2 Player", avatarUrl: null }
-        : c.author,
+        : c.author ? applyAuthorPrivacy(c.author) : c.author,
       replies: c.replies?.map(maskComment) ?? [],
     };
     return masked;
@@ -79,11 +82,10 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  const userId = session?.user?.userId;
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { requireActiveUserApi } = await import("@/lib/admin");
+  const userCheck = await requireActiveUserApi();
+  if (userCheck.error) return userCheck.response;
+  const userId = userCheck.session.user?.userId!;
 
   const { rateLimitByIp, rateLimitResponse } = await import("@/lib/rate-limit");
   const rl = rateLimitByIp(request, "comment:create", 20, 300_000); // 20 per 5 min

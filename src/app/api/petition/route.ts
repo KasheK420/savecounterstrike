@@ -149,10 +149,10 @@ export async function POST(request: NextRequest) {
   const rl = rateLimitByIp(request, "petition:sign", 3, 600_000);
   if (rl.limited) return rateLimitResponse(rl);
 
-  const session = await auth();
-  if (!session?.user?.userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { requireActiveUserApi } = await import("@/lib/admin");
+  const userCheck = await requireActiveUserApi();
+  if (userCheck.error) return userCheck.response;
+  const session = userCheck.session;
 
   const body = await request.json();
   const parsed = petitionSignSchema.safeParse(body);

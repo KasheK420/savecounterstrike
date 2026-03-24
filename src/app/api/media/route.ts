@@ -12,6 +12,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { isAdminUser } from "@/lib/admin";
 import { mediaSubmitSchema } from "@/lib/validations";
+import { applyAuthorPrivacy } from "@/lib/mask";
 import { filterProfanity } from "@/lib/profanity";
 import { detectPlatform, getEmbedUrl, getThumbnailUrl } from "@/lib/embed";
 
@@ -59,6 +60,8 @@ export async function GET(request: NextRequest) {
             ownsCs2: true,
             cs2PlaytimeHours: true,
             faceitLevel: true,
+            hidePlaytime: true,
+            hideFaceit: true,
             profileVisibility: true,
           },
         },
@@ -78,6 +81,7 @@ export async function GET(request: NextRequest) {
 
   const items = media.map((m: typeof media[0]) => ({
     ...m,
+    author: m.author ? applyAuthorPrivacy(m.author) : m.author,
     userVote: m.votes?.[0]?.value ?? 0,
     votes: undefined,
   }));
@@ -96,11 +100,10 @@ export async function GET(request: NextRequest) {
  * Rate limit: 5 submissions per hour per IP.
  */
 export async function POST(request: NextRequest) {
-  const session = await auth();
-  const userId = session?.user?.userId;
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { requireActiveUserApi } = await import("@/lib/admin");
+  const userCheck = await requireActiveUserApi();
+  if (userCheck.error) return userCheck.response;
+  const userId = userCheck.session.user?.userId!;
 
   // Rate limit: 5 submissions per hour per IP
   const { rateLimitByIp, rateLimitResponse } = await import("@/lib/rate-limit");

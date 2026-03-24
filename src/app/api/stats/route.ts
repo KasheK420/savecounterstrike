@@ -8,9 +8,11 @@
  * @route GET /api/stats
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { maskSteamId } from "@/lib/mask";
+import { requireModeratorApi } from "@/lib/admin";
+import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 
 // ── Steam API Configuration ─────────────────────────────────
 
@@ -39,7 +41,14 @@ async function getCurrentPlayers(): Promise<number> {
  * GET /api/stats
  * Aggregate and return all community statistics.
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // Stats is admin/mod only — enforce at API level, not just UI
+  const result = await requireModeratorApi();
+  if (result.error) return result.response;
+
+  // Rate limit: 10 per minute (expensive aggregation endpoint)
+  const rl = rateLimitByIp(request, "stats:get", 10, 60_000);
+  if (rl.limited) return rateLimitResponse(rl);
   const [
     currentPlayers,
     totalSignatures,

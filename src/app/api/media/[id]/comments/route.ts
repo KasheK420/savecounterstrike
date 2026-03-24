@@ -85,7 +85,7 @@ export async function POST(
   const { requireActiveUserApi } = await import("@/lib/admin");
   const userCheck = await requireActiveUserApi();
   if (userCheck.error) return userCheck.response;
-  const userId = userCheck.session.user?.userId!;
+  const userId = userCheck.session.user!.userId!;
 
   const { rateLimitByIp, rateLimitResponse } = await import("@/lib/rate-limit");
   const rl = rateLimitByIp(request, "comment:create", 20, 300_000); // 20 per 5 min

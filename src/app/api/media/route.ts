@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
   const { requireActiveUserApi } = await import("@/lib/admin");
   const userCheck = await requireActiveUserApi();
   if (userCheck.error) return userCheck.response;
-  const userId = userCheck.session.user?.userId!;
+  const userId = userCheck.session.user!.userId!;
 
   // Rate limit: 5 submissions per hour per IP
   const { rateLimitByIp, rateLimitResponse } = await import("@/lib/rate-limit");

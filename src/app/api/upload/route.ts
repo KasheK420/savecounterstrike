@@ -62,10 +62,9 @@ export async function POST(request: NextRequest) {
   const rl = rateLimitByIp(request, "upload", 10, 300_000);
   if (rl.limited) return rateLimitResponse(rl);
 
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { requireActiveUserApi } = await import("@/lib/admin");
+  const userCheck = await requireActiveUserApi();
+  if (userCheck.error) return userCheck.response;
 
   try {
     const formData = await request.formData();

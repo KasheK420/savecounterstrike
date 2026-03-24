@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/auth";
 import { Video, Plus } from "lucide-react";
 import { MediaCard } from "@/components/media/MediaCard";
 
@@ -22,7 +21,6 @@ export default async function MediaPage({ searchParams }: Props) {
   const limit = 20;
   const skip = (page - 1) * limit;
 
-  const session = await auth();
   const { isAdminUser } = await import("@/lib/admin");
   const isAdmin = await isAdminUser();
 

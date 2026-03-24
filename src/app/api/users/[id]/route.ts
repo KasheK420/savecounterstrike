@@ -96,7 +96,7 @@ export async function PATCH(
   const { requireActiveUserApi } = await import("@/lib/admin");
   const userCheck = await requireActiveUserApi();
   if (userCheck.error) return userCheck.response;
-  const userId = userCheck.session.user?.userId!;
+  const userId = userCheck.session.user!.userId!;
 
   const { id } = await params;
 

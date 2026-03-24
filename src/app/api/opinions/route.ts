@@ -9,7 +9,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/auth";
 import { opinionSchema } from "@/lib/validations";
 import { sanitizeContent } from "@/lib/sanitize";
 import { filterProfanity } from "@/lib/profanity";
@@ -104,7 +103,7 @@ export async function POST(request: NextRequest) {
   const { requireActiveUserApi } = await import("@/lib/admin");
   const userCheck = await requireActiveUserApi();
   if (userCheck.error) return userCheck.response;
-  const userId = userCheck.session.user?.userId!;
+  const userId = userCheck.session.user!.userId!;
 
   const body = await request.json();
   const parsed = opinionSchema.safeParse(body);

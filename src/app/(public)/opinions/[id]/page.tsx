@@ -13,8 +13,11 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const opinion = await db.opinion.findUnique({ where: { id } });
-  if (!opinion) return { title: "Not Found" };
+  const opinion = await db.opinion.findUnique({
+    where: { id },
+    select: { title: true, content: true, status: true },
+  });
+  if (!opinion || opinion.status !== "APPROVED") return { title: "Not Found" };
   return {
     title: opinion.title,
     description: stripHtml(opinion.content).slice(0, 160),
@@ -46,7 +49,7 @@ export default async function OpinionPage({
     },
   });
 
-  if (!opinion) notFound();
+  if (!opinion || opinion.status !== "APPROVED") notFound();
 
   return (
     <div className="min-h-screen py-16">

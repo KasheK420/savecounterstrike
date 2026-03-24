@@ -19,10 +19,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const media = await db.media.findUnique({
     where: { id },
-    select: { title: true, description: true, thumbnailUrl: true },
+    select: { title: true, description: true, thumbnailUrl: true, status: true },
   });
 
-  if (!media) return { title: "Not Found" };
+  if (!media || media.status !== "APPROVED") return { title: "Not Found" };
 
   return {
     title: media.title,
@@ -67,15 +67,13 @@ export default async function MediaDetailPage({ params }: Props) {
           id: true,
           displayName: true,
           avatarUrl: true,
-          steamId: true,
           ownsCs2: true,
           cs2PlaytimeHours: true,
-          cs2Kills: true,
-          cs2Deaths: true,
           cs2Wins: true,
-          cs2HeadshotPct: true,
           faceitLevel: true,
           faceitElo: true,
+          hidePlaytime: true,
+          hideFaceit: true,
           karma: true,
           profileVisibility: true,
         },
@@ -95,10 +93,12 @@ export default async function MediaDetailPage({ params }: Props) {
   if (!media) notFound();
   if (!isAdmin && media.status !== "APPROVED") notFound();
 
+  const { applyAuthorPrivacy } = await import("@/lib/mask");
+
   const userVote = (media as Record<string, unknown>).votes
     ? ((media as Record<string, unknown>).votes as { value: number }[])?.[0]?.value ?? 0
     : 0;
-  const author = media.author;
+  const author = applyAuthorPrivacy(media.author);
 
   return (
     <div className="min-h-screen py-16">

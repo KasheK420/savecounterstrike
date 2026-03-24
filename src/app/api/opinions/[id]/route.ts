@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { requireAdminApi, requireModeratorApi } from "@/lib/admin";
+import { requireModeratorApi } from "@/lib/admin";
 import { opinionSchema } from "@/lib/validations";
 import { sanitizeContent } from "@/lib/sanitize";
 import { filterProfanity } from "@/lib/profanity";
@@ -66,7 +66,7 @@ export async function PUT(
   const { requireActiveUserApi } = await import("@/lib/admin");
   const userCheck = await requireActiveUserApi();
   if (userCheck.error) return userCheck.response;
-  const userId = userCheck.session.user?.userId!;
+  const userId = userCheck.session.user!.userId!;
 
   const { id } = await params;
   const opinion = await db.opinion.findUnique({ where: { id } });

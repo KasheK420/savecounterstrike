@@ -39,7 +39,7 @@
     "lucide-react": "^0.577.0",
     "next": "16.2.1",
     "next-auth": "^5.0.0-beta.30",
-    "nodemailer": "^7.0.13",
+    "nodemailer": "^8.0.4",
     "openid": "^2.0.15",
     "prisma": "^6.19.2",
     "react": "19.2.4",

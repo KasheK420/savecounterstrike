@@ -22,6 +22,10 @@ export async function GET(
 ) {
   const { id } = await params;
 
+  // Check ownership early to include auth fields for profile owner
+  const session = await auth();
+  const isOwner = session?.user?.userId === id;
+
   const user = await db.user.findUnique({
     where: { id },
     select: {
@@ -34,10 +38,19 @@ export async function GET(
       customName: true,
       hidePlaytime: true,
       hideFaceit: true,
+      role: true,
       ownsCs2: true,
       cs2PlaytimeHours: true,
       cs2Wins: true,
       cs2HeadshotPct: true,
+      // Auth fields — only populated for owner
+      ...(isOwner ? {
+        steamId: true,
+        email: true,
+        emailVerified: true,
+        passwordHash: true,
+        mfaEnabled: true,
+      } : {}),
       faceitLevel: true,
       faceitElo: true,
       profileVisibility: true,
@@ -67,8 +80,6 @@ export async function GET(
   }
 
   // Enforce privacy flags for non-owner viewers
-  const session = await auth();
-  const isOwner = session?.user?.userId === id;
   if (!isOwner) {
     if (user.hidePlaytime) {
       user.cs2PlaytimeHours = null;
@@ -81,7 +92,14 @@ export async function GET(
     }
   }
 
-  return NextResponse.json(user);
+  // Sanitize: never expose password hash, convert to hasPassword boolean
+  const response: Record<string, unknown> = { ...user };
+  if ("passwordHash" in response) {
+    response.hasPassword = !!response.passwordHash;
+    delete response.passwordHash;
+  }
+
+  return NextResponse.json(response);
 }
 
 /**

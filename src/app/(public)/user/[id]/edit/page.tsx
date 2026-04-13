@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "@/components/auth/SessionProvider";
+import { ProfileAuthSection } from "@/components/auth/ProfileAuthSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Save, Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { Save, Loader2, ArrowLeft, Eye, EyeOff, User, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 export default function EditProfilePage() {
@@ -16,12 +17,24 @@ export default function EditProfilePage() {
   const router = useRouter();
   const id = params.id as string;
 
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<"profile" | "security">(
+    searchParams.get("tab") === "security" ? "security" : "profile"
+  );
   const [bio, setBio] = useState("");
   const [customName, setCustomName] = useState("");
   const [hidePlaytime, setHidePlaytime] = useState(false);
   const [hideFaceit, setHideFaceit] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [authData, setAuthData] = useState<{
+    steamId: string | null;
+    email: string | null;
+    emailVerified: boolean;
+    hasPassword: boolean;
+    mfaEnabled: boolean;
+    role: string;
+  } | null>(null);
 
   const isOwner = user?.userId === id;
 
@@ -35,6 +48,14 @@ export default function EditProfilePage() {
           setCustomName(data.customName || "");
           setHidePlaytime(data.hidePlaytime || false);
           setHideFaceit(data.hideFaceit || false);
+          setAuthData({
+            steamId: data.steamId || null,
+            email: data.email || null,
+            emailVerified: data.emailVerified || false,
+            hasPassword: !!data.hasPassword,
+            mfaEnabled: data.mfaEnabled || false,
+            role: data.role || "USER",
+          });
         }
       } catch {
         // Silent
@@ -97,12 +118,49 @@ export default function EditProfilePage() {
           Back to Profile
         </Link>
 
-        <h1 className="font-heading text-2xl font-bold text-foreground mb-8">
+        <h1 className="font-heading text-2xl font-bold text-foreground mb-6">
           EDIT <span className="text-cs-orange">PROFILE</span>
         </h1>
 
-        <div className="space-y-6">
-          {/* Avatar + Name (from Steam) */}
+        {/* Tab Navigation */}
+        <div className="flex gap-1 mb-8 border-b border-border">
+          <button
+            onClick={() => setActiveTab("profile")}
+            className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
+              activeTab === "profile"
+                ? "border-cs-orange text-cs-orange"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <User className="h-4 w-4" />
+            Profile
+          </button>
+          <button
+            onClick={() => setActiveTab("security")}
+            className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
+              activeTab === "security"
+                ? "border-cs-orange text-cs-orange"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <ShieldCheck className="h-4 w-4" />
+            Security
+          </button>
+        </div>
+
+        {/* Security Tab */}
+        {activeTab === "security" && authData && (
+          <ProfileAuthSection authData={authData} />
+        )}
+        {activeTab === "security" && !authData && (
+          <div className="text-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-cs-orange mx-auto" />
+          </div>
+        )}
+
+        {/* Profile Tab */}
+        {activeTab === "profile" && <div className="space-y-6">
+          {/* Avatar + Name */}
           <div className="cs-card rounded-xl p-6 flex items-center gap-4">
             <Avatar className="h-16 w-16 border-2 border-cs-orange/30">
               <AvatarImage src={user.image} alt={user.name} />
@@ -236,7 +294,7 @@ export default function EditProfilePage() {
               Save Profile
             </Button>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );

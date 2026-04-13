@@ -76,5 +76,10 @@
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
+  },
+  "overrides": {
+    "next-auth": {
+      "nodemailer": "$nodemailer"
+    }
   }
 }

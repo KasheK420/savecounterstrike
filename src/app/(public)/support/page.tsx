@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Heart, Coffee, Server, Clock, Users, Code, Globe, HandHeart } from "lucide-react";
+import { Heart, Coffee, Server, Clock, Users, Code, Globe, HandHeart, Megaphone } from "lucide-react";
 import { CryptoAddress } from "@/components/support/CryptoAddress";
 import { SupporterList } from "@/components/support/SupporterList";
 
@@ -55,9 +55,63 @@ export default function SupportPage() {
             <span className="text-cs-orange cs-glow">COSTS</span>
           </h1>
           <p className="text-muted-foreground text-lg mt-4 max-w-2xl mx-auto leading-relaxed">
-            SaveCounterStrike.com is free, ad-free, and community-funded. Every
-            contribution keeps the lights on — nothing more, nothing less.
+            SaveCounterStrike.com is free, ad-free, and community-funded. Your biggest contribution isn&apos;t money — it&apos;s sharing this with every CS2 player you know.
           </p>
+        </div>
+
+        {/* Share & Reach — Primary Call to Action */}
+        <div className="cs-card rounded-xl p-8 mb-8 border border-cs-green/20 bg-cs-green/[0.03]">
+          <div className="text-center space-y-5">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cs-green/10 border border-cs-green/20">
+              <Megaphone className="h-4 w-4 text-cs-green" />
+              <span className="text-xs font-medium text-cs-green uppercase tracking-wider">Most impactful way to help</span>
+            </div>
+
+            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">
+              Share This With <span className="text-cs-green">Every CS2 Player</span> You Know
+            </h2>
+
+            <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              This project doesn&apos;t need your money — it needs your <strong className="text-foreground">voice</strong>.
+              The more players sign the petition, the harder it is for Valve to ignore us.
+              Share the link, talk about it on social media, post it in your Discord servers,
+              mention it on Reddit. Every share counts more than any donation ever could.
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-3 pt-2">
+              <a
+                href={`https://x.com/intent/tweet?text=${encodeURIComponent("I signed the petition to save Counter-Strike from cheaters. Join us — every signature counts. #SaveCounterStrike #CS2")}&url=${encodeURIComponent("https://savecounterstrike.com")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium bg-[#000] hover:bg-[#1a1a1a] text-white border border-border/50 transition-colors"
+              >
+                Share on X
+              </a>
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://savecounterstrike.com")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium bg-[#1877F2] hover:bg-[#166FE5] text-white transition-colors"
+              >
+                Share on Facebook
+              </a>
+              <a
+                href="https://discord.gg/zwBzCN6CE5"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium bg-[#5865F2] hover:bg-[#4752C4] text-white transition-colors"
+              >
+                Join Discord
+              </a>
+            </div>
+
+            <p className="text-xs text-muted-foreground/70 pt-2">
+              This project is <strong className="text-foreground">not-for-profit</strong>.
+              If any money comes in, it goes straight back to the community — server costs,
+              tournaments, giveaways. No one takes a salary. The code is open source,
+              the finances are transparent.
+            </p>
+          </div>
         </div>
 
         {/* Community-first statement */}

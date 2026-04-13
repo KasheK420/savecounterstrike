@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { HelpCircle, ChevronDown, Shield, FileText, BarChart3, Users } from "lucide-react";
+import { HelpCircle, ChevronDown, Shield, FileText, BarChart3, Users, Lock } from "lucide-react";
 
 interface FaqItem {
   q: string;
@@ -66,7 +66,7 @@ const FAQ_DATA: FaqCategory[] = [
     items: [
       {
         q: "How do I sign the petition?",
-        a: "There are two ways: 1) Sign in with your Steam account for a fully verified signature, or 2) Enter your Steam profile URL or Steam64 ID without logging in. Both methods verify your Steam profile exists via the Steam API. Signing via Steam login is preferred as it gives full verification, but we want everyone to be able to participate.",
+        a: "There are three ways: 1) Create an account with your email and sign in, 2) Sign in directly with your Steam account for a fully verified signature, or 3) Enter your Steam profile URL or Steam64 ID without logging in. Methods 1 and 2 give full verification. You can also link your Steam account to your email account later in your profile settings.",
       },
       {
         q: "Who can see my signature?",
@@ -75,6 +75,41 @@ const FAQ_DATA: FaqCategory[] = [
       {
         q: "Can I remove my signature?",
         a: "Contact us if you'd like your signature removed. Admins can remove signatures from the admin panel. Once removed, you're free to sign again if you change your mind.",
+      },
+    ],
+  },
+  {
+    title: "Account & Security",
+    icon: Lock,
+    color: "text-cs-blue",
+    items: [
+      {
+        q: "How do I create an account?",
+        a: "You can register with your email address and a password, or sign in instantly with your Steam account. Both methods are equal — you get full access either way. If you register with email, you'll need to verify your email address before you can post content.",
+      },
+      {
+        q: "Can I link my Steam account to my email account?",
+        a: "Yes! Go to your profile settings (click your avatar → Edit Profile → Security tab). You can link your Steam account to your email account, or add an email and password to your Steam account. This gives you two ways to sign in and lets you recover your account if you lose access to one method.",
+      },
+      {
+        q: "I forgot my password. How do I reset it?",
+        a: "Click 'Forgot password?' on the login page and enter your email. You'll receive a reset link valid for 30 minutes. If you don't see the email, check your spam folder. For security, we don't confirm whether the email exists in our system.",
+      },
+      {
+        q: "What is Two-Factor Authentication (MFA)?",
+        a: "MFA adds an extra layer of security to your account. After enabling it in your profile settings, you'll need to enter a 6-digit code from an authenticator app (like Google Authenticator or Authy) each time you sign in. MFA is optional for regular users but mandatory for moderators and administrators.",
+      },
+      {
+        q: "What if I lose access to my authenticator app?",
+        a: "When you set up MFA, you receive 10 one-time recovery codes. Each code can be used once to sign in without your authenticator. Store these codes somewhere safe — we cannot recover them for you. If you've used all recovery codes, contact us for manual account recovery.",
+      },
+      {
+        q: "Is my password stored securely?",
+        a: "Yes. We use bcrypt with 12 rounds of hashing — your password is never stored in plain text. We also check new passwords against the Have I Been Pwned database to prevent you from using passwords that have appeared in known data breaches. All authentication tokens are hashed with SHA-256 before storage.",
+      },
+      {
+        q: "How do I merge two accounts?",
+        a: "If you accidentally created separate accounts (one via Steam, one via email), you can merge them by linking the other identity in your profile settings. When a conflict is detected, we'll walk you through the merge process — all your content (opinions, comments, votes) will be transferred to your main account.",
       },
     ],
   },
@@ -100,7 +135,7 @@ const FAQ_DATA: FaqCategory[] = [
     items: [
       {
         q: "Can I submit my own opinion or suggestion?",
-        a: "Yes! Go to the Opinions page and click 'Submit your opinion.' You'll need to sign in with Steam first. You can write formatted text with our rich editor, add images, and explain what you think Valve should change. The top-voted opinions will be included in the open letter.",
+        a: "Yes! Go to the Opinions page and click 'Submit your opinion.' You'll need to sign in first — either with your email account or via Steam. You can write formatted text with our rich editor, add images, and explain what you think Valve should change. The top-voted opinions will be included in the open letter.",
       },
       {
         q: "How does voting work?",

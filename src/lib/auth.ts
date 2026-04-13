@@ -1,8 +1,8 @@
 /**
- * @fileoverview NextAuth v5 configuration with Steam OpenID authentication.
+ * @fileoverview NextAuth v5 configuration with Steam + Email authentication.
  *
- * Handles Steam-based authentication, user creation/updates, and role assignment.
- * Supports ADMIN (env-configured), MODERATOR (manually assigned), and USER roles.
+ * Handles Steam OpenID and email/password authentication, user creation/updates,
+ * role assignment, and session management with security stamp validation.
  *
  * @module auth
  * @see {@link https://authjs.dev/getting-started/installation|NextAuth Docs}
@@ -21,11 +21,12 @@ const adminSteamIds = (process.env.ADMIN_STEAM_IDS || "")
   .filter(Boolean);
 
 /**
- * NextAuth configuration with Steam credentials provider.
+ * NextAuth configuration with Steam + Email credentials providers.
  * Exported auth helpers for use in server components and API routes.
  */
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
+    // ── Steam Provider ────────────────────────────────────
     Credentials({
       id: "steam",
       name: "Steam",
@@ -35,37 +36,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         avatarUrl: { type: "text" },
         profileUrl: { type: "text" },
       },
-      /**
-       * Authorize callback — called after Steam OpenID verification.
-       * Creates or updates user record and determines role.
-       *
-       * @param credentials - Steam profile data from callback
-       * @returns User object for JWT or null if banned/invalid
-       */
       async authorize(credentials) {
         const steamId = credentials?.steamId as string;
         if (!steamId) return null;
 
-        // Check if user exists in database
         const existing = await db.user.findUnique({ where: { steamId } });
+        if (existing?.isBanned) return null;
 
-        // Block banned users from signing in
-        if (existing?.isBanned) {
-          return null;
-        }
-
-        // ── Role Determination ───────────────────────────────
-        // Priority: 1) Env ADMIN_STEAM_IDS → ADMIN
-        //           2) Existing MODERATOR → preserve
-        //           3) Existing ADMIN (manual) → preserve
-        //           4) Default → USER
         let role: "ADMIN" | "MODERATOR" | "USER";
         if (adminSteamIds.includes(steamId)) {
           role = "ADMIN";
         } else if (existing?.role === "MODERATOR") {
-          role = "MODERATOR"; // Preserve manually-assigned MODERATOR
+          role = "MODERATOR";
         } else if (existing?.role === "ADMIN" && !adminSteamIds.includes(steamId)) {
-          role = "ADMIN"; // Preserve manually-assigned ADMIN (removed from env)
+          role = "ADMIN";
         } else {
           role = existing?.role || "USER";
         }
@@ -93,46 +77,138 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           image: user.avatarUrl,
           steamId: user.steamId,
           role: user.role,
+          authMethod: "steam" as const,
+          mfaVerified: !user.mfaEnabled,
+          securityStamp: user.securityStamp,
+          isEmailVerified: user.emailVerified,
+        };
+      },
+    }),
+
+    // ── Email/Password Provider ───────────────────────────
+    Credentials({
+      id: "email-password",
+      name: "Email",
+      credentials: {
+        userId: { type: "text" },
+        mfaVerified: { type: "text" },
+      },
+      async authorize(credentials) {
+        // This provider is called AFTER password verification in our custom login route.
+        // The login route handles password checking, lockout, etc.
+        // This provider just creates the session.
+        const userId = credentials?.userId as string;
+        if (!userId) return null;
+
+        const user = await db.user.findUnique({
+          where: { id: userId },
+          select: {
+            id: true,
+            displayName: true,
+            avatarUrl: true,
+            steamId: true,
+            email: true,
+            role: true,
+            isBanned: true,
+            mfaEnabled: true,
+            securityStamp: true,
+            emailVerified: true,
+          },
+        });
+
+        if (!user || user.isBanned) return null;
+
+        return {
+          id: user.id,
+          name: user.displayName,
+          image: user.avatarUrl,
+          steamId: user.steamId,
+          email: user.email,
+          role: user.role,
+          authMethod: "email" as const,
+          mfaVerified: credentials?.mfaVerified === "true" || !user.mfaEnabled,
+          securityStamp: user.securityStamp,
+          isEmailVerified: user.emailVerified,
         };
       },
     }),
   ],
+
   // ── Session Callbacks ─────────────────────────────────────
 
   callbacks: {
     /**
      * JWT callback — runs when token is created or updated.
-     * Adds custom claims (steamId, role, userId) to the token.
+     * Adds custom claims and validates security stamp against DB.
      */
-    jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
+      // On sign-in: populate token with user data
       if (user) {
-        token.steamId = (user as unknown as { steamId?: string }).steamId;
-        token.role = (user as unknown as { role?: string }).role;
-        token.userId = user.id;
+        const u = user as Record<string, unknown>;
+        token.steamId = u.steamId as string | undefined;
+        token.role = u.role as string | undefined;
+        token.userId = u.id as string | undefined;
+        token.authMethod = u.authMethod as string | undefined;
+        token.mfaVerified = u.mfaVerified as boolean | undefined;
+        token.securityStamp = u.securityStamp as string | undefined;
+        token.isEmailVerified = u.isEmailVerified as boolean | undefined;
+        token.email = u.email as string | undefined;
       }
+
+      // On every request: validate security stamp against DB
+      // This catches password changes, role changes, MFA changes
+      if (token.userId && trigger !== "signIn") {
+        const dbUser = await db.user.findUnique({
+          where: { id: token.userId as string },
+          select: { securityStamp: true, role: true, isBanned: true, emailVerified: true },
+        });
+
+        // Force re-auth if user deleted, banned, or security stamp changed
+        if (!dbUser || dbUser.isBanned) {
+          return { ...token, expired: true };
+        }
+        if (dbUser.securityStamp !== token.securityStamp) {
+          return { ...token, expired: true };
+        }
+        // Keep role in sync with DB
+        token.role = dbUser.role;
+        token.isEmailVerified = dbUser.emailVerified;
+      }
+
       return token;
     },
+
     /**
      * Session callback — makes token claims available in session.
-     * These values are accessible client-side via useSession() or auth().
      */
     session({ session, token }) {
+      // If token is expired (security stamp mismatch), clear session
+      if ((token as Record<string, unknown>).expired) {
+        session.user = {} as typeof session.user;
+        return session;
+      }
+
       if (session.user) {
         session.user.steamId = token.steamId as string | undefined;
         session.user.role = token.role as string | undefined;
         session.user.userId = token.userId as string | undefined;
+        session.user.authMethod = token.authMethod as "email" | "steam" | undefined;
+        session.user.mfaVerified = token.mfaVerified as boolean | undefined;
+        session.user.securityStamp = token.securityStamp as string | undefined;
+        session.user.isEmailVerified = token.isEmailVerified as boolean | undefined;
+        if (token.email) session.user.email = token.email as string;
       }
       return session;
     },
   },
-  // ── Configuration ─────────────────────────────────────────
+
+  // ── Configuration ─────────────────────────────────────
 
   pages: {
-    /** Redirect unauthenticated users to home page */
-    signIn: "/",
+    signIn: "/auth/login",
   },
   session: {
     strategy: "jwt",
-    maxAge: 7 * 24 * 60 * 60, // 7 days session lifetime
+    maxAge: 7 * 24 * 60 * 60, // 7 days
   },
 });

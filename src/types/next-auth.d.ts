@@ -1,8 +1,8 @@
 /**
- * @fileoverview NextAuth type augmentation for Steam authentication.
+ * @fileoverview NextAuth type augmentation for Steam + Email authentication.
  *
- * Extends the default NextAuth Session interface to include Steam-specific
- * fields (steamId, role, userId) used throughout the application.
+ * Extends the default NextAuth Session interface to include custom fields
+ * used throughout the application: identity, role, MFA status.
  *
  * @module types/next-auth
  * @see {@link https://next-auth.js.org/getting-started/typescript|NextAuth TypeScript}
@@ -12,8 +12,8 @@ import "next-auth";
 
 declare module "next-auth" {
   /**
-   * Extended Session interface with Steam authentication fields.
-   * These properties are set by the JWT and Session callbacks in auth.ts.
+   * Extended Session interface with auth fields.
+   * Set by the JWT and Session callbacks in auth.ts.
    */
   interface Session {
     user: {
@@ -26,8 +26,16 @@ declare module "next-auth" {
       steamId?: string;
       /** User role: "USER" | "MODERATOR" | "ADMIN" */
       role?: string;
-      /** Internal database user ID (alias of id) */
+      /** Internal database user ID */
       userId?: string;
+      /** How the user authenticated in this session */
+      authMethod?: "email" | "steam";
+      /** Whether MFA was verified in this session */
+      mfaVerified?: boolean;
+      /** Security stamp for session invalidation */
+      securityStamp?: string;
+      /** Whether user's email is verified */
+      isEmailVerified?: boolean;
     };
   }
 }

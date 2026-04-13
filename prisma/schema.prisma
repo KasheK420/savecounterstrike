@@ -7,11 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ── Users (Steam Auth) ─────────────────────────────────
+// ── Users ──────────────────────────────────────────────
 
 model User {
   id          String   @id @default(cuid())
-  steamId     String   @unique
+
+  // Identity — at least one must be set (app-level validation)
+  steamId     String?  @unique
+  email       String?  @unique
+
+  // Auth
+  passwordHash     String?
+  emailVerified    Boolean  @default(false)
+  emailVerifiedAt  DateTime?
+  securityStamp    String   @default(cuid())
+
+  // MFA
+  mfaEnabled          Boolean  @default(false)
+  mfaSecret           String?
+  lastTotpStep        Int?
+  pendingMfaSecret    String?
+  pendingMfaExpiresAt DateTime?
+
+  // Profile
   displayName String
   avatarUrl   String?
   profileUrl  String?
@@ -33,7 +51,7 @@ model User {
   faceitLevel      Int?        // 1-10
   faceitElo        Int?
 
-  // Profile
+  // Profile details
   bio          String?  @db.VarChar(500)
   karma        Int      @default(0)
   customName   String?  @db.VarChar(32)
@@ -45,15 +63,21 @@ model User {
   bannedAt     DateTime?
   bannedReason String?
 
-  petitionSignature PetitionSignature?
-  opinions          Opinion[]     @relation("UserOpinions")
-  opinionVotes      OpinionVote[] @relation("UserOpinionVotes")
-  comments          Comment[]     @relation("UserComments")
-  commentVotes      CommentVote[] @relation("UserCommentVotes")
-  media             Media[]       @relation("UserMedia")
-  mediaVotes        MediaVote[]   @relation("UserMediaVotes")
+  // Relations
+  petitionSignature    PetitionSignature?
+  opinions             Opinion[]     @relation("UserOpinions")
+  opinionVotes         OpinionVote[] @relation("UserOpinionVotes")
+  comments             Comment[]     @relation("UserComments")
+  commentVotes         CommentVote[] @relation("UserCommentVotes")
+  media                Media[]       @relation("UserMedia")
+  mediaVotes           MediaVote[]   @relation("UserMediaVotes")
+  passwordResetTokens  PasswordResetToken[]
+  emailVerifyTokens    EmailVerifyToken[]
+  loginAttempts        LoginAttempt[]
+  mfaRecoveryCodes     MfaRecoveryCode[]
 
   @@index([steamId])
+  @@index([email])
 }
 
 enum Role {
@@ -406,4 +430,83 @@ model PageView {
   @@index([path])
   @@index([country])
   @@index([ipHash, createdAt])
+}
+
+// ── Auth: Password Reset Tokens ───────────────────────
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// ── Auth: Email Verification Tokens ───────────────────
+
+model EmailVerifyToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// ── Auth: MFA Recovery Codes ──────────────────────────
+
+model MfaRecoveryCode {
+  id        String    @id @default(cuid())
+  userId    String
+  codeHash  String
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ── Auth: Login Attempts (audit + lockout) ────────────
+
+enum AuthMethod {
+  EMAIL
+  STEAM
+  MFA
+}
+
+model LoginAttempt {
+  id        String     @id @default(cuid())
+  userId    String?
+  ipHash    String
+  userAgent String?
+  success   Boolean
+  method    AuthMethod
+  createdAt DateTime   @default(now())
+  user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([ipHash, createdAt])
+  @@index([userId, createdAt])
+}
+
+// ── Auth: Audit Log ───────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  details   Json?
+  ipHash    String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action, createdAt])
 }

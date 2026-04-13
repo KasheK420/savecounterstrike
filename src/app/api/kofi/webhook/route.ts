@@ -8,6 +8,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { timingSafeCompare } from "@/lib/timing";
 
 /** Shape of the Ko-fi webhook payload (parsed from the `data` JSON field). */
 interface KofiPayload {
@@ -99,7 +100,7 @@ export async function POST(request: NextRequest) {
 
     // Verify token
     const expectedToken = process.env.KOFI_VERIFICATION_TOKEN;
-    if (!expectedToken || payload.verification_token !== expectedToken) {
+    if (!expectedToken || !timingSafeCompare(payload.verification_token, expectedToken)) {
       return NextResponse.json({ error: "Invalid verification token" }, { status: 401 });
     }
 

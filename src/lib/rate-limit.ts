@@ -82,16 +82,18 @@ export function rateLimit(
  * @returns Client IP address or "unknown"
  */
 export function getClientIp(request: Request): string {
-  // Cloudflare Tunnel sets the real client IP — most trusted source
+  // Cloudflare Tunnel sets both cf-connecting-ip and cf-ray.
+  // Only trust cf-connecting-ip when cf-ray is also present,
+  // preventing spoofed headers on direct (non-CF) connections.
   const cfIp = request.headers.get("cf-connecting-ip");
-  if (cfIp) return cfIp.trim();
+  const cfRay = request.headers.get("cf-ray");
+  if (cfIp && cfRay) return cfIp.trim();
 
   // Fall back to rightmost non-private IP in x-forwarded-for
   // (rightmost = added by the closest trusted proxy, not spoofable by client)
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) {
     const ips = forwarded.split(",").map((ip) => ip.trim());
-    // Use last IP (added by our reverse proxy, not client-controlled)
     return ips[ips.length - 1] || "unknown";
   }
 

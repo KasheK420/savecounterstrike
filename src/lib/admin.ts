@@ -10,6 +10,7 @@
 import { auth } from "./auth";
 import { db } from "./db";
 import type { Session } from "next-auth";
+import { timingSafeCompare } from "./timing";
 
 /**
  * Require ADMIN role. Returns session if user is admin, null otherwise.
@@ -136,12 +137,6 @@ export async function requireAdminApi() {
 }
 
 /**
- * API route helper for moderator+ endpoints.
- * Returns a standardized error response if not moderator or admin.
- *
- * @returns Object with error flag, response (if error), and session (if success)
- */
-/**
  * API route helper for bot-to-web service calls.
  * Validates the shared secret in Authorization header.
  *
@@ -160,7 +155,7 @@ export function requireBotApi(request: Request) {
   }
 
   const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${secret}`) {
+  if (!auth || !timingSafeCompare(auth, `Bearer ${secret}`)) {
     return {
       error: true as const,
       response: new Response(
@@ -173,6 +168,12 @@ export function requireBotApi(request: Request) {
   return { error: false as const };
 }
 
+/**
+ * API route helper for moderator+ endpoints.
+ * Returns a standardized error response if not moderator or admin.
+ *
+ * @returns Object with error flag, response (if error), and session (if success)
+ */
 export async function requireModeratorApi() {
   const session = await requireModerator();
   if (!session) {

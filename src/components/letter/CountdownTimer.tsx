@@ -26,11 +26,16 @@ function getTimeLeft(): TimeLeft {
 }
 
 export function CountdownTimer() {
-  const [time, setTime] = useState<TimeLeft | null>(() => getTimeLeft());
+  const [time, setTime] = useState<TimeLeft | null>(null);
 
   useEffect(() => {
-    const interval = setInterval(() => setTime(getTimeLeft()), 1000);
-    return () => clearInterval(interval);
+    const tick = () => setTime(getTimeLeft());
+    const immediate = setTimeout(tick, 0);
+    const interval = setInterval(tick, 1000);
+    return () => {
+      clearTimeout(immediate);
+      clearInterval(interval);
+    };
   }, []);
 
   if (!time) {

@@ -83,7 +83,7 @@ export function OpinionCard({ opinion }: OpinionCardProps) {
           </span>
           <span className="text-xs text-muted-foreground flex items-center gap-1">
             <Calendar className="h-3 w-3" />
-            {new Date(opinion.createdAt).toLocaleDateString()}
+            {new Date(opinion.createdAt).toLocaleDateString("en-US")}
           </span>
         </div>
       </div>

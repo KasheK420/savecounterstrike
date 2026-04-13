@@ -106,7 +106,7 @@ export default async function AdminPetitionsPage() {
                     {sig.user?.steamId || sig.steamId || "—"}
                   </span>
                   <span className="text-xs text-muted-foreground ml-auto shrink-0">
-                    {new Date(sig.createdAt).toLocaleString()}
+                    {new Date(sig.createdAt).toLocaleString("en-US")}
                   </span>
                 </div>
                 {sig.message && (

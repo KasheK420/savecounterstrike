@@ -192,7 +192,7 @@ export default function AdminBotPage() {
             <Users className="h-4 w-4 text-cs-orange" />
           </div>
           <div className="text-lg font-bold text-foreground">
-            {status?.trackedCount.toLocaleString() ?? 0}
+            {status?.trackedCount.toLocaleString("en-US") ?? 0}
           </div>
         </div>
 
@@ -204,7 +204,7 @@ export default function AdminBotPage() {
             <ShieldAlert className="h-4 w-4 text-red-500" />
           </div>
           <div className="text-lg font-bold text-red-500">
-            {status?.bannedCount.toLocaleString() ?? 0}
+            {status?.bannedCount.toLocaleString("en-US") ?? 0}
           </div>
         </div>
       </div>
@@ -328,7 +328,7 @@ export default function AdminBotPage() {
                     {p.steamId}
                   </td>
                   <td className="p-3 text-right font-mono">
-                    {p.premierRating?.toLocaleString() ?? "—"}
+                    {p.premierRating?.toLocaleString("en-US") ?? "—"}
                   </td>
                   <td className="p-3 text-center">
                     {p.vacBanned ? (

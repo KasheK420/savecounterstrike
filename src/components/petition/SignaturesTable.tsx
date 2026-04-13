@@ -63,7 +63,7 @@ export function SignaturesTable() {
   return (
     <div className="space-y-4">
       <div className="text-sm text-muted-foreground text-center">
-        {data.total.toLocaleString()} total signatures
+        {data.total.toLocaleString("en-US")} total signatures
       </div>
 
       <div className="cs-card rounded-xl overflow-hidden">
@@ -96,7 +96,7 @@ export function SignaturesTable() {
                 {sig.maskedSteamId}
               </span>
               <span className="text-muted-foreground text-xs">
-                {new Date(sig.signedAt).toLocaleDateString()}
+                {new Date(sig.signedAt).toLocaleDateString("en-US")}
               </span>
               <span className="text-muted-foreground text-xs truncate">
                 {sig.message ? `"${sig.message}"` : "—"}

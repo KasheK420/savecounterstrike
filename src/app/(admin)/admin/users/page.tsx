@@ -97,14 +97,14 @@ export default async function AdminUsersPage() {
                       variant="outline"
                       className="border-cs-red/30 text-cs-red text-[10px]"
                     >
-                      BANNED{user.bannedAt ? ` ${new Date(user.bannedAt).toLocaleDateString()}` : ""}
+                      BANNED{user.bannedAt ? ` ${new Date(user.bannedAt).toLocaleDateString("en-US")}` : ""}
                     </Badge>
                   )}
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
                   <span className="font-mono">{user.steamId}</span>
                   <span>
-                    Joined {new Date(user.createdAt).toLocaleDateString()}
+                    Joined {new Date(user.createdAt).toLocaleDateString("en-US")}
                   </span>
                   {user.bannedReason && (
                     <span className="text-cs-red">

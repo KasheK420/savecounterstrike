@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SaveCounterStrike — Rework in Progress</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #050505;
+      color: #e0e0e0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 640px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 span {
+      color: #de9b35;
+    }
+
+    .subtitle {
+      color: #888;
+      font-size: 1.1rem;
+      margin-bottom: 2.5rem;
+      line-height: 1.6;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(222, 155, 53, 0.15);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      color: #de9b35;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .card p {
+      color: #aaa;
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    .card ul {
+      color: #aaa;
+      line-height: 1.8;
+      font-size: 0.95rem;
+      list-style: none;
+      padding: 0;
+    }
+
+    .card ul li {
+      padding-left: 1.2rem;
+      position: relative;
+      margin-bottom: 0.75rem;
+    }
+
+    .card ul li::before {
+      content: "—";
+      position: absolute;
+      left: 0;
+      color: #de9b35;
+    }
+
+    .card ul li strong {
+      color: #e0e0e0;
+    }
+
+    .reddit-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255, 69, 0, 0.1);
+      border: 1px solid rgba(255, 69, 0, 0.2);
+      color: #ff4500;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+    }
+
+    .links {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1.4rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-discord {
+      background: #5865F2;
+      color: white;
+    }
+    .btn-discord:hover { background: #4752C4; }
+
+    .btn-kofi {
+      background: #de9b35;
+      color: #050505;
+    }
+    .btn-kofi:hover { background: #f0b54d; }
+
+    .btn-github {
+      background: rgba(255, 255, 255, 0.08);
+      color: #e0e0e0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .btn-github:hover { background: rgba(255, 255, 255, 0.12); }
+
+    .footer {
+      margin-top: 3rem;
+      color: #444;
+      font-size: 0.75rem;
+    }
+
+    .footer a {
+      color: #666;
+      text-decoration: none;
+    }
+    .footer a:hover { color: #de9b35; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SAVE<span>CS</span></h1>
+
+    <div class="reddit-badge">
+      Community feedback received — reworking
+    </div>
+
+    <p class="subtitle">
+      We're reworking the site based on community feedback.<br>
+      Reddit wasn't pleased, and we want to keep Reddit happy.
+    </p>
+
+    <div class="card">
+      <h2>What's happening</h2>
+      <p>
+        We launched, Reddit reviewed, feedback was brutally honest (as expected), and now we're
+        making it better. We're listening — that's the whole point of this project.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>What we changed based on your feedback</h2>
+      <ul>
+        <li><strong>Petition no longer requires Steam login</strong> — you can sign without logging in. Steam URL/ID is optional, used only to keep the signer list unique.</li>
+        <li><strong>Kernel-level anti-cheat is not the main demand</strong> — wording updated. The focus is on Valve investing proportionally in anti-cheat and the game overall.</li>
+        <li><strong>Community opinions section</strong> — a dedicated page where you can submit and vote on what you think Valve should change. Top-voted ideas shape the open letter.</li>
+        <li><strong>"AI slop" comments</strong> — fair point. One person, limited dev experience, trying to build something useful quickly. No sensitive data handled. Fully open-source — contribute or audit anytime.</li>
+        <li><strong>Support/tips</strong> — never forced, never pushed. Covers server costs, surplus reinvested into community tools. Stated transparently on the site.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>What's coming back (improved)</h2>
+      <p>
+        Petition — sign without Steam login<br>
+        Community Opinions — vote on what matters<br>
+        Revenue Tracker — real Steam Market data<br>
+        Media Wall — cheater clips and evidence<br>
+        The Open Letter — delivered August 31, 2026
+      </p>
+    </div>
+
+    <div class="links">
+      <a href="https://discord.gg/zwBzCN6CE5" target="_blank" class="btn-discord">
+        Join Discord
+      </a>
+      <a href="https://ko-fi.com/savecounterstrike" target="_blank" class="btn-kofi">
+        Support on Ko-fi
+      </a>
+      <a href="https://github.com/KasheK420/savecounterstrike" target="_blank" class="btn-github">
+        GitHub
+      </a>
+    </div>
+
+    <div class="footer">
+      <p>&copy; 2026 SaveCounterStrike.com — Created by <a href="https://majorluk.pl">Lukas Majoros</a></p>
+      <p style="margin-top: 0.3rem;">We'll be back shortly. The fight continues.</p>
+    </div>
+  </div>
+</body>
+</html>

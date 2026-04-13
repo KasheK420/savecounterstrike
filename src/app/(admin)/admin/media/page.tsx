@@ -94,7 +94,7 @@ export default async function AdminMediaPage() {
                 <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                   <span>{m.author.displayName}</span>
                   <span>{m._count.comments} comments</span>
-                  <span>{new Date(m.createdAt).toLocaleDateString()}</span>
+                  <span>{new Date(m.createdAt).toLocaleDateString("en-US")}</span>
                   <span
                     className={
                       m.status === "APPROVED"

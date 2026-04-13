@@ -38,10 +38,10 @@ export function UserBadges({
       <span
         key="playtime"
         className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-cs-orange/15 text-cs-orange"
-        title={`${cs2PlaytimeHours.toLocaleString()} hours in CS2`}
+        title={`${cs2PlaytimeHours.toLocaleString("en-US")} hours in CS2`}
       >
         <Gamepad2 className="h-2.5 w-2.5" />
-        {cs2PlaytimeHours.toLocaleString()}h
+        {cs2PlaytimeHours.toLocaleString("en-US")}h
       </span>
     );
   }

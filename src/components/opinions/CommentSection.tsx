@@ -143,7 +143,7 @@ function CommentThread({
               compact
             />
             <span className="text-[10px] text-muted-foreground">
-              {new Date(comment.createdAt).toLocaleDateString()}
+              {new Date(comment.createdAt).toLocaleDateString("en-US")}
             </span>
           </div>
 

@@ -16,13 +16,17 @@ export default function AdminBanWavesPage() {
   const [banWaves, setBanWaves] = useState<BanWave[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
-    date: new Date().toISOString().split("T")[0],
+    date: "",
     title: "",
     description: "",
     estimatedBans: "",
     source: "",
   });
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setForm(prev => ({ ...prev, date: prev.date || new Date().toISOString().split("T")[0] }));
+  }, []);
 
   useEffect(() => {
     fetchBanWaves();
@@ -203,11 +207,11 @@ export default function AdminBanWavesPage() {
                     {wave.title}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {new Date(wave.date).toLocaleDateString()}
+                    {new Date(wave.date).toLocaleDateString("en-US")}
                   </span>
                   {wave.estimatedBans && (
                     <span className="text-xs text-red-400 font-medium">
-                      ~{wave.estimatedBans.toLocaleString()} bans
+                      ~{wave.estimatedBans.toLocaleString("en-US")} bans
                     </span>
                   )}
                 </div>

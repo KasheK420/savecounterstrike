@@ -193,7 +193,7 @@ export default async function UserProfilePage({
               </h2>
             </div>
             <p className="text-xs text-muted-foreground">
-              {new Date(user.petitionSignature.createdAt).toLocaleDateString()}
+              {new Date(user.petitionSignature.createdAt).toLocaleDateString("en-US")}
             </p>
             {user.petitionSignature.message && (
               <p className="text-sm text-muted-foreground mt-2 italic">

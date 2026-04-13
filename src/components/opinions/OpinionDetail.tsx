@@ -66,7 +66,7 @@ export function OpinionDetail({ opinion }: OpinionDetailProps) {
           </div>
           {opinion.editedAt && (
             <p className="text-xs text-muted-foreground/50 mt-1 italic">
-              edited {new Date(opinion.editedAt).toLocaleDateString()}
+              edited {new Date(opinion.editedAt).toLocaleDateString("en-US")}
             </p>
           )}
           <div className="flex items-center gap-3 mt-3 flex-wrap">

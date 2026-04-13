@@ -96,6 +96,7 @@ export async function fetchSteamProfile(
 
   const url = `${STEAM_API_BASE}/ISteamUser/GetPlayerSummaries/v2/?key=${apiKey}&steamids=${steamId}`;
   const response = await fetch(url);
+  if (!response.ok) return null;
   const data = await response.json();
 
   const player = data?.response?.players?.[0];
@@ -124,6 +125,7 @@ export async function resolveVanityURL(vanityName: string): Promise<string | nul
     const res = await fetch(
       `${STEAM_API_BASE}/ISteamUser/ResolveVanityURL/v1/?key=${apiKey}&vanityurl=${encodeURIComponent(vanityName)}`
     );
+    if (!res.ok) return null;
     const data = await res.json();
     if (data?.response?.success === 1) return data.response.steamid;
     return null;

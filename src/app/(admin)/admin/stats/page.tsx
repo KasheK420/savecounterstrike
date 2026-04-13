@@ -97,7 +97,7 @@ export default async function AdminStatsPage() {
       </div>
 
       <p className="text-xs text-muted-foreground/50">
-        Last updated: {new Date(revenueData.lastUpdated).toLocaleString()}
+        Last updated: {new Date(revenueData.lastUpdated).toLocaleString("en-US")}
       </p>
     </div>
   );

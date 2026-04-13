@@ -76,7 +76,7 @@ export default async function AdminOpinionsPage() {
                 <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                   <span>{op.author.displayName}</span>
                   <span>{op._count.comments} comments</span>
-                  <span>{new Date(op.createdAt).toLocaleDateString()}</span>
+                  <span>{new Date(op.createdAt).toLocaleDateString("en-US")}</span>
                   <span
                     className={
                       op.status === "APPROVED"

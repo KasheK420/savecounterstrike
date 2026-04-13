@@ -130,7 +130,7 @@ export function RevenueBreakdown() {
                       ${c.price.toFixed(2)}
                     </span>
                     <span className="cs-stat-number text-sm text-foreground min-w-[80px] text-right">
-                      {c.volume.toLocaleString()}
+                      {c.volume.toLocaleString("en-US")}
                     </span>
                   </div>
                 </div>

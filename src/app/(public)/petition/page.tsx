@@ -59,8 +59,8 @@ export default async function PetitionPage() {
               <SignatureCounter initialCount={count} />
               <div className="mt-6 space-y-2">
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>{count.toLocaleString()} signed</span>
-                  <span>Goal: {GOAL.toLocaleString()}</span>
+                  <span>{count.toLocaleString("en-US")} signed</span>
+                  <span>Goal: {GOAL.toLocaleString("en-US")}</span>
                 </div>
                 <Progress value={progressPercent} className="h-2 bg-muted" />
               </div>

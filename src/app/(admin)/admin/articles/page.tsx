@@ -83,7 +83,7 @@ export default async function AdminArticlesPage() {
                 <div className="flex items-center gap-2 mt-1">
                   <p className="text-xs text-muted-foreground">
                     /{article.slug} &middot;{" "}
-                    {new Date(article.createdAt).toLocaleDateString()}
+                    {new Date(article.createdAt).toLocaleDateString("en-US")}
                   </p>
                   {article.tags.length > 0 && (
                     <div className="flex items-center gap-1">

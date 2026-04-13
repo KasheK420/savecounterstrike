@@ -77,7 +77,7 @@ function StatCard({
         <Icon className={`h-5 w-5 ${color}`} />
       </div>
       <div className="cs-stat-number text-2xl font-heading text-foreground">
-        {typeof value === "number" ? value.toLocaleString() : value}
+        {typeof value === "number" ? value.toLocaleString("en-US") : value}
       </div>
       {subtitle && (
         <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
@@ -166,7 +166,7 @@ export function StatsContent() {
           {data.currentPlayers > 0 && (
             <p className="text-lg text-muted-foreground">
               <span className="text-cs-green font-bold">
-                {data.currentPlayers.toLocaleString()}
+                {data.currentPlayers.toLocaleString("en-US")}
               </span>{" "}
               players online right now
             </p>
@@ -323,10 +323,10 @@ export function StatsContent() {
                         <td
                           className={`p-3 text-right font-bold font-mono ${getPremierColor(player.premierRating ?? 0)}`}
                         >
-                          {player.premierRating?.toLocaleString() ?? "—"}
+                          {player.premierRating?.toLocaleString("en-US") ?? "—"}
                         </td>
                         <td className="p-3 text-right text-muted-foreground font-mono">
-                          {player.wins?.toLocaleString() ?? "—"}
+                          {player.wins?.toLocaleString("en-US") ?? "—"}
                         </td>
                         <td className="p-3 text-center">
                           {player.vacBanned ? (
@@ -389,7 +389,7 @@ export function StatsContent() {
                     <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                       {wave.estimatedBans && (
                         <span className="text-red-400 font-medium">
-                          ~{wave.estimatedBans.toLocaleString()} bans
+                          ~{wave.estimatedBans.toLocaleString("en-US")} bans
                         </span>
                       )}
                       {wave.source && (

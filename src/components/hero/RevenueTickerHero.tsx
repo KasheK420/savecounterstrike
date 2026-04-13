@@ -128,13 +128,13 @@ export function RevenueTickerHero() {
         </div>
         <div className="text-center">
           <div className="cs-stat-number text-sm text-foreground">
-            ${Math.round(data.perMinuteRevenue).toLocaleString()}
+            ${Math.round(data.perMinuteRevenue).toLocaleString("en-US")}
           </div>
           <div>/min</div>
         </div>
         <div className="text-center">
           <div className="cs-stat-number text-sm text-foreground">
-            ${data.perHourRevenue.toLocaleString()}
+            ${data.perHourRevenue.toLocaleString("en-US")}
           </div>
           <div>/hour</div>
         </div>
@@ -153,7 +153,7 @@ export function RevenueTickerHero() {
             <Users className="h-3 w-3 text-cs-blue" />
             <span>
               <strong className="text-foreground">
-                {data.currentPlayers.toLocaleString()}
+                {data.currentPlayers.toLocaleString("en-US")}
               </strong>{" "}
               playing now
             </span>

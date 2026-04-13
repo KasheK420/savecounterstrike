@@ -50,7 +50,7 @@ function SignerCard({ signer }: { signer: Signer }) {
           )}
           {u.cs2PlaytimeHours != null && u.cs2PlaytimeHours > 0 && (
             <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-cs-orange/15 text-cs-orange shrink-0">
-              {u.cs2PlaytimeHours.toLocaleString()}h
+              {u.cs2PlaytimeHours.toLocaleString("en-US")}h
             </span>
           )}
           {u.faceitLevel != null && u.faceitLevel > 0 && (
@@ -61,7 +61,7 @@ function SignerCard({ signer }: { signer: Signer }) {
             </span>
           )}
           <span className="text-xs text-muted-foreground shrink-0 ml-auto">
-            {new Date(signer.createdAt).toLocaleDateString()}
+            {new Date(signer.createdAt).toLocaleDateString("en-US")}
           </span>
         </div>
         {signer.message && (

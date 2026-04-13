@@ -129,7 +129,7 @@ export function LetterContent({ signatureCount }: LetterContentProps) {
               on behalf of the Counter-Strike community
             </p>
             <p className="font-serif text-sm text-[#8b1a1a] mt-1 font-semibold">
-              {signatureCount.toLocaleString()} signatures and counting
+              {signatureCount.toLocaleString("en-US")} signatures and counting
             </p>
           </div>
 

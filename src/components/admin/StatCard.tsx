@@ -24,7 +24,7 @@ export function StatCard({
         <Icon className={`h-5 w-5 ${color}`} />
       </div>
       <div className="cs-stat-number text-2xl font-heading text-foreground">
-        {typeof value === "number" ? value.toLocaleString() : value}
+        {typeof value === "number" ? value.toLocaleString("en-US") : value}
       </div>
       {subtitle && (
         <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>

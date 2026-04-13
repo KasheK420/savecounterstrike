@@ -153,7 +153,7 @@ export default function AdminAnalyticsPage() {
                 Total Views
               </span>
               <div className="cs-stat-number text-2xl font-heading text-foreground mt-2">
-                {data.totalViews.toLocaleString()}
+                {data.totalViews.toLocaleString("en-US")}
               </div>
             </div>
             <div className="cs-card rounded-lg p-5">
@@ -161,7 +161,7 @@ export default function AdminAnalyticsPage() {
                 Unique Visitors
               </span>
               <div className="cs-stat-number text-2xl font-heading text-foreground mt-2">
-                {data.uniqueVisitors.toLocaleString()}
+                {data.uniqueVisitors.toLocaleString("en-US")}
               </div>
             </div>
             <div className="cs-card rounded-lg p-5">
@@ -259,7 +259,7 @@ export default function AdminAnalyticsPage() {
                           {page.path}
                         </td>
                         <td className="py-2 text-right text-muted-foreground">
-                          {page.count.toLocaleString()}
+                          {page.count.toLocaleString("en-US")}
                         </td>
                       </tr>
                     ))}
@@ -468,7 +468,7 @@ export default function AdminAnalyticsPage() {
                         {ref.referrer || "(direct)"}
                       </td>
                       <td className="py-2 text-right text-muted-foreground">
-                        {ref.count.toLocaleString()}
+                        {ref.count.toLocaleString("en-US")}
                       </td>
                     </tr>
                   ))}
@@ -509,7 +509,7 @@ export default function AdminAnalyticsPage() {
                     {data.recentViews.map((view: typeof data.recentViews[0], i) => (
                       <tr key={i} className="border-b border-border/30">
                         <td className="py-2 text-muted-foreground whitespace-nowrap">
-                          {new Date(view.createdAt).toLocaleString()}
+                          {new Date(view.createdAt).toLocaleString("en-US")}
                         </td>
                         <td className="py-2 text-foreground truncate max-w-[200px]">
                           {view.path}

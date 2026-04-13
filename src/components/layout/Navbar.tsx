@@ -3,15 +3,15 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useSession } from "@/components/auth/SessionProvider";
-import { SteamLoginButton } from "@/components/auth/SteamLoginButton";
 import { UserAvatar } from "@/components/auth/UserAvatar";
+import { LogIn } from "lucide-react";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Menu, Shield, BookOpen, Video, MessageSquare, BarChart3, DollarSign, Info, HelpCircle, Heart } from "lucide-react";
+import { Menu, Shield, BookOpen, Video, MessageSquare, BarChart3, DollarSign, Info, HelpCircle } from "lucide-react";
 
 const navLinks = [
   { href: "/petition", label: "Petition", icon: Shield },
@@ -62,7 +62,17 @@ export function Navbar() {
 
           {/* Auth */}
           <div className="flex items-center gap-3">
-            {user ? <UserAvatar /> : <SteamLoginButton />}
+            {user ? (
+              <UserAvatar />
+            ) : (
+              <Link
+                href="/auth/login"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-cs-orange/30 text-cs-orange hover:bg-cs-orange hover:text-background transition-all rounded-md"
+              >
+                <LogIn className="h-4 w-4" />
+                Sign In
+              </Link>
+            )}
 
             {/* Mobile menu */}
             <Sheet open={open} onOpenChange={setOpen}>

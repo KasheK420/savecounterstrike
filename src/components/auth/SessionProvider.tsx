@@ -10,7 +10,7 @@ interface SessionUser {
   userId: string;
   name: string;
   image: string;
-  steamId: string;
+  steamId?: string;
   role: string;
 }
 

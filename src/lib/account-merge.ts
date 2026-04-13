@@ -52,17 +52,23 @@ export async function mergeAccounts(
     const keepSig = await tx.petitionSignature.findUnique({
       where: { userId: keepUserId },
     });
-    if (!keepSig) {
-      await tx.petitionSignature
-        .updateMany({
+    const mergeSig = await tx.petitionSignature.findUnique({
+      where: { userId: mergeUserId },
+    });
+
+    if (mergeSig) {
+      if (!keepSig) {
+        // Keep user has no signature — transfer the merge user's signature
+        await tx.petitionSignature.updateMany({
           where: { userId: mergeUserId },
           data: { userId: keepUserId },
-        })
-        .catch(() => {});
-    } else {
-      await tx.petitionSignature.deleteMany({
-        where: { userId: mergeUserId },
-      });
+        });
+      } else {
+        // Both users have signatures — delete the merge user's duplicate
+        await tx.petitionSignature.deleteMany({
+          where: { userId: mergeUserId },
+        });
+      }
     }
 
     // 2. Transfer Opinions

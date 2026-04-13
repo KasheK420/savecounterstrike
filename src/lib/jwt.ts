@@ -9,6 +9,7 @@
  */
 
 import { createHmac } from "crypto";
+import { timingSafeCompare } from "./timing";
 
 /**
  * Sign a JWT payload with HS256.
@@ -59,7 +60,7 @@ export function verifyJwt<T>(token: string, secret: string): T | null {
     .update(`${header}.${body}`)
     .digest("base64url");
 
-  if (sig !== expected) return null;
+  if (!timingSafeCompare(sig, expected)) return null;
 
   try {
     const payload = JSON.parse(Buffer.from(body, "base64url").toString());

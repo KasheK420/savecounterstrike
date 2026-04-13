@@ -23,14 +23,17 @@ export async function GET() {
   // Enrich with actual signature status + user data
   const enriched = await Promise.all(
     data.signers.map(async (signer) => {
-      const user = await db.user.findUnique({
-        where: { steamId: signer.steamId },
-        select: {
-          displayName: true,
-          avatarUrl: true,
-          petitionSignature: { select: { createdAt: true } },
-        },
-      });
+      // Skip DB lookup if steamId is missing (e.g. outreach-generated entries)
+      const user = signer.steamId
+        ? await db.user.findUnique({
+            where: { steamId: signer.steamId },
+            select: {
+              displayName: true,
+              avatarUrl: true,
+              petitionSignature: { select: { createdAt: true } },
+            },
+          })
+        : null;
 
       return {
         label: signer.label,

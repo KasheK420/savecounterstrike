@@ -14,12 +14,19 @@ import nodemailer from "nodemailer";
 import { auth } from "@/lib/auth";
 import { validateOrigin } from "@/lib/csrf";
 import { db } from "@/lib/db";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { mfaEnabledEmail } from "@/lib/email-templates";
 import {
   decryptSecret,
   verifyTotp,
   hashRecoveryCode,
 } from "@/lib/mfa";
+import { z } from "zod";
+
+/** Zod schema for MFA confirm request body */
+const mfaConfirmSchema = z.object({
+  code: z.string().regex(/^\d{6}$/, "Code must be 6 digits"),
+});
 
 /**
  * POST /api/auth/mfa/confirm
@@ -40,20 +47,25 @@ export async function POST(request: NextRequest) {
 
     const userId = session.user.userId;
 
-    // 2. Validate origin (CSRF protection)
+    // 2. Rate limit: 5 per hour per userId
+    const rl = rateLimit(`auth:mfa-confirm:${userId}`, 5, 3_600_000);
+    if (rl.limited) return rateLimitResponse(rl);
+
+    // 3. Validate origin (CSRF protection)
     if (!validateOrigin(request)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // 3. Parse and validate code — must be 6 digits
+    // 4. Parse and validate code with Zod
     const body = await request.json();
-    const code = typeof body.code === "string" ? body.code.trim() : "";
-    if (!/^\d{6}$/.test(code)) {
+    const parsed = mfaConfirmSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Code must be 6 digits" },
+        { error: parsed.error.flatten() },
         { status: 400 },
       );
     }
+    const { code } = parsed.data;
 
     // 4. Fetch user with pending MFA data
     const user = await db.user.findUnique({

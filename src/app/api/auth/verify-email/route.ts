@@ -10,6 +10,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 import { hashToken } from "@/lib/tokens";
 
 /**
@@ -25,6 +26,10 @@ export async function GET(request: NextRequest) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   try {
+    // 0. Rate limit: 10 per minute per IP
+    const rl = rateLimitByIp(request, "auth:verify-email", 10, 60_000);
+    if (rl.limited) return rateLimitResponse(rl);
+
     // 1. Read token from query params
     const token = request.nextUrl.searchParams.get("token");
     if (!token) {

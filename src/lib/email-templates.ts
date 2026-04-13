@@ -7,6 +7,13 @@
  * @module email-templates
  */
 
+/**
+ * Escape HTML special characters to prevent XSS in email templates.
+ */
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+}
+
 const BRAND_COLOR = "#F97316"; // cs-orange
 const SITE_NAME = "SaveCounterStrike";
 const SITE_URL =
@@ -21,11 +28,13 @@ function wrapTemplate(title: string, body: string): string {
 
 /** Email verification template */
 export function verificationEmail(userName: string, verifyUrl: string) {
+  const safeUserName = escapeHtml(userName);
+  const safeVerifyUrl = escapeHtml(verifyUrl);
   return {
     subject: `Verify your email — ${SITE_NAME}`,
     html: wrapTemplate(
       "Verify Email",
-      `<p>Hi ${userName},</p><p>Click below to verify your email:</p><p style="text-align:center;margin:32px 0;"><a href="${verifyUrl}" style="background:${BRAND_COLOR};color:#000;padding:12px 32px;text-decoration:none;border-radius:6px;font-weight:bold;">Verify Email</a></p><p style="font-size:12px;color:#888;">Link expires in 24 hours. If you didn't create an account, ignore this email.</p>`,
+      `<p>Hi ${safeUserName},</p><p>Click below to verify your email:</p><p style="text-align:center;margin:32px 0;"><a href="${safeVerifyUrl}" style="background:${BRAND_COLOR};color:#000;padding:12px 32px;text-decoration:none;border-radius:6px;font-weight:bold;">Verify Email</a></p><p style="font-size:12px;color:#888;">Link expires in 24 hours. If you didn't create an account, ignore this email.</p>`,
     ),
     text: `Hi ${userName},\n\nVerify your email: ${verifyUrl}\n\nLink expires in 24 hours.`,
   };
@@ -33,11 +42,13 @@ export function verificationEmail(userName: string, verifyUrl: string) {
 
 /** Password reset template */
 export function passwordResetEmail(userName: string, resetUrl: string) {
+  const safeUserName = escapeHtml(userName);
+  const safeResetUrl = escapeHtml(resetUrl);
   return {
     subject: `Password reset — ${SITE_NAME}`,
     html: wrapTemplate(
       "Password Reset",
-      `<p>Hi ${userName},</p><p>You requested a password reset. Click below:</p><p style="text-align:center;margin:32px 0;"><a href="${resetUrl}" style="background:${BRAND_COLOR};color:#000;padding:12px 32px;text-decoration:none;border-radius:6px;font-weight:bold;">Reset Password</a></p><p style="font-size:12px;color:#888;">Link expires in 30 minutes. If you didn't request this, ignore this email.</p>`,
+      `<p>Hi ${safeUserName},</p><p>You requested a password reset. Click below:</p><p style="text-align:center;margin:32px 0;"><a href="${safeResetUrl}" style="background:${BRAND_COLOR};color:#000;padding:12px 32px;text-decoration:none;border-radius:6px;font-weight:bold;">Reset Password</a></p><p style="font-size:12px;color:#888;">Link expires in 30 minutes. If you didn't request this, ignore this email.</p>`,
     ),
     text: `Hi ${userName},\n\nReset your password: ${resetUrl}\n\nLink expires in 30 minutes.`,
   };
@@ -45,11 +56,12 @@ export function passwordResetEmail(userName: string, resetUrl: string) {
 
 /** MFA enabled notification template */
 export function mfaEnabledEmail(userName: string) {
+  const safeUserName = escapeHtml(userName);
   return {
     subject: `MFA enabled — ${SITE_NAME}`,
     html: wrapTemplate(
       "MFA Enabled",
-      `<p>Hi ${userName},</p><p>Two-factor authentication has been enabled on your account. If you didn't do this, contact support immediately.</p>`,
+      `<p>Hi ${safeUserName},</p><p>Two-factor authentication has been enabled on your account. If you didn't do this, contact support immediately.</p>`,
     ),
     text: `Hi ${userName},\n\nMFA has been enabled on your account. If you didn't do this, contact support immediately.`,
   };
@@ -57,11 +69,13 @@ export function mfaEnabledEmail(userName: string) {
 
 /** Account merge notification template */
 export function accountMergeEmail(userName: string, mergedIdentity: string) {
+  const safeUserName = escapeHtml(userName);
+  const safeMergedIdentity = escapeHtml(mergedIdentity);
   return {
     subject: `Account merged — ${SITE_NAME}`,
     html: wrapTemplate(
       "Account Merged",
-      `<p>Hi ${userName},</p><p>Your account has been merged with ${mergedIdentity}. All content has been transferred.</p>`,
+      `<p>Hi ${safeUserName},</p><p>Your account has been merged with ${safeMergedIdentity}. All content has been transferred.</p>`,
     ),
     text: `Hi ${userName},\n\nYour account has been merged with ${mergedIdentity}. All content has been transferred.`,
   };

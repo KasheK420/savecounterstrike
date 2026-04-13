@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     } else {
       // 6. No user found — add a small delay to match the timing of the
       //    success path, preventing timing-based enumeration.
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 100 + Math.floor(Math.random() * 300)));
     }
 
     // 7. Always return the same 200 response

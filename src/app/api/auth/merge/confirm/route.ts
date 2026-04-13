@@ -18,6 +18,13 @@ import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { verifyJwt } from "@/lib/jwt";
 import { accountMergeEmail } from "@/lib/email-templates";
 import { mergeAccounts } from "@/lib/account-merge";
+import { z } from "zod";
+
+/** Zod schema for merge confirm request body */
+const mergeConfirmSchema = z.object({
+  mergeToken: z.string().min(1, "Merge token is required"),
+  password: z.string().optional(),
+});
 
 /** Shape of the merge confirmation JWT payload */
 interface MergeTokenPayload {
@@ -50,19 +57,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // 2. Parse request body
+    // 2. Parse and validate request body with Zod
     const body = await request.json();
-    const { mergeToken, password } = body as {
-      mergeToken?: string;
-      password?: string;
-    };
-
-    if (!mergeToken) {
+    const parsed = mergeConfirmSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Merge token is required" },
+        { error: parsed.error.flatten() },
         { status: 400 },
       );
     }
+    const { mergeToken, password } = parsed.data;
 
     // 3. Verify merge JWT
     const authSecret = process.env.AUTH_SECRET;

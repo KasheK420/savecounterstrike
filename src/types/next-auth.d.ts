@@ -32,8 +32,6 @@ declare module "next-auth" {
       authMethod?: "email" | "steam";
       /** Whether MFA was verified in this session */
       mfaVerified?: boolean;
-      /** Security stamp for session invalidation */
-      securityStamp?: string;
       /** Whether user's email is verified */
       isEmailVerified?: boolean;
     };

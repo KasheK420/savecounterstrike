@@ -92,6 +92,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 4b. Ban check — fake bcrypt to keep timing constant, same error as not-found
+    if (user.isBanned) {
+      await verifyPassword(password, DUMMY_HASH);
+      return NextResponse.json(
+        { error: INVALID_CREDENTIALS },
+        { status: 401 },
+      );
+    }
+
     // 5. Check DB-backed account lockout
     const fifteenMinAgo = new Date(Date.now() - LOCKOUT_WINDOW_MS);
     const failedAttempts = await db.loginAttempt.count({
@@ -141,18 +150,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 8. Log successful attempt
-    await db.loginAttempt.create({
-      data: {
-        userId: user.id,
-        ipHash,
-        userAgent: request.headers.get("user-agent") || null,
-        success: true,
-        method: "EMAIL",
-      },
-    });
-
-    // 9. MFA flow
+    // 8. MFA flow — do NOT log success yet; MFA verify will log its own
     if (user.mfaEnabled) {
       const authSecret = process.env.AUTH_SECRET;
       if (!authSecret) {
@@ -191,7 +189,17 @@ export async function POST(request: NextRequest) {
       return response;
     }
 
-    // 10. No MFA — create session via NextAuth
+    // 9. No MFA — log success and create session via NextAuth
+    await db.loginAttempt.create({
+      data: {
+        userId: user.id,
+        ipHash,
+        userAgent: request.headers.get("user-agent") || null,
+        success: true,
+        method: "EMAIL",
+      },
+    });
+
     await signIn("email-password", {
       userId: user.id,
       mfaVerified: "true",

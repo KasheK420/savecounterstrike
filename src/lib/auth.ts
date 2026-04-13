@@ -11,6 +11,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { db } from "./db";
+import { timingSafeCompare } from "./timing";
 
 // ── Admin Configuration ─────────────────────────────────────
 
@@ -167,7 +168,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!dbUser || dbUser.isBanned) {
           return { ...token, expired: true };
         }
-        if (dbUser.securityStamp !== token.securityStamp) {
+        const dbStamp = dbUser.securityStamp;
+        const tokenStamp = token.securityStamp as string | undefined;
+        if (
+          typeof dbStamp !== "string" ||
+          typeof tokenStamp !== "string" ||
+          !timingSafeCompare(dbStamp, tokenStamp)
+        ) {
           return { ...token, expired: true };
         }
         // Keep role in sync with DB
@@ -194,7 +201,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.userId = token.userId as string | undefined;
         session.user.authMethod = token.authMethod as "email" | "steam" | undefined;
         session.user.mfaVerified = token.mfaVerified as boolean | undefined;
-        session.user.securityStamp = token.securityStamp as string | undefined;
         session.user.isEmailVerified = token.isEmailVerified as boolean | undefined;
         if (token.email) session.user.email = token.email as string;
       }

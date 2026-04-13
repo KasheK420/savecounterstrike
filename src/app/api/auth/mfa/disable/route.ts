@@ -15,6 +15,16 @@ import { validateOrigin } from "@/lib/csrf";
 import { db } from "@/lib/db";
 import { verifyRecoveryCode } from "@/lib/mfa";
 import { verifyPassword } from "@/lib/password";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { z } from "zod";
+
+/** Zod schema for MFA disable request body */
+const mfaDisableSchema = z.object({
+  password: z.string().optional(),
+  recoveryCode: z.string().optional(),
+}).refine(d => d.password || d.recoveryCode, {
+  message: "Password or recovery code is required",
+});
 
 /**
  * POST /api/auth/mfa/disable
@@ -35,17 +45,25 @@ export async function POST(request: NextRequest) {
 
     const userId = session.user.userId;
 
-    // 2. Validate origin (CSRF protection)
+    // 2. Rate limit: 5 per hour per userId
+    const rl = rateLimit(`auth:mfa-disable:${userId}`, 5, 3_600_000);
+    if (rl.limited) return rateLimitResponse(rl);
+
+    // 3. Validate origin (CSRF protection)
     if (!validateOrigin(request)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // 3. Parse request body
+    // 4. Parse and validate request body with Zod
     const body = await request.json();
-    const { password, recoveryCode } = body as {
-      password?: string;
-      recoveryCode?: string;
-    };
+    const parsed = mfaDisableSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.flatten() },
+        { status: 400 },
+      );
+    }
+    const { password, recoveryCode } = parsed.data;
 
     // 4. Fetch user
     const user = await db.user.findUnique({

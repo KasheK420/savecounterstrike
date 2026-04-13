@@ -118,7 +118,7 @@ export default async function RootLayout({
         userId: session.user.userId || "",
         name: session.user.name || "Unknown",
         image: session.user.image || "",
-        steamId: session.user.steamId || "",
+        steamId: session.user.steamId || undefined,
         role: session.user.role || "USER",
       }
     : null;

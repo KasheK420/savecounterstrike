@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
         steamId: true,
         displayName: true,
         mfaEnabled: true,
+        isBanned: true,
       },
     });
 
@@ -65,6 +66,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "User not found" },
         { status: 404 },
+      );
+    }
+
+    // Reject banned users
+    if (user.isBanned) {
+      return NextResponse.json(
+        { error: "Account is banned" },
+        { status: 403 },
       );
     }
 

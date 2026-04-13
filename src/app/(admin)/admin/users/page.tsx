@@ -102,7 +102,7 @@ export default async function AdminUsersPage() {
                   )}
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-                  <span className="font-mono">{user.steamId}</span>
+                  <span className="font-mono">{user.steamId || "email-only"}</span>
                   <span>
                     Joined {new Date(user.createdAt).toLocaleDateString("en-US")}
                   </span>

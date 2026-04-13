@@ -16,6 +16,8 @@ import { db } from "@/lib/db";
 import { verifySteamLogin, fetchSteamProfile } from "@/lib/steam";
 import { fetchCS2Stats } from "@/lib/steam-stats";
 import { signJwt } from "@/lib/jwt";
+import { timingSafeCompare } from "@/lib/timing";
+import { rateLimitByIp, rateLimitResponse } from "@/lib/rate-limit";
 
 /** Merge confirmation JWT lifetime: 10 minutes */
 const MERGE_TOKEN_EXPIRY_SEC = 10 * 60;
@@ -34,6 +36,12 @@ export async function GET(request: NextRequest) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   try {
+    // ── Rate Limit ────────────────────────────────────────────
+    const rl = rateLimitByIp(request, "auth:link-steam-callback", 10, 60_000);
+    if (rl.limited) {
+      return NextResponse.redirect(`${siteUrl}/?error=rate_limited`);
+    }
+
     // ── CSRF Protection ────────────────────────────────────────
     const params = request.nextUrl.searchParams;
     const state = params.get("state");
@@ -41,7 +49,7 @@ export async function GET(request: NextRequest) {
     const storedState = cookieStore.get("steam_link_state")?.value;
     cookieStore.delete("steam_link_state");
 
-    if (!state || !storedState || state !== storedState) {
+    if (!state || !storedState || !timingSafeCompare(state, storedState)) {
       return NextResponse.redirect(`${siteUrl}/?error=invalid_state`);
     }
 

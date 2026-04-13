@@ -65,13 +65,21 @@ export async function POST(request: NextRequest) {
     // 5. Fetch user with password hash
     const user = await db.user.findUnique({
       where: { id: userId },
-      select: { id: true, passwordHash: true },
+      select: { id: true, passwordHash: true, emailVerified: true },
     });
 
     if (!user || !user.passwordHash) {
       return NextResponse.json(
         { error: "Password change is not available for this account" },
         { status: 400 },
+      );
+    }
+
+    // 5b. Require verified email
+    if (!user.emailVerified) {
+      return NextResponse.json(
+        { error: "Email must be verified before changing password" },
+        { status: 403 },
       );
     }
 
